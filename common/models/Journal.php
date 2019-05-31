@@ -9,7 +9,6 @@ use yii\db\ActiveRecord;
  * This is the model class for table "journal".
  *
  * @property integer $_id
- * @property string $oid идентификатор организации
  * @property string $userUuid
  * @property string $description
  * @property string $date

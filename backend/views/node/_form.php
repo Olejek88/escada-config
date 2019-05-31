@@ -4,7 +4,7 @@ use common\components\MainFunctions;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
 use common\models\Node;
-use common\models\Objects;
+use common\models\Protocols;
 use common\models\User;
 use common\models\Users;
 use kartik\date\DatePicker;
@@ -56,27 +56,6 @@ use yii\widgets\ActiveForm;
                 'allowClear' => true
             ],
         ]);
-    ?>
-
-    <?php echo $form->field($model, 'oid')->hiddenInput(['value' => User::ORGANISATION_UUID])->label(false); ?>
-
-    <?php
-    $object = Objects::find()->all();
-    $items = ArrayHelper::map($object, 'uuid', function ($model) {
-        return $model['title'];
-    });
-    echo $form->field($model, 'objectUuid')->widget(Select2::class,
-        [
-            'data' => $items,
-            'language' => 'ru',
-            'options' => [
-                'placeholder' => 'Выберите объект..'
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
-
     ?>
 
     <div class="form-group text-center">

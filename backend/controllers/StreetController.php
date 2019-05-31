@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\StreetSearch;
-use common\models\Street;
+use common\models\Threads;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
@@ -75,7 +75,7 @@ class StreetController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Street();
+        $model = new Threads();
         $searchModel = new StreetSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination->pageSize = 10;
@@ -136,12 +136,12 @@ class StreetController extends Controller
      * Finds the Street model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Street the loaded model
+     * @return Threads the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Street::findOne($id)) !== null) {
+        if (($model = Threads::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

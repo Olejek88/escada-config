@@ -12,8 +12,8 @@ use yii\db\Expression;
  *
  * @property integer $_id
  * @property string $uuid
- * @property string $oid идентификатор организации
  * @property string $address
+ * @property string $name
  * @property string $deviceTypeUuid
  * @property string $serial
  * @property string $port
@@ -21,12 +21,9 @@ use yii\db\Expression;
  * @property string $deviceStatusUuid
  * @property string $date
  * @property string $nodeUuid
- * @property string $objectUuid
  * @property string $createdAt
  * @property string $changedAt
- * @property boolean $deleted
  *
- * @property Objects $object
  * @property DeviceStatus $deviceStatus
  * @property DeviceType $deviceType
  */
@@ -67,14 +64,10 @@ class Device extends ActiveRecord
      */
     public function fields()
     {
-        return ['_id', 'uuid', 'address',
+        return ['_id', 'uuid', 'address','name',
             'nodeUuid',
             'node' => function ($model) {
                 return $model->node;
-            },
-            'objectUuid',
-            'object' => function ($model) {
-                return $model->object;
             },
             'deviceTypeUuid',
             'deviceType' => function ($model) {
@@ -84,7 +77,7 @@ class Device extends ActiveRecord
             'deviceStatus' => function ($model) {
                 return $model->deviceStatus;
             },
-            'serial', 'date', 'port', 'deleted', 'interface',
+            'serial', 'date', 'port', 'interface',
             'createdAt', 'changedAt'
         ];
     }
@@ -103,22 +96,20 @@ class Device extends ActiveRecord
                     'nodeUuid',
                     'deviceTypeUuid',
                     'deviceStatusUuid',
-                    'objectUuid',
                     'serial',
                     'interface',
                     'port'
                 ],
                 'required'
             ],
-            [['date', 'oid', 'createdAt', 'changedAt'], 'safe'],
-            [['deleted'], 'boolean'],
+            [['date', 'createdAt', 'changedAt'], 'safe'],
             [
                 [
                     'uuid',
                     'deviceTypeUuid',
                     'deviceStatusUuid',
-                    'objectUuid',
                     'serial',
+                    'name',
                     'port',
                     'nodeUuid',
                     'address'
@@ -145,10 +136,9 @@ class Device extends ActiveRecord
             'date' => Yii::t('app', 'Дата последней связи'),
             'deviceStatusUuid' => Yii::t('app', 'Статус'),
             'deviceStatus' => Yii::t('app', 'Статус'),
-            'objectUuid' => Yii::t('app', 'Объект'),
-            'object' => Yii::t('app', 'Объект'),
             'nodeUuid' => Yii::t('app', 'Шкаф установки'),
             'node' => Yii::t('app', 'Шкаф установки'),
+            'name' => Yii::t('app', 'Название'),
             'port' => Yii::t('app', 'Порт'),
             'serial' => Yii::t('app', 'Серийный номер'),
             'address' => Yii::t('app', 'Адрес'),
@@ -205,22 +195,4 @@ class Device extends ActiveRecord
         return $this->hasOne(Node::class, ['uuid' => 'nodeUuid']);
     }
 
-    /**
-     * Объект связанного поля.
-     *
-     * @return ActiveQuery
-     */
-    public function getObject()
-    {
-        return $this->hasOne(Objects::class, ['uuid' => 'objectUuid']);
-    }
-    /**
-     * Объект связанного поля.
-     *
-     * @return string
-     */
-    public function getFullTitle()
-    {
-        return $this['object']->getFullTitle().' ['.$this['deviceType']['title'].']';
-    }
 }

@@ -4,7 +4,7 @@ use common\components\MainFunctions;
 use common\models\Device;
 use common\models\Measure;
 use common\models\Node;
-use common\models\Photo;
+use common\models\Info;
 use yii\helpers\Html;
 
 /* @var $model Node */

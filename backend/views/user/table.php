@@ -95,14 +95,6 @@ echo GridView::widget([
     'beforeHeader' => [
         '{toggleData}'
     ],
-    'toolbar' => [
-        '{export}',
-    ],
-    'export' => [
-        'fontAwesome' => true,
-        'target' => GridView::TARGET_BLANK,
-        'filename' => 'users'
-    ],
     'pjax' => true,
     'showPageSummary' => false,
     'pageSummaryRowOptions' => ['style' => 'line-height: 0; padding: 0'],

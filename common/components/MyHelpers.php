@@ -1,24 +1,8 @@
 <?php
-/**
- * PHP Version 7.0
- *
- * @category Category
- * @package  Common\components
- * @author   Дмитрий Логачев <demonwork@yandex.ru>
- * @license  http://www.yiiframework.com/license/ License name
- * @link     http://www.toirus.ru
- */
-
 namespace common\components;
 
 /**
  * Class MyHelpers
- *
- * @category Category
- * @package  Common\components
- * @author   Дмитрий Логачев <demonwork@yandex.ru>
- * @license  http://www.yiiframework.com/license/ License name
- * @link     http://www.toirus.ru
  */
 class MyHelpers
 {

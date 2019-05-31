@@ -11,7 +11,6 @@ use yii\db\Expression;
  * This is the model class for table "messages".
  *
  * @property integer $_id
- * @property string $oid идентификатор организации
  * @property string $uuid
  * @property string $link
  * @property string $createdAt
@@ -72,7 +71,7 @@ class Message extends ActiveRecord
                 ],
                 'required'
             ],
-            [['oid','createdAt', 'changedAt'], 'safe'],
+            [['createdAt', 'changedAt'], 'safe'],
             [
                 [ 'uuid' ], 'string', 'max' => 50
             ],

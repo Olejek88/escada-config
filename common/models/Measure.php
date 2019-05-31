@@ -9,10 +9,9 @@ use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
- * This is the model class for table "measure".
+ * This is the model class for table "data".
  *
  * @property integer $_id
- * @property string $oid идентификатор организации
  * @property string $uuid
  * @property string $sensorChannelUuid
  * @property string $measureTypeUuid
@@ -53,7 +52,7 @@ class Measure extends ActiveRecord
      */
     public static function tableName()
     {
-        return 'measure';
+        return 'data';
     }
 
     /**
@@ -77,8 +76,8 @@ class Measure extends ActiveRecord
                 'required'
             ],
             [['value'], 'number'],
-            [['uuid', 'sensorChannelUuid', 'measureTypeUuid', 'date', 'oid'], 'string', 'max' => 50],
-            [['oid','createdAt', 'changedAt'], 'safe'],
+            [['uuid', 'sensorChannelUuid', 'measureTypeUuid', 'date'], 'string', 'max' => 50],
+            [['createdAt', 'changedAt'], 'safe'],
         ];
     }
 

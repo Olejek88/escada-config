@@ -7,12 +7,12 @@ use common\models\Device;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
 use common\models\Node;
-use common\models\Objects;
-use common\models\House;
+use common\models\Protocols;
+use common\models\Stat;
 use common\models\Measure;
 use common\models\Message;
-use common\models\Photo;
-use common\models\Street;
+use common\models\Info;
+use common\models\Threads;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
@@ -247,7 +247,7 @@ class NodeController extends Controller
                     $fullTree[$oCnt0][$c][$oCnt1]['measure_user'] = "-";
                 }
 
-                $photo = Photo::find()
+                $photo = Info::find()
                     ->select('*')
                     ->where(['objectUuid' => $equipment['uuid']])
                     ->orderBy('createdAt DESC')
@@ -285,7 +285,7 @@ class NodeController extends Controller
         ini_set('memory_limit', '-1');
         $c = 'children';
         $fullTree = array();
-        $streets = Street::find()
+        $streets = Threads::find()
             ->select('*')
             ->orderBy('title')
             ->all();
@@ -301,14 +301,14 @@ class NodeController extends Controller
                 ['street/view', 'id' => $street['_id']]
             );
             $oCnt1 = 0;
-            $houses = House::find()->select('uuid,number')->where(['streetUuid' => $street['uuid']])->
+            $houses = Stat::find()->select('uuid,number')->where(['streetUuid' => $street['uuid']])->
             orderBy('number')->all();
             foreach ($houses as $house) {
                 $user_house = UserHouse::find()->select('_id')->where(['houseUuid' => $house['uuid']])->one();
                 $user = Users::find()->where(['uuid' =>
                     UserHouse::find()->where(['houseUuid' => $house['uuid']])->one()
                 ])->one();
-                $flats = Objects::find()->select('uuid,number')->where(['houseUuid' => $house['uuid']])->all();
+                $flats = Protocols::find()->select('uuid,number')->where(['houseUuid' => $house['uuid']])->all();
                 foreach ($flats as $flat) {
                     $house_count++;
                     $visited = 0;
@@ -372,7 +372,7 @@ class NodeController extends Controller
                             $house_visited++;
                         }
 
-                        $photo = Photo::find()
+                        $photo = Info::find()
                             ->select('*')
                             ->where(['objectuid' => $equipment['uuid']])
                             ->orderBy('createdAt DESC')
@@ -437,7 +437,7 @@ class NodeController extends Controller
     {
         ini_set('memory_limit', '-1');
         $fullTree = array();
-        $streets = Street::find()
+        $streets = Threads::find()
             ->select('*')
             ->orderBy('title')
             ->all();
@@ -445,10 +445,10 @@ class NodeController extends Controller
         foreach ($streets as $street) {
             $house_count = 0;
             $house_visited = 0;
-            $houses = House::find()->select('uuid,number')->where(['streetUuid' => $street['uuid']])->
+            $houses = Stat::find()->select('uuid,number')->where(['streetUuid' => $street['uuid']])->
             orderBy('number')->all();
             foreach ($houses as $house) {
-                $objects = Objects::find()->select('uuid,number')->where(['objectUuid' => $house['uuid']])->all();
+                $objects = Protocols::find()->select('uuid,number')->where(['objectUuid' => $house['uuid']])->all();
                 foreach ($objects as $object) {
                     $house_count++;
                     $visited = 0;
@@ -533,41 +533,6 @@ class NodeController extends Controller
             'tree-measure',
             ['equipment' => $fullTree]
         );
-    }
-
-    /**
-     * Deletes an existing Node model.
-     * If deletion is successful, the browser will be redirected to the 'index' page.
-     *
-     * @param integer $id Id
-     *
-     * @return mixed
-     * @throws NotFoundHttpException
-     * @throws \Throwable
-     * @throws StaleObjectException
-     */
-    public
-    function actionDelete($id)
-    {
-        $equipment = $this->findModel($id);
-        $photos = Photo::find()
-            ->select('*')
-            ->where(['equipmentUuid' => $equipment['uuid']])
-            ->all();
-        foreach ($photos as $photo) {
-            $photo->delete();
-        }
-
-        $measures = Measure::find()
-            ->select('*')
-            ->where(['equipmentUuid' => $equipment['uuid']])
-            ->all();
-        foreach ($measures as $measure) {
-            $measure->delete();
-        }
-
-        $this->findModel($id)->delete();
-        return $this->redirect(['index']);
     }
 
     /**

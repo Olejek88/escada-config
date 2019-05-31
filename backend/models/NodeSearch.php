@@ -18,7 +18,7 @@ class NodeSearch extends Node
     {
         return [
             [['_id'], 'integer'],
-            [['uuid', 'address', 'deviceStatusUuid', 'objectUuid', 'createdAt', 'changedAt'], 'safe'],
+            [['uuid', 'address', 'deviceStatusUuid', 'createdAt', 'changedAt'], 'safe'],
         ];
     }
 
@@ -60,7 +60,6 @@ class NodeSearch extends Node
         $query->andFilterWhere([
             '_id' => $this->_id,
             'deviceStatusUuid' => $this->deviceStatusUuid,
-            'objectUuid' => $this->objectUuid,
             'createdAt' => $this->createdAt,
             'changedAt' => $this->changedAt,
         ]);

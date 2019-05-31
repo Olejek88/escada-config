@@ -11,7 +11,6 @@ use yii\db\Expression;
  * This is the model class for table "sensor_config".
  *
  * @property integer $_id
- * @property string $oid идентификатор организации
  * @property string $uuid
  * @property string $sensorChannelUuid
  * @property string $config
@@ -69,7 +68,7 @@ class SensorConfig extends ActiveRecord
                 ],
                 'required'
             ],
-            [['oid','createdAt', 'changedAt'], 'safe'],
+            [['createdAt', 'changedAt'], 'safe'],
             [
                 [
                     'uuid',

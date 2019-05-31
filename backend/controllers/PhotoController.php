@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\PhotoSearch;
-use common\models\Photo;
+use common\models\Info;
 use Yii;
 use yii\filters\VerbFilter;
 use yii\web\Controller;
@@ -75,7 +75,7 @@ class PhotoController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Photo();
+        $model = new Info();
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
             return $this->redirect(['view', 'id' => $model->_id]);
         } else {
@@ -121,12 +121,12 @@ class PhotoController extends Controller
      * Finds the Measure model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Photo the loaded model
+     * @return Info the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Photo::findOne($id)) !== null) {
+        if (($model = Info::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

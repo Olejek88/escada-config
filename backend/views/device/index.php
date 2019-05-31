@@ -26,34 +26,6 @@ $gridColumns = [
         }
     ],
     [
-        'class' => 'kartik\grid\ExpandRowColumn',
-        'width' => '50px',
-        'hAlign' => 'center',
-        'vAlign' => 'middle',
-        'value' => function ($model, $key, $index, $column) {
-            return GridView::ROW_COLLAPSED;
-        },
-        'detail' => function ($model, $key, $index, $column) {
-            return Yii::$app->controller->renderPartial('equipment-details', ['model' => $model]);
-        },
-        'expandIcon' => '<span class="glyphicon glyphicon-expand"></span>',
-        'headerOptions' => ['class' => 'kartik-sheet-style'],
-        'expandOneOnly' => true
-    ],
-    [
-        'class' => 'kartik\grid\DataColumn',
-        'attribute' => 'nodeUuid',
-        'vAlign' => 'middle',
-        'width' => '180px',
-        'value' => function ($data) {
-            return $data['node']['object']->getAddress().' ['.$data['node']['address'].']';
-        },
-        'filterType' => GridView::FILTER_SELECT2,
-        'header' => 'Адрес',
-        'filterInputOptions' => ['placeholder' => 'Любой'],
-        'format' => 'raw',
-    ],
-    [
         'class' => 'kartik\grid\EditableColumn',
         'attribute' => 'deviceTypeUuid',
         'hAlign' => 'center',

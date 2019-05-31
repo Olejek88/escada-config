@@ -3,9 +3,9 @@
 namespace backend\controllers;
 
 use backend\models\ObjectsSearch;
-use common\models\House;
-use common\models\Objects;
-use common\models\Street;
+use common\models\Stat;
+use common\models\Protocols;
+use common\models\Threads;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
@@ -90,7 +90,7 @@ class ObjectController extends Controller
      */
     public function actionCreate()
     {
-        $model = new Objects();
+        $model = new Protocols();
         $searchModel = new ObjectsSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination->pageSize = 50;
@@ -151,12 +151,12 @@ class ObjectController extends Controller
      * Finds the Object model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return Objects
+     * @return Protocols
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = Objects::findOne($id)) !== null) {
+        if (($model = Protocols::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');
@@ -172,7 +172,7 @@ class ObjectController extends Controller
     {
         ini_set('memory_limit', '-1');
         $fullTree = array();
-        $streets = Street::find()
+        $streets = Threads::find()
             ->select('*')
             ->orderBy('title')
             ->all();
@@ -181,7 +181,7 @@ class ObjectController extends Controller
                 'title' => $street['title'],
                 'folder' => true
             ];
-            $houses = House::find()->where(['streetUuid' => $street['uuid']])->
+            $houses = Stat::find()->where(['streetUuid' => $street['uuid']])->
             orderBy('number')->all();
             foreach ($houses as $house) {
                 $childIdx = count($fullTree['children']) - 1;
@@ -189,7 +189,7 @@ class ObjectController extends Controller
                     'title' => $house->getFullTitle(),
                     'folder' => true
                 ];
-                $objects = Objects::find()->where(['houseUuid' => $house['uuid']])->all();
+                $objects = Protocols::find()->where(['houseUuid' => $house['uuid']])->all();
                 foreach ($objects as $object) {
                     $childIdx2 = count($fullTree['children'][$childIdx]['children']) - 1;
                     $fullTree['children'][$childIdx]['children'][$childIdx2]['children'][] = [

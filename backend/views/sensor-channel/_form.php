@@ -2,8 +2,8 @@
 
 use common\components\MainFunctions;
 use common\models\MeasureType;
-use common\models\Organisation;
-use common\models\Objects;
+use common\models\Config;
+use common\models\Protocols;
 use common\models\SensorChannel;
 use common\models\Task;
 use common\models\User;
@@ -61,7 +61,7 @@ use common\models\requestStatus;
     <?php
     $device = Device::find()->all();
     $items = ArrayHelper::map($device, 'uuid', function ($data) {
-        return $data->getFullTitle();
+        return $data['name'];
     });
     echo $form->field($model, 'deviceUuid',
         ['template' => MainFunctions::getAddButton("/device/create")])->widget(Select2::class,

@@ -7,14 +7,14 @@ use common\components\MainFunctions;
 use common\models\Device;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
-use common\models\House;
+use common\models\Stat;
 use common\models\Measure;
 use common\models\Node;
-use common\models\Objects;
-use common\models\Photo;
+use common\models\Protocols;
+use common\models\Info;
 use common\models\SensorChannel;
 use common\models\SensorConfig;
-use common\models\Street;
+use common\models\Threads;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
@@ -139,8 +139,7 @@ class DeviceController extends Controller
             }
             // сохраняем запись
             if ($model->save(false)) {
-                MainFunctions::register("Добавлено новое оборудование ".$model['deviceType']['title'].' '.
-                    $model['node']['object']->getAddress().' ['.$model['node']['address'].']');
+                MainFunctions::register("Добавлено новое оборудование ".$model['deviceType']['title']);
                 return $this->redirect(['view', 'id' => $model->_id]);
             }
             echo json_encode($model->errors);
@@ -157,7 +156,7 @@ class DeviceController extends Controller
     {
         $devices = array();
         $device_count = 0;
-        $objects = Objects::find()
+        $objects = Protocols::find()
             ->select('*')
             ->all();
         foreach ($objects as $object) {
@@ -234,7 +233,7 @@ class DeviceController extends Controller
     {
         ini_set('memory_limit', '-1');
         $fullTree = array();
-        $streets = Street::find()
+        $streets = Threads::find()
             ->select('*')
             ->orderBy('title')
             ->all();
@@ -243,7 +242,7 @@ class DeviceController extends Controller
                 'title' => $street['title'],
                 'folder' => true
             ];
-            $houses = House::find()->where(['streetUuid' => $street['uuid']])->
+            $houses = Stat::find()->where(['streetUuid' => $street['uuid']])->
             orderBy('number')->all();
             foreach ($houses as $house) {
                 $childIdx = count($fullTree['children']) - 1;
@@ -251,7 +250,7 @@ class DeviceController extends Controller
                     'title' => $house->getFullTitle(),
                     'folder' => true
                 ];
-                $objects = Objects::find()->where(['houseUuid' => $house['uuid']])->all();
+                $objects = Protocols::find()->where(['houseUuid' => $house['uuid']])->all();
                 foreach ($objects as $object) {
                     $childIdx2 = count($fullTree['children'][$childIdx]['children']) - 1;
                     $fullTree['children'][$childIdx]['children'][$childIdx2]['children'][] = [
@@ -366,7 +365,7 @@ class DeviceController extends Controller
     function actionDelete($id)
     {
         $device = $this->findModel($id);
-        $photos = Photo::find()
+        $photos = Info::find()
             ->select('*')
             ->where(['deviceUuid' => $device['uuid']])
             ->all();

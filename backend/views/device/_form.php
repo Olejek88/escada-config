@@ -4,10 +4,7 @@ use common\components\MainFunctions;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
 use common\models\Node;
-use common\models\Objects;
-use common\models\User;
-use common\models\Users;
-use kartik\date\DatePicker;
+use common\models\Threads;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -39,6 +36,23 @@ use yii\widgets\ActiveForm;
     ?>
 
     <?php
+    $thread = Threads::find()->all();
+    $items = ArrayHelper::map($thread, 'uuid', 'title');
+    echo $form->field($model, 'thread',
+        ['template' => MainFunctions::getAddButton("/thread/create")])->widget(Select2::class,
+        [
+            'data' => $items,
+            'language' => 'ru',
+            'options' => [
+                'placeholder' => 'Выберите поток'
+            ],
+            'pluginOptions' => [
+                'allowClear' => true
+            ],
+        ]);
+    ?>
+
+    <?php
     $deviceType = DeviceType::find()->all();
     $items = ArrayHelper::map($deviceType, 'uuid', 'title');
     echo $form->field($model, 'deviceTypeUuid',
@@ -48,24 +62,6 @@ use yii\widgets\ActiveForm;
             'language' => 'ru',
             'options' => [
                 'placeholder' => 'Выберите тип..'
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
-    ?>
-
-    <?php
-    $object = Objects::find()->all();
-    $items = ArrayHelper::map($object, 'uuid', function ($model) {
-        return $model['title'];
-    });
-    echo $form->field($model, 'objectUuid')->widget(Select2::class,
-        [
-            'data' => $items,
-            'language' => 'ru',
-            'options' => [
-                'placeholder' => 'Выберите объект..'
             ],
             'pluginOptions' => [
                 'allowClear' => true
@@ -109,6 +105,7 @@ use yii\widgets\ActiveForm;
             ],
         ]);
     ?>
+    <?php echo $form->field($model, 'name')->textInput(['maxlength' => true]) ?>
 
     <?php echo $form->field($model, 'port')->textInput(['maxlength' => true]) ?>
 
@@ -116,26 +113,7 @@ use yii\widgets\ActiveForm;
 
     <?php echo $form->field($model, 'serial')->textInput(['maxlength' => true]) ?>
 
-    <?php echo $form->field($model, 'oid')->hiddenInput(['value' => User::ORGANISATION_UUID])->label(false); ?>
-
-    <?php
-    $nodes = Node::find()->all();
-    $items = ArrayHelper::map($nodes, 'uuid', function ($model) {
-        return $model['object']['address'].' ['.$model['address'].']';
-    });
-    echo $form->field($model, 'nodeUuid')->widget(Select2::class,
-        [
-            'data' => $items,
-            'language' => 'ru',
-            'options' => [
-                'placeholder' => 'Выберите контроллер..'
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
-
-    ?>
+    <?php echo $form->field($model, 'nodeUuid')->hiddenInput(['value' => NODE::CURRENT_NODE])->label(false); ?>
 
     <div class="form-group text-center">
 

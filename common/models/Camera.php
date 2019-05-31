@@ -12,19 +12,16 @@ use yii\db\Expression;
  *
  * @property integer $_id
  * @property string $uuid
- * @property string $oid идентификатор организации
  * @property string $title
- * @property string $deviceStatusUuid
- * @property string $objectUuid
  * @property string $nodeUuid
+ * @property string $deviceStatusUuid
  * @property string $address
  * @property integer $port
  * @property string $createdAt
  * @property string $changedAt
- * @property boolean $deleted
  *
- * @property DeviceStatus $deviceStatus
  * @property Node $node
+ * @property DeviceStatus $deviceStatus
  */
 class Camera extends ActiveRecord
 {
@@ -65,19 +62,11 @@ class Camera extends ActiveRecord
     public function fields()
     {
         return ['_id', 'uuid', 'title',
-            'nodeUuid',
-            'node' => function ($model) {
-                return $model->node;
-            },
-            'objectUuid',
-            'object' => function ($model) {
-                return $model->object;
-            },
             'deviceStatusUuid',
             'deviceStatus' => function ($model) {
                 return $model->deviceStatus;
             },
-            'deleted', 'address','createdAt', 'changedAt'
+            'address','createdAt', 'changedAt'
         ];
     }
 
@@ -93,21 +82,18 @@ class Camera extends ActiveRecord
                 [
                     'uuid',
                     'title',
+                    'nodeUuid',
                     'deviceStatusUuid',
-                    'objectUuid',
                     'address'
                 ],
                 'required'
             ],
             [['createdAt', 'changedAt'], 'safe'],
-            [['deleted'], 'boolean'],
+            ['port', 'integer'],
             [
                 [
                     'uuid',
                     'deviceStatusUuid',
-                    'oid',
-                    'nodeUuid',
-                    'objectUuid'
                 ],
                 'string', 'max' => 50
             ],
@@ -133,10 +119,6 @@ class Camera extends ActiveRecord
             'title' => Yii::t('app', 'Название'),
             'deviceStatusUuid' => Yii::t('app', 'Статус'),
             'deviceStatus' => Yii::t('app', 'Статус'),
-            'nodeUuid' => Yii::t('app', 'Контроллер'),
-            'node' => Yii::t('app', 'Контроллер'),
-            'objectUuid' => Yii::t('app', 'Объект'),
-            'object' => Yii::t('app', 'Объект'),
             'address' => Yii::t('app', 'Адрес'),
             'createdAt' => Yii::t('app', 'Создан'),
             'changedAt' => Yii::t('app', 'Изменен'),
@@ -179,12 +161,4 @@ class Camera extends ActiveRecord
         return $this->hasOne(Node::class, ['uuid' => 'nodeUuid']);
     }
 
-    public function getObject()
-    {
-        return $this->hasOne(Objects::class, ['uuid' => 'objectUuid']);
-    }
-
-    public function getPhoto() {
-        return $this->hasMany(Photo::class, ['equipmentUuid' => 'uuid']);
-    }
 }

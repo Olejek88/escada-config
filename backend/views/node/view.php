@@ -34,10 +34,6 @@ $this->title = 'Контроллер';
                                     'address',
                                     'uuid',
                                     [
-                                        'label' => 'Объект',
-                                        'value' => $model['object']->title
-                                    ],
-                                    [
                                         'label' => 'Статус',
                                         'value' => $model['deviceStatus']->title
                                     ],

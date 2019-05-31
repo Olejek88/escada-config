@@ -2,7 +2,7 @@
 
 namespace backend\models;
 
-use common\models\Objects;
+use common\models\Protocols;
 use common\models\SensorChannel;
 use common\models\SensorConfig;
 use yii\base\Model;

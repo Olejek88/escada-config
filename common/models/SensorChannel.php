@@ -11,7 +11,6 @@ use yii\db\ActiveRecord;
  *
  * @property integer $_id
  * @property string $uuid
- * @property string $oid идентификатор организации
  * @property string $title
  * @property string $register
  * @property string $deviceUuid
@@ -36,7 +35,7 @@ class SensorChannel extends ActiveRecord
     {
         return [
             [['uuid', 'title', 'deviceUuid', 'measureTypeUuid'], 'required'],
-            [['oid','createdAt', 'changedAt'], 'safe'],
+            [['createdAt', 'changedAt'], 'safe'],
             [['uuid', 'deviceUuid', 'register', 'measureTypeUuid'], 'string', 'max' => 50],
             [['title'], 'string', 'max' => 100],
         ];

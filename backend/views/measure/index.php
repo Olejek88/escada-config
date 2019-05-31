@@ -51,7 +51,7 @@ $this->title = Yii::t('app', 'Измеренные значения');
                                 ],
                                 'headerOptions' => ['class' => 'text-center'],
                                 'content' => function ($data) {
-                                    return $data['sensorChannel']['device']->getFullTitle();
+                                    return $data['sensorChannel']['device']['name'];
 
                                 }
                             ],

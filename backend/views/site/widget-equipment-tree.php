@@ -1,78 +1,192 @@
 <?php
+
 use wbraganca\fancytree\FancytreeWidget;
-use yii\helpers\Html;
 use yii\web\JsExpression;
 
-/* @var $device */
+/* @var $devices */
 ?>
 
-<div class="box box-primary">
-    <div class="box-header with-border">
-        <h3 class="box-title">Устройства системы</h3>
-        <div class="box-tools pull-right">
-            <div class="btn-group">
-                <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
-                    <i class="fa fa-bars"></i></button>
-                <ul class="dropdown-menu pull-right" role="menu">
-                    <li><?php echo Html::a("Все оборудование","/device/table") ?></li>
-                    <li><?php echo Html::a("Деревом","/device/tree") ?></li>
-                </ul>
-            </div>
-            <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
-            </button>
-            <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i>
-            </button>
+    <div class="box box-primary">
+        <div class="box-header with-border">
+            <h3 class="box-title">Устройства системы</h3>
+        </div>
+        <!-- /.box-header -->
+        <div class="box-body">
+            <table id="tree" style="width: 100%">
+                <colgroup>
+                    <col width="*">
+                    <col width="120px">
+                    <col width="140px">
+                    <col width="120px">
+                    <col width="150px">
+                </colgroup>
+                <thead style="background-color: #337ab7; color: white">
+                <tr>
+                    <th align="center" colspan="4" style="background-color: #3c8dbc; color: whitesmoke">Оборудование
+                        системы
+                    </th>
+                </tr>
+                <tr style="background-color: #3c8dbc; color: whitesmoke">
+                    <th align="center">Оборудование</th>
+                    <th>Статус</th>
+                    <th>Дата</th>
+                    <th>Показания</th>
+                    <th>Регистр</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td></td>
+                    <td class="alt"></td>
+                    <td class="center"></td>
+                    <td class="alt"></td>
+                    <td class="center"></td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </div>
-    <!-- /.box-header -->
-    <div class="box-body">
-        <table id="tree" cellspacing="1">
-            <colgroup>
-                <col width="*">
-                <col width="*">
-                <col width="100px">
-                <col width="140px">
-            </colgroup>
-            <thead style="background-color: #337ab7; color: white">
-            <tr style="background-color: #3c8dbc; color: whitesmoke">
-                <th align="center">Оборудование</th>
-                <th>Расположение</th>
-                <th>Статус</th>
-                <th>Дата</th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <td></td>
-                <td class="alt"></td>
-                <td class="center"></td>
-                <td class="alt"></td>
-            </tr>
-            </tbody>
-        </table>
-        <?php
-            echo FancytreeWidget::widget([
-            'options' => [
-                'id' => 'tree',
-                'source' => $device,
-                'extensions' => ["glyph", "table"],
-                'glyph' => 'glyph_opts',
-                'table' => [
-                    'indentation' => 20,
-                    "titleColumnIdx" => "1",
-                    "locationColumnIdx" => "2",
-                    "statusColumnIdx" => "3",
-                    "userColumnIdx" => "4"
+<?php
+$this->registerJsFile('/js/custom/modules/list/jquery.fancytree.contextMenu.js',
+    ['depends' => ['wbraganca\fancytree\FancytreeAsset']]);
+$this->registerJsFile('/js/custom/modules/list/jquery.contextMenu.min.js',
+    ['depends' => ['yii\jui\JuiAsset']]);
+$this->registerCssFile('/css/custom/modules/list/ui.fancytree.css');
+$this->registerCssFile('/css/custom/modules/list/jquery.contextMenu.min.css');
+
+echo FancytreeWidget::widget([
+    'options' => [
+        'id' => 'tree',
+        'source' => $devices,
+        'checkbox' => true,
+        'selectMode' => 3,
+        'extensions' => ['dnd', "glyph", "table", "contextMenu"],
+        'glyph' => 'glyph_opts',
+        'dnd' => [
+            'preventVoidMoves' => true,
+            'preventRecursiveMoves' => true,
+            'autoExpandMS' => 400,
+            'dragStart' => new JsExpression('function(node, data) {
+				return true;
+			}'),
+            'dragEnter' => new JsExpression('function(node, data) {
+				return true;
+			}'),
+            'dragDrop' => new JsExpression('function(node, data) {
+				data.otherNode.moveTo(node, data.hitMode);
+			}'),
+        ],
+        'contextMenu' => [
+            'menu' => [
+                'new' => [
+                    'name' => 'Добавить новое',
+                    'icon' => 'add',
+                    'callback' => new JsExpression('function(key, opt) {
+                        var node = $.ui.fancytree.getNode(opt.$trigger);
+                        if (node.folder==true) {
+                            $.ajax({
+                                url: "new",
+                                type: "post",
+                                data: {
+                                    selected_node: node.key,
+                                    folder: node.folder,
+                                    uuid: node.data.uuid,
+                                    type: node.type,
+                                    model_uuid: node.data.model_uuid,
+                                    type_uuid: node.data.type_uuid                                                                        
+                                },
+                                success: function (data) { 
+                                    $(\'#modalAddEquipment\').modal(\'show\');
+                                    $(\'#modalContentEquipment\').html(data);
+                                }
+                           }); 
+                        }                        
+                    }')
                 ],
-                'renderColumns' => new JsExpression('function(event, data) {
-                        var node = data.node;
-                        $tdList = $(node.tr).find(">td");
-                        $tdList.eq(1).text(node.data.location);
-                        $tdList.eq(2).html(node.data.status);
-                        $tdList.eq(3).html(node.data.date); 
-                   }')
+                'edit' => [
+                    'name' => 'Редактировать',
+                    'icon' => 'edit',
+                    'callback' => new JsExpression('function(key, opt) {
+                        var node = $.ui.fancytree.getNode(opt.$trigger);
+                            $.ajax({
+                                url: "edit",
+                                type: "post",
+                                data: {
+                                    selected_node: node.key,
+                                    folder: node.folder,
+                                    uuid: node.data.uuid,
+                                    type: node.type,
+                                    model_uuid: node.data.model_uuid,
+                                    type_uuid: node.data.type_uuid,
+                                    reference: "equipment"                                                                        
+                                },
+                                success: function (data) { 
+                                    $(\'#modalAddEquipment\').modal(\'show\');
+                                    $(\'#modalContentEquipment\').html(data);
+                                }
+                           }); 
+                    }')
+                ],
+                'doc' => [
+                    'name' => 'Добавить документацию',
+                    'icon' => 'add',
+                    'callback' => new JsExpression('function(key, opt) {
+                            var node = $.ui.fancytree.getNode(opt.$trigger);
+                            $.ajax({
+                                url: "../documentation/add",
+                                type: "post",
+                                data: {
+                                    selected_node: node.key,
+                                    folder: node.folder,
+                                    uuid: node.data.uuid,
+                                    model_uuid: node.data.model_uuid                                    
+                                },
+                                success: function (data) { 
+                                    $(\'#modalAddDocumentation\').modal(\'show\');
+                                    $(\'#modalContent\').html(data);
+                                }
+                            });
+                    }')
+                ],
+                'defect' => [
+                    'name' => 'Добавить дефект',
+                    'icon' => 'add',
+                    'callback' => new JsExpression('function(key, opt) {
+                            var node = $.ui.fancytree.getNode(opt.$trigger);
+                            $.ajax({
+                                url: "../defect/add",
+                                type: "post",
+                                data: {
+                                    selected_node: node.key,
+                                    folder: node.folder,
+                                    uuid: node.data.uuid,
+                                    model_uuid: node.data.model_uuid                                    
+                                },
+                                success: function (data) { 
+                                    $(\'#modalAddDefect\').modal(\'show\');
+                                    $(\'#modalContentDefect\').html(data);
+                                }
+                            });
+                    }')
+                ]
             ]
-        ]);
-        ?>
-    </div>
-</div>
+        ],
+        'table' => [
+            'indentation' => 20,
+            "titleColumnIdx" => "1",
+            "statusColumnIdx" => "2",
+            "dateColumnIdx" => "3",
+            "measureColumnIdx" => "4",
+            "registerColumnIdx" => "5"
+        ],
+        'renderColumns' => new JsExpression('function(event, data) {
+            var node = data.node;
+            $tdList = $(node.tr).find(">td");
+            $tdList.eq(1).html(node.data.status);
+            $tdList.eq(2).html(node.data.date);
+            $tdList.eq(3).html(node.data.measure);
+            $tdList.eq(4).html(node.data.register);
+        }')
+    ]
+]);
+?>

@@ -41,7 +41,7 @@ use yii\widgets\ActiveForm;
     <?php
     $sensorChannels = SensorChannel::find()->all();
     $items = ArrayHelper::map($sensorChannels, 'uuid', function ($data) {
-        return $data['device']->getFullTitle().' ['.$data['title'].']';
+        return $data['device']['name'].' ['.$data['title'].']';
     });
     echo $form->field($model, 'sensorChannelUuid')->widget(Select2::class,
         [

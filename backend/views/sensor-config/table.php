@@ -37,7 +37,7 @@ $gridColumns = [
         ],
         'headerOptions' => ['class' => 'text-center'],
         'content' => function ($data) {
-            return $data['sensorChannel']['title'].' '.$data['sensorChannel']['device']->getFullTitle();
+            return $data['sensorChannel']['title'].' '.$data['sensorChannel']['device']['name'];
         }
     ],
     [

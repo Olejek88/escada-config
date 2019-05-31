@@ -12,26 +12,6 @@ use Yii;
 
 class MainFunctions
 {
-    /**
-     * Возвращает разницу во времени для операций. Проверяет время на корректность.
-     *
-     * @param string $beginDate - дата начала
-     * @param string $endDate - дата окончания
-     * @param integer $limit - предел в секундах
-     *
-     * @return integer Время выполнения.
-     */
-    public static function getOperationLength($beginDate, $endDate, $limit)
-    {
-        // даты должны быть не из прошлого века
-        // дата окончания старше даты начала
-        // время выполнения не больше лимита
-        if (strtotime($endDate) > 10000000 && strtotime($beginDate) > 10000000 && strtotime($endDate) > strtotime($beginDate) && (strtotime($endDate) - strtotime($beginDate)) < $limit) {
-            return strtotime($endDate) - strtotime($beginDate);
-        } else
-            return 0;
-    }
-
     static function random_color_part()
     {
         return str_pad(dechex(mt_rand(0, 255)), 2, '0', STR_PAD_LEFT);
@@ -105,30 +85,6 @@ class MainFunctions
     }
 
     /**
-     * Find nearest location of user by coordinates
-     * @param Users $user
-     * @param boolean $full
-     * @return string название локации
-     */
-    public static function getLocationByUser($user, $full)
-    {
-        $location = 'не определено';
-        /*        $gps = Gpstrack::find()->where(['userUuid' => $user['uuid']])->orderBy('date DESC')->one();
-                $objects = Objects::find()->all();
-                $max_distance=10;
-                foreach ($objects as $object) {
-                    $distance=abs(sqrt(($object['latitude']-$gps['latitude'])^2+($object['longitude']-$gps['longitude'])^2));
-                    if ($distance<$max_distance) {
-                        $max_distance = $distance;
-                        $location = $object['title'];
-                        if ($full)
-                            $location .= ' ['.$gps['latitude'].', '.$gps['longitude'].']';
-                    }
-                }*/
-        return $location;
-    }
-
-    /**
      * Sort array by param
      * @param $array
      * @param $cols
@@ -163,21 +119,6 @@ class MainFunctions
     public static function getColorLabelByStatus($status, $type)
     {
         $label = '<div class="progress"><div class="critical3">' . $status['title'] . '</div></div>';
-        if ($type == 'task_status') {
-            if ($status["uuid"] == WorkStatus::NEW_OPERATION ||
-                $status["uuid"] == WorkStatus::IN_WORK)
-                $label = '<div class="progress"><div class="critical5">' . $status['title'] . '</div></div>';
-            if ($status["uuid"] == WorkStatus::CANCELED)
-                $label = '<div class="progress"><div class="critical2">' . $status['title'] . '</div></div>';
-            if ($status["uuid"] == WorkStatus::UN_COMPLETE)
-                $label = '<div class="progress"><div class="critical1">' . $status['title'] . '</div></div>';
-        }
-        if ($type == 'task_verdict') {
-            if ($status["uuid"] == TaskVerdict::NOT_DEFINED)
-                $label = '<div class="progress"><div class="critical5">' . $status['title'] . '</div></div>';
-            if ($status["uuid"] == TaskVerdict::INSPECTED)
-                $label = '<div class="progress"><div class="critical1">' . $status['title'] . '</div></div>';
-        }
         if ($type == 'equipment_status') {
             if ($status['uuid'] == DeviceStatus::NOT_MOUNTED) {
                 $label = 'critical1';

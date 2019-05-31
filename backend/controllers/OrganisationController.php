@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\OrganisationSearch;
-use common\models\Organisation;
+use common\models\Config;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
@@ -63,7 +63,7 @@ class OrganisationController extends ControllerAlias
     public function actionTable()
     {
         if (isset($_POST['editableAttribute'])) {
-            $model = Organisation::find()
+            $model = Config::find()
                 ->where(['_id' => $_POST['editableKey']])
                 ->one();
             if ($_POST['editableAttribute'] == 'title') {
@@ -112,7 +112,7 @@ class OrganisationController extends ControllerAlias
      */
     public function actionCreate()
     {
-        $model = new Organisation();
+        $model = new Config();
 
         if ($model->load(Yii::$app->request->post())) {
             // проверяем все поля, если что-то не так показываем форму с ошибками
@@ -186,13 +186,13 @@ class OrganisationController extends ControllerAlias
      *
      * @param integer $id Id
      *
-     * @return Organisation the loaded model
+     * @return Config the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected
     function findModel($id)
     {
-        if (($model = Organisation::findOne($id)) !== null) {
+        if (($model = Config::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

@@ -1,25 +1,33 @@
 <?php
 namespace backend\controllers;
 
+use backend\models\MeasureSearch;
+use backend\models\RequestSearch;
+use backend\models\ThreadsSearch;
 use backend\models\UserSearch;
 use backend\models\UsersSearch;
 use common\components\MainFunctions;
 use common\models\City;
 use common\models\Defect;
+use common\models\DeviceStatus;
 use common\models\EquipmentRegister;
 use common\models\ExternalEvent;
+use common\models\Info;
 use common\models\Journal;
+use common\models\MeasureType;
 use common\models\Node;
 use common\models\Orders;
 use common\models\OrderStatus;
-use common\models\Organisation;
+use common\models\Config;
 use common\models\Device;
 use common\models\DeviceType;
-use common\models\Objects;
+use common\models\Protocols;
 use common\models\LoginForm;
 use common\models\Measure;
 use common\models\SensorChannel;
-use common\models\Street;
+use common\models\SensorConfig;
+use common\models\Stat;
+use common\models\Threads;
 use common\models\User;
 use common\models\UsersAttribute;
 use Yii;
@@ -55,7 +63,7 @@ class SiteController extends Controller
                         'allow' => true,
                     ],
                     [
-                        'actions' => ['logout', 'index', 'dashboard', 'test', 'timeline'],
+                        'actions' => ['logout', 'dashboard', 'test', 'timeline'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -83,182 +91,120 @@ class SiteController extends Controller
     }
 
     /**
-     * Displays map.
-     *
-     * @return string
-     */
-    public function actionIndex()
-    {
-        /**
-         * Работа с картой
-         */
-        $objectSelect = Objects::find()
-            ->select('_id, title, latitude, longitude')
-            ->asArray()
-            ->all();
-
-        $cnt = 0;
-        $objectsGroup = 'var objects=L.layerGroup([';
-        $objectsList = '';
-        foreach ($objectSelect as $object) {
-            $objectsList .= 'var object' . $object["_id"]
-                . '= L.marker([' . $object["latitude"]
-                . ',' . $object["longitude"] . ']).bindPopup("<b>'
-                . $object["title"] . '</b>").openPopup();';
-            if ($cnt > 0) {
-                $objectsGroup .= ',';
-            }
-
-            $objectsGroup .= 'object' . $object["_id"];
-            $cnt++;
-        }
-
-        $objectsGroup .= ']);' . PHP_EOL;
-
-        $devices = Device::find()->all();
-
-        $cnt = 0;
-        $default_coordinates = "[55.54,61.36]";
-        $coordinates = $default_coordinates;
-        $equipmentsGroup = 'var devices=L.layerGroup([';
-        $equipmentsList = '';
-        foreach ($devices as $device) {
-            if ($device["object"]["latitude"] > 0) {
-                $equipmentsList .= 'var device'
-                    . $device["_id"]
-                    . '= L.marker([' . $device["object"]["latitude"]
-                    . ',' . $device["object"]["longitude"]
-                    . '], {icon: houseIcon}).bindPopup("<b>'
-                    . $device["deviceType"]["title"] . '</b><br/>'
-                    . $device["object"]->getAddress() . '").openPopup();';
-                $coordinates = "[".$device["object"]["latitude"].",".$device["object"]["longitude"]."]";
-                if ($coordinates==$default_coordinates && $device["object"]["latitude"]>0) {
-                    $coordinates = "[".$device["object"]["latitude"].",".$device["object"]["longitude"]."]";
-                }
-                if ($cnt > 0) {
-                    $equipmentsGroup .= ',';
-                }
-
-                $equipmentsGroup .= 'device' . $device["_id"];
-                $cnt++;
-            }
-        }
-        $equipmentsGroup .= ']);' . PHP_EOL;
-
-        return $this->render(
-            'index',
-            [
-                'objectsGroup' => $objectsGroup,
-                'objectsList' => $objectsList,
-                'devicesGroup' => $equipmentsGroup,
-                'devicesList' => $equipmentsList,
-                'coordinates' => $coordinates
-            ]
-        );
-    }
-
-    /**
      * Dashboard
      *
      * @return string
      */
     public function actionDashboard()
     {
-        $searchModel = new UserSearch();
-        $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
-        $dataProvider->pagination->pageSize = 15;
-
-        $accountUser = Yii::$app->user->identity;
-        $currentUser = User::find()
-            ->where(['_id' => $accountUser['id']])
-            ->asArray()
-            ->one();
-
-        $cityCount = City::find()->count();
-        $streetCount = Street::find()->count();
-        $objectsCount = Objects::find()->count();
-        $deviceCount = Device::find()->count();
-        $contragentCount = Organisation::find()->count();
-        $nodesCount = Node::find()->count();
-        $sensorChannelsCount = SensorChannel::find()->count();
-        $deviceTypeCount = DeviceType::find()->count();
-        $usersCount = User::find()->count();
-
+        $categories = "";
+        $values = "";
+        $stat_categories = "";
+        $stat_values = "";
         $last_measures = Measure::find()
-            ->where('createdAt > (NOW()-(4*24*3600000));')
-            ->count();
-        $complete = 0;
+            ->where(['measureTypeUuid' => MeasureType::POWER])
+            ->andWhere(['type' => 0])
+            ->orderBy('date')
+            ->all();
+        foreach ($last_measures as $measure) {
+            $categories.= $measure['date'];
+            $values.=$measure['value'];
+        }
+
+        $stats = Stat::find()
+            ->orderBy('changedAt')
+            ->all();
+        foreach ($stats as $stat) {
+            $stat_categories.= $stat['date'];
+            $stat_values.=$stat['value'];
+        }
 
         $measures = Measure::find()
+            ->where(['measureTypeUuid' => MeasureType::POWER])
+            ->andWhere(['type' => 1])
             ->orderBy('date')
             ->all();
 
-        $equipments = Device::find()
-            ->orderBy('_id DESC')
-            ->limit(20)
-            ->all();
+        $measureSearchModel = new MeasureSearch();
+        $measureDataProvider = $measureSearchModel->search(Yii::$app->request->queryParams);
 
-        $users = User::find()
-            ->all();
+        $devices = Device::find()->all();
+        $threads = Threads::find()->all();
+        $info = Info::find()->all();
 
-        /**
-         * Работа с картой
-         */
-        $deviceData = array();
-        $devices = Device::find()->select('*')->all();
-        $deviceList[] = $devices;
-        $deviceCount = count($devices);
-        $cnt = 0;
-        $equipmentsGroup = 'var devices=L.layerGroup([';
-        $equipmentsList = '';
-        $default_coordinates = "[55.54,61.36]";
-        $coordinates = $default_coordinates;
-        foreach ($devices as $device) {
-            if ($device["object"]["latitude"] > 0) {
-                $equipmentsList .= 'var device'
-                    . $device["_id"]
-                    . '= L.marker([' . $device["object"]["latitude"]
-                    . ',' . $device["object"]["longitude"]
-                    . '], {icon: houseIcon}).bindPopup("<b>'
-                    . $device["deviceType"]["title"] . '</b><br/>'
-                    . $device["object"]->getAddress() . '").openPopup();';
-                $coordinates = "[".$device["object"]["latitude"].",".$device["object"]["longitude"]."]";
-                if ($coordinates==$default_coordinates && $device["object"]["latitude"]>0) {
-                    $coordinates = "[".$device["object"]["latitude"].",".$device["object"]["longitude"]."]";
+        $threadSearchModel = new ThreadsSearch();
+        $threadDataProvider = $threadSearchModel->search(Yii::$app->request->queryParams);
+
+        $types = DeviceType::find()->indexBy('_id')->all();
+        $tree = array();
+        foreach ($types as $type) {
+            $expanded = true;
+            $tree['children'][] = [
+                'title' => $type->title,
+                'key' => $type->_id,
+                'folder' => true,
+                'expanded' => $expanded,
+            ];
+            $devices = Device::find()->where(['deviceTypeUuid' => $type['uuid']])->all();
+            foreach ($devices as $device) {
+                $childIdx = count($tree['children']) - 1;
+                if ($device['deviceStatusUuid'] == DeviceStatus::NOT_MOUNTED) {
+                    $class = 'critical1';
+                } elseif ($device['deviceStatusUuid'] == DeviceStatus::NOT_WORK) {
+                    $class = 'critical2';
+                } else {
+                    $class = 'critical3';
                 }
-                if ($cnt > 0) {
-                    $equipmentsGroup .= ',';
+                $fullTree['children'][$childIdx]['children'][] = [
+                    'title' => $device['deviceType']['title'],
+                    'status' => '<div class="progress"><div class="'
+                        . $class . '">' . $device['deviceStatus']->title . '</div></div>',
+                    'register' => $device['port'].' ['.$device['address'].']',
+                    'date' => $device['date'],
+                    'folder' => true
+                ];
+                $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->all();
+                foreach ($channels as $channel) {
+                    $childIdx2 = count($fullTree['children'][$childIdx]['children']) - 1;
+                    $measure = Measure::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
+                    $date = '-';
+                    if (!$measure) {
+                        $config = null;
+                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
+                        if ($config) {
+                            $measure = Html::a('конфигурация', ['sensor-config/view', 'id' => $config['_id']]);
+                            $date = $config['changedAt'];
+                        }
+                    } else {
+                        $date = $measure['date'];
+                        $measure = $measure['value'];
+                    }
+                    $fullTree['children'][$childIdx]['children'][$childIdx2]['children'][] = [
+                        'title' => $channel['title'],
+                        'register' => $channel['register'],
+                        'measure' => $measure,
+                        'date' => $date,
+                        'folder' => false
+                    ];
                 }
-
-                $equipmentsGroup .= 'device' . $device["_id"];
-                $cnt++;
             }
         }
-        $equipmentsGroup .= ']);' . PHP_EOL;
 
         return $this->render(
             'dashboard',
             [
-                'cityCount' => $cityCount,
-                'streetCount' => $streetCount,
-                'usersCount' => $usersCount,
-                'objectCount' => $objectsCount,
-                'nodesCount' => $nodesCount,
-                'channelsCount' => $sensorChannelsCount,
-                'deviceTypeCount' => $deviceTypeCount,
-                'deviceCount' => $deviceCount,
-                'measures' => $measures,
-                'devices' => $devices,
-                'users' => $users,
-                'devicesList' => $equipmentsList,
-                'devicesGroup' => $equipmentsGroup,
+                'categories' => $categories,
+                'values' => $values,
+                'stat_categories' => $stat_categories,
+                'stat_values' => $stat_values,
                 'last_measures' => $last_measures,
-                'complete' => $complete,
-                'contragentCount' => $contragentCount,
-                'currentUser' => $currentUser,
-                'searchModel' => $searchModel,
-                'coordinates' => $coordinates,
-                'dataProvider' => $dataProvider
+                'measures' => $measures,
+                'stats' => $stats,
+                'devices' => $devices,
+                'threads' => $threads,
+                'info' => $info,
+                'threadDataProvider' => $threadDataProvider,
+                'measureDataProvider' => $measureDataProvider
             ]
         );
     }

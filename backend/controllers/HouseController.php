@@ -3,7 +3,7 @@
 namespace backend\controllers;
 
 use backend\models\HouseSearch;
-use common\models\House;
+use common\models\Stat;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
@@ -79,7 +79,7 @@ class HouseController extends Controller
      */
     public function actionCreate()
     {
-        $model = new House();
+        $model = new Stat();
         $searchModel = new HouseSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
         $dataProvider->pagination->pageSize = 10;
@@ -139,12 +139,12 @@ class HouseController extends Controller
      * Finds the House model based on its primary key value.
      * If the model is not found, a 404 HTTP exception will be thrown.
      * @param integer $id
-     * @return House the loaded model
+     * @return Stat the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
     protected function findModel($id)
     {
-        if (($model = House::findOne($id)) !== null) {
+        if (($model = Stat::findOne($id)) !== null) {
             return $model;
         } else {
             throw new NotFoundHttpException('The requested page does not exist.');

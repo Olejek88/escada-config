@@ -67,7 +67,7 @@ $this->title = Yii::t('app', 'Камеры');
                                     ],
                                     'headerOptions' => ['class' => 'text-center'],
                                     'content' => function ($data) {
-                                        return $data['node']['object']->getAddress().' ['.$data['node']['address'].']';
+                                        return '['.$data['node']['address'].']';
                                     }
                                 ],
                                 [

@@ -18,6 +18,7 @@ $gridColumns = [
         'attribute' => '_id',
         'hAlign' => 'center',
         'vAlign' => 'middle',
+        'mergeHeader' => true,
         'contentOptions' => [
             'class' => 'table_class',
             'style' => 'width: 50px; text-align: center'
@@ -28,79 +29,23 @@ $gridColumns = [
         }
     ],
     [
-        'class' => 'kartik\grid\ExpandRowColumn',
-        'width' => '50px',
-        'hAlign' => 'center',
-        'vAlign' => 'middle',
-        'value' => function ($model, $key, $index, $column) {
-            return GridView::ROW_COLLAPSED;
-        },
-        'detail' => function ($model, $key, $index, $column) {
-            return Yii::$app->controller->renderPartial('node-details', ['model' => $model]);
-        },
-        'expandIcon' => '<span class="glyphicon glyphicon-expand"></span>',
-        'headerOptions' => ['class' => 'kartik-sheet-style'],
-        'expandOneOnly' => true
-    ],
-    [
-        'class' => 'kartik\grid\DataColumn',
-        'attribute' => 'objectUuid',
-        'vAlign' => 'middle',
-        'width' => '180px',
-        'value' => function ($data) {
-            return $data['object']['house']['street']->title . ', ' . $data['object']['house']->number . '-' . $data['object']->title;
-        },
-        'filterType' => GridView::FILTER_SELECT2,
-        'header' => 'Объект ' . Html::a('<span class="glyphicon glyphicon-plus"></span>',
-                '/object/create?from=equipment/index',
-                ['title' => Yii::t('app', 'Добавить')]),
-        'filterInputOptions' => ['placeholder' => 'Любой'],
-        'format' => 'raw',
-    ],
-    [
-        'class' => 'kartik\grid\EditableColumn',
-        'attribute' => 'deviceStatusUuid',
-        'header' => 'Статус ' . Html::a('<span class="glyphicon glyphicon-plus"></span>',
-                '/device-status/create?from=equipment/index',
-                ['title' => Yii::t('app', 'Добавить')]),
+        'attribute' => 'deviceStatus.title',
+        'header' => 'Статус',
         'contentOptions' => [
             'class' => 'table_class'
         ],
+        'mergeHeader' => true,
         'headerOptions' => ['class' => 'text-center'],
         'hAlign' => 'center',
         'vAlign' => 'middle',
         'width' => '180px',
-        'editableOptions' => function () {
-            $status = [];
-            $list = [];
-            $statuses = DeviceStatus::find()->orderBy('title')->all();
-            foreach ($statuses as $stat) {
-                $color = 'background-color: white';
-                if ($stat['uuid'] == DeviceStatus::UNKNOWN ||
-                    $stat['uuid'] == DeviceStatus::NOT_MOUNTED)
-                    $color = 'background-color: gray';
-                if ($stat['uuid'] == DeviceStatus::NOT_WORK)
-                    $color = 'background-color: lightred';
-                if ($stat['uuid'] == DeviceStatus::WORK)
-                    $color = 'background-color: green';
-                $list[$stat['uuid']] = $stat['title'];
-                $status[$stat['uuid']] = "<span class='badge' style='" . $color . "; height: 12px; margin-top: -3px'> </span>&nbsp;" .
-                    $stat['title'];
-            }
-            return [
-                'header' => 'Статус',
-                'size' => 'md',
-                'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                'displayValueConfig' => $status,
-                'data' => $list
-            ];
-        },
     ],
     [
         'class' => 'kartik\grid\EditableColumn',
         'attribute' => 'address',
         'hAlign' => 'center',
         'vAlign' => 'middle',
+        'mergeHeader' => true,
         'contentOptions' => [
             'class' => 'table_class'
         ],
@@ -108,30 +53,6 @@ $gridColumns = [
         'content' => function ($data) {
             return $data->address;
         }
-    ],
-    [
-        'hAlign' => 'center',
-        'vAlign' => 'middle',
-        'header' => 'Устройства',
-        'contentOptions' => [
-            'class' => 'table_class'
-        ],
-        'headerOptions' => ['class' => 'text-center'],
-        'content' => function ($data) {
-            $devices_list = "";
-            $count = 1;
-            $devices = Device::find()->where(['nodeUuid' => $data['uuid']])->all();
-            foreach ($devices as $device) {
-                $devices_list = $count.'. '.$device['title'].'</br>';
-                $count++;
-            }
-            return $devices_list;
-        }
-    ],
-    [
-        'class' => 'kartik\grid\ActionColumn',
-        'header' => 'Действия',
-        'headerOptions' => ['class' => 'kartik-sheet-style'],
     ]
 ];
 
