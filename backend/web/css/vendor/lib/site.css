@@ -1,0 +1,210 @@
+html,
+body {
+    height: 100%;
+}
+
+.wrap {
+    min-height: 100%;
+    height: auto;
+    margin: 0 auto -60px;
+    padding: 0 0 60px;
+}
+
+.wrap > .container {
+    padding: 70px 15px 20px;
+}
+
+.footer {
+    height: 60px;
+    background-color: #f5f5f5;
+    border-top: 1px solid #ddd;
+}
+
+.jumbotron {
+    text-align: center;
+    background-color: transparent;
+}
+
+.jumbotron .btn {
+    font-size: 21px;
+    padding: 14px 24px;
+}
+
+.not-set {
+    color: #c55;
+    font-style: italic;
+}
+
+/* add sorting icons to gridview sort links */
+a.asc:after, a.desc:after {
+    position: relative;
+    top: 1px;
+    display: inline-block;
+    font-family: 'Glyphicons Halflings';
+    font-style: normal;
+    font-weight: normal;
+    line-height: 1;
+    padding-left: 5px;
+}
+
+a.asc:after {
+    content: /*"\e113"*/ "\e151";
+}
+
+a.desc:after {
+    content: /*"\e114"*/ "\e152";
+}
+
+.sort-numerical a.asc:after {
+    content: "\e153";
+}
+
+.sort-numerical a.desc:after {
+    content: "\e154";
+}
+
+.sort-ordinal a.asc:after {
+    content: "\e155";
+}
+
+.sort-ordinal a.desc:after {
+    content: "\e156";
+}
+
+.grid-view td {
+    white-space: nowrap;
+}
+
+.grid-view .filters input,
+.grid-view .filters select {
+    min-width: 50px;
+}
+
+.hint-block {
+    display: block;
+    margin-top: 5px;
+    color: #999;
+}
+
+.error-summary {
+    color: #a94442;
+    background: #fdf7f7;
+    border-left: 3px solid #eed3d7;
+    padding: 10px 20px;
+    margin: 0 0 15px 0;
+}
+
+/* align the logout "link" (button in form) of the navbar */
+.nav li > form > button.logout {
+    padding: 15px;
+    border: none;
+}
+
+@media(max-width:767px) {
+    .nav li > form > button.logout {
+        display:block;
+        text-align: left;
+        width: 100%;
+        padding: 10px 15px;
+    }
+}
+
+.nav > li > form > button.logout:focus,
+.nav > li > form > button.logout:hover {
+    text-decoration: none;
+}
+
+.nav > li > form > button.logout:focus {
+    outline: none;
+}
+
+/**
+ * wrapper-login
+ */
+
+.wrapper-block {
+    padding-top: 100px;
+    height: 100vh;
+}
+
+.wrapper-login-panel {
+    width: 400px;
+    margin: 0px auto;
+    padding: 10px;
+}
+
+.wrapper-login-footer {
+    width: 400px;
+    margin: -20px auto;
+    padding: 10px;
+    text-align: center;
+}
+
+#wrapper-login-footer-list, #wrapper-login-footer-list li {
+    display:inline-block;
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+}
+
+.wrapper-block {
+    padding-top: 100px;
+    height: 100vh;
+    background: url('/images/lights2.jpg') no-repeat 100%;
+}
+
+#wrapper-login-footer-list {
+        font-weight: normal;
+    }
+
+    #wrapper-login-footer-list li{
+        display: inline-block;
+        text-align: center;
+    }
+
+    #wrapper-login-footer-list a {
+        padding: 5px 15px;
+        color: #fff;
+        text-decoration: none;
+    }
+
+    #wrapper-login-footer-list a:hover {
+        color: #eee;
+    }
+
+.btn-report {color:#ffffff;background-color:#00ff66;border-color:transparent}
+
+.fc-event-time, .fc-event-title { padding: 0 1px; }
+.fc-day-grid-event > .fc-content {
+    white-space: normal;
+}
+
+.fc-delete-button {
+    background-size: 100% 100%;
+    width: 72px !important;
+    height: 78px !important;
+    box-shadow: none !important;
+    background: url("../../../images/trashcan.png") !important;
+    background-image: url("../../../images/trashcan.png") !important;
+}
+
+.modal-dashboard-1 {
+    width: 300px;
+    height: 200px;
+    position: absolute;
+    z-index: 1000;
+    top: 80px;
+    left: 170px;
+    margin-left: -150px;
+}
+.navbar-nav > li > a {
+    padding-top: 15px;
+    padding-bottom: 10px;
+}
+.select2-container .select2-selection--single .select2-selection__rendered {
+    margin-top: 0 !important;
+
+}
+.table_class {
+    align-content: center;
+}

@@ -1,0 +1,105 @@
+/**
+ * by Maxim Shumakov 2017-04-17
+ */
+
+     /**
+      *  Журнал
+      */
+
+/*
+##################################################################
+*/
+
+.close-panel-journal {
+    position: absolute;
+    top: 75%;
+    left: 47%;
+    z-index: 2001;
+    display: none;
+    cursor: pointer;
+}
+
+.close-panel-journal:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 80%;
+    top: 0%;
+    z-index: 1;
+    font-family: Arial, sans-serif;
+    color: #333;
+    font-size: 11px;
+    padding-left: 20px;
+    width: 200px;
+}
+
+.close-panel-journal:hover {
+    -moz-transform: scale(1.2);
+    -ms-transform: scale(1.2);
+    -webkit-transform: scale(1.2);
+    -o-transform: scale(1.2);
+    transform: scale(1.2);
+    opacity: .8;
+}
+
+.panel-last-event {
+    height: 200px !important;
+    background: #fff;
+    display: none;
+
+}
+
+.block-table-journal {
+    border: 0px solid #ccc;
+
+}
+
+/**
+ * [Таблица журнала]
+ * @type {[type]}
+ */
+
+.all-tables {
+ 	border-collapse:collapse;
+ 	table-layout:fixed;
+ 	width:100%;
+ }
+ .all-tables td, th {
+ 	padding:2px 4px;
+ 	border-bottom:1px solid #c5c5c5;
+    height:16px;
+    cursor: default;
+ }
+ .all-tables td:first-child, .all-tables th:first-child {border-left:0;}
+ .DivFixTable {
+ 	width:100%;
+ }
+
+.gradient {
+    border-bottom: 1px solid #333;
+    color: #333;
+}
+.Tdata {
+	height: 200px;
+	width: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    background-color: #eee;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #ccc;
+}
+
+
+
+/*
+##################################################################
+ */
+
+     /**
+      *  Конец
+      */

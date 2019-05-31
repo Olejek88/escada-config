@@ -1,0 +1,40 @@
+/**
+ * by Maxim Shumakov 2017-04-17
+ */
+
+     /**
+      *  Работа с левым боковым меню
+      */
+
+/*
+##################################################################
+*/
+
+#order-filtr-input {
+    width: 500px;
+    margin: 0 auto;
+}
+
+#orders {
+    padding: 20px 40px 10px 40px;
+    height: 380px;
+    overflow-y: auto;
+}
+
+#orders a {
+    color: #333;
+}
+
+.orders-block ul a li img {
+    width: 100px;
+    height: 100px;
+}
+
+
+/*
+##################################################################
+ */
+
+     /**
+      *  Конец
+      */

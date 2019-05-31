@@ -1,0 +1,173 @@
+/**
+ * by Maxim Shumakov 2017-04-17
+ */
+
+     /**
+      *  Настройки профиля
+      */
+
+/*
+##################################################################
+*/
+
+.wrapper-content-base {
+    padding: 10px !important;
+}
+
+.wrapper-canvas-dinamic, .wrapper-table-data {
+    -webkit-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    -moz-box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    box-shadow: 0 0 5px rgba(0,0,0,0.3);
+    margin-bottom: 20px !important;
+    margin: 0 auto;
+}
+
+.wrapper-table-data {
+    padding: 15px;
+    width: 100%;
+    background: #fff;
+}
+
+
+.overlay-refresh-box {
+    display: block !important;
+    text-align: center;
+    padding: 0 30px 30px 30px;
+}
+
+
+.intData {
+    font-size: 30px;
+    font-weight: 100;
+}
+
+.profile-block-one {
+    padding: 10px;
+}
+
+.profile-block-center {
+    position: relative;
+    margin: 0 auto;
+    height: 700px;
+    width: 900px;
+}
+
+.profile-image-block-panel {
+    position: relative;
+    background: #fff;
+    border: 1px solid #eee;
+    height: 207px;
+    width: 250px;
+    top: 290px;
+}
+
+.profile-image-block {
+    zoom: 1; /* set hasLayout */
+    display: block; /* resets display for IE/Win */
+}
+
+.profile-image-block:after {
+    content: ".";
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.profile-image-block-panel ul {
+    list-style-type: none;
+    position: absolute;
+    padding-left: 0px;
+    width: 100%;
+}
+
+
+.profile-image-block-panel ul li {
+    border-bottom: 1px solid #eee;
+    padding: 10px 10px 10px 20px;
+    border-left: 3px solid #fff;
+}
+
+
+/**
+ * Закоментирован проблемный участок кода, который изменял цвет ссылок!
+ */
+/*.profile-image-block-panel ul a, a:visited, a:active {
+    text-decoration: none;
+    color: #333;
+}*/
+
+.profile-image-block-panel ul li:hover {
+    border-bottom: 1px solid #eee;
+    padding: 10px 10px 10px 20px;
+    border-left: 3px solid #3C8DBC;
+    background: #F0F2F5;
+}
+
+.profile-info-block {
+    position: relative;
+    border: 1px solid #eee;
+    top: -282px;
+    left: 260px;
+    width: 640px;
+    padding: 10px;
+    background: #fff;
+}
+
+.personal-pole-block {
+    padding: 20px;
+    width: 300px;
+    text-align: right;
+}
+
+.personal-data-block {
+    padding: 20px;
+    width: 280px;
+    text-align: left;
+    position: relative;
+    top: -240px;
+    left: 270px;
+    /*border: 1px solid #333;*/
+}
+
+.personal-menu-block {
+    text-align: center;
+    padding: 20px;
+    width: 280px;
+    text-align: left;
+    position: relative;
+}
+
+.profile-header-info-block {
+    font-size: 1.5em;
+    border-bottom: 1px solid #eee;
+    padding: 5px 10px 10px 10px;
+}
+
+.profile-body-info-block {
+    font-size: 1.2em;
+    padding: 10px;
+}
+
+.table-personal-block {
+   /* background: #333;*/
+   width: 600px;
+   margin: 0 auto;
+}
+
+.small-left-tr-block {
+    background: #333;
+}
+
+.table-personal-block tr td {
+    padding: 5px 5px 0 5px;
+    width: 290px;
+}
+
+/*
+##################################################################
+ */
+
+     /**
+      *  Конец
+      */

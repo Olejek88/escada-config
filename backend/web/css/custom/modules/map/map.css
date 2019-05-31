@@ -1,0 +1,42 @@
+/**
+ * by Maxim Shumakov 2017-04-17
+ */
+
+     /**
+      *  Карта
+      */
+
+/*
+##################################################################
+*/
+
+.tab-content li a {
+/* 13.04.2018   color: #b8c7ce !important;*/
+}
+
+.box-relative {
+    position: relative;
+    width: 100%;
+    padding: 0;
+    margin: -15px 0 0 0 !important;
+}
+
+.map, .map iframe {
+    position: relative; !important;
+    padding: 0 !important;
+    overflow: hidden;
+}
+
+.box-scroll {
+    height: 120px;
+    overflow-y: auto;
+    /*background: #333;*/
+}
+
+/*
+##################################################################
+ */
+
+     /**
+      *  Конец
+      */

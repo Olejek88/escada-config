@@ -1,0 +1,79 @@
+th {
+    text-align: center;
+    font-weight: normal;
+}
+col.center {
+    text-align: center;
+}
+td.center {
+    text-align: center;
+}
+td.alt {
+    text-align: center;
+    background-color: #d0e9c6;
+    margin: 0 3px 0 3px;
+}
+.btn100 {
+    width: 100%;
+    margin: 3px 0 3px 0;
+}
+.progress {
+    position: relative;
+    height: 18px;
+    margin: 0 3px;
+    border-radius: 4px !important;
+    background-color: #f5f5f5;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.1);
+}
+.progress > .progress-type {
+    position: absolute;
+    left: 0;
+    font-weight: 800;
+    padding: 3px 10px -2px 10px;
+    color: rgb(255, 255, 255);
+    background-color: rgba(25, 25, 25, 0.2);
+}
+.progress > .progress-completed {
+    position: absolute;
+    right: 0;
+    left: 0;
+    font-weight: 800;
+    padding: 3px -12px 2px 10px;
+}
+.progress > .critical1 {
+    background-color: #ff3333;
+    color: white;
+    margin-top: -3px;
+}
+.progress > .critical2 {
+    background-color: #ff9933;
+    color: white;
+    margin-top: -3px;
+}
+.progress > .critical3 {
+    background-color: #11aa11;
+    color: white;
+    margin-top: -3px;
+}
+.progress > .critical4 {
+    background-color: #666666;
+    color: white;
+    margin-top: -3px;
+}
+table.fancytree-ext-table tbody tr.fancytree-active {
+    background-color: #d0e9c6;
+}
+span.fancytree-icon {
+    margin-top: 5px;
+}
+span.fancytree-expander {
+    margin-top: 5px;
+}
+.list-group-item {
+    padding: 5px;
+    line-height: 1.2;
+}
+
+span.fancytree-checkbox, span.fancytree-expander, span.fancytree-custom-icon {
+    margin-top: 6px !important;
+}
