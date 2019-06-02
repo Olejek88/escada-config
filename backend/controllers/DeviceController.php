@@ -83,8 +83,8 @@ class DeviceController extends Controller
             if ($_POST['editableAttribute'] == 'deviceStatusUuid') {
                 $model['deviceStatusUuid'] = $_POST['Device'][$_POST['editableIndex']]['deviceStatusUuid'];
             }
-            if ($_POST['editableAttribute'] == 'date') {
-                $model['date'] = date("Y-m-d H:i:s", $_POST['Device'][$_POST['editableIndex']]['date']);
+            if ($_POST['editableAttribute'] == 'dev_time') {
+                $model['dev_time'] = date("Y-m-d H:i:s", $_POST['Device'][$_POST['editableIndex']]['dev_time']);
             }
             $model->save();
             return json_encode('');
@@ -172,7 +172,7 @@ class DeviceController extends Controller
                 $device->deviceStatusUuid = DeviceStatus::UNKNOWN;
                 $device->serial = '222222';
                 $device->interface = 1;
-                $device->date = date('Y-m-d H:i:s');
+                //$device->dev_time = date('Y-m-d H:i:s');
                 $device->changedAt = date('Y-m-d H:i:s');
                 $device->createdAt = date('Y-m-d H:i:s');
                 $device->save();

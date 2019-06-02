@@ -81,7 +81,7 @@ use kartik\grid\GridView;
             ],
             [
                 'class'=>'kartik\grid\BooleanColumn',
-                'attribute'=>'active',
+                'attribute'=>'work',
                 'vAlign'=>'middle',
             ],
         ];
@@ -102,6 +102,7 @@ use kartik\grid\GridView;
             'condensed' => false,
             'responsive' => true,
             'hover' => true,
+            'export' => false,
             'floatHeader' => false,
             'panel' => [
                 'type' => GridView::TYPE_PRIMARY,

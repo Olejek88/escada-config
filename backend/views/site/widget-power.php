@@ -78,7 +78,10 @@ $this->registerJsFile('/js/vendor/lib/HighCharts/modules/exporting.js');
                                         text: 'Потребляемая мощность'
                                     }
                                 },
-                                series: [<?php echo $values; ?>]
+                                series: [{
+                                    name: 'Потребляемая мощность (кВт/ч)',
+                                    data: [<?php echo $values; ?>]
+                                }]
                             });
                         });
                     </script>
