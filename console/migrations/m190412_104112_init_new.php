@@ -233,8 +233,8 @@ class m190412_104112_init_new extends Migration
             'deviceUuid' => $this->string(45)->notNull(),
             'date' => $this->timestamp()->defaultValue('2019-01-01'),
             'description' => $this->string(),
-            'createdAt' => $this->timestamp()->notNull(),
-            'changedAt' => $this->timestamp()->notNull()
+            'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
         $this->createIndex(
