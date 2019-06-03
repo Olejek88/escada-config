@@ -101,22 +101,37 @@ class SiteController extends Controller
         $values = "";
         $stat_categories = "";
         $stat_values = "";
+        $stat_values2 = "";
         $last_measures = Measure::find()
             ->where(['measureTypeUuid' => MeasureType::POWER])
             ->andWhere(['type' => 0])
             ->orderBy('date')
             ->all();
+        $cnt=0;
         foreach ($last_measures as $measure) {
-            $categories.= $measure['date'];
+            if ($cnt>0) {
+                $categories .= ',';
+                $values.=',';
+            }
+            $categories.= "'".$measure['date']."'";
             $values.=$measure['value'];
+            $cnt++;
         }
 
         $stats = Stat::find()
             ->orderBy('changedAt')
             ->all();
+        $cnt=0;
         foreach ($stats as $stat) {
-            $stat_categories.= $stat['date'];
-            $stat_values.=$stat['value'];
+            if ($cnt>0) {
+                $stat_categories .= ',';
+                $stat_values.=',';
+                $stat_values2.=',';
+            }
+            $stat_categories.= "'".$stat['createdAt']."'";
+            $stat_values.= $stat['cpu'];
+            $stat_values2.= $stat['mem'];
+            $cnt++;
         }
 
         $measures = Measure::find()
@@ -155,17 +170,17 @@ class SiteController extends Controller
                 } else {
                     $class = 'critical3';
                 }
-                $fullTree['children'][$childIdx]['children'][] = [
+                $tree['children'][$childIdx]['children'][] = [
                     'title' => $device['deviceType']['title'],
                     'status' => '<div class="progress"><div class="'
                         . $class . '">' . $device['deviceStatus']->title . '</div></div>',
                     'register' => $device['port'].' ['.$device['address'].']',
-                    'date' => $device['date'],
+                    'date' => $device['last_date'],
                     'folder' => true
                 ];
                 $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->all();
                 foreach ($channels as $channel) {
-                    $childIdx2 = count($fullTree['children'][$childIdx]['children']) - 1;
+                    $childIdx2 = count($tree['children'][$childIdx]['children']) - 1;
                     $measure = Measure::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
                     $date = '-';
                     if (!$measure) {
@@ -179,7 +194,7 @@ class SiteController extends Controller
                         $date = $measure['date'];
                         $measure = $measure['value'];
                     }
-                    $fullTree['children'][$childIdx]['children'][$childIdx2]['children'][] = [
+                    $tree['children'][$childIdx]['children'][$childIdx2]['children'][] = [
                         'title' => $channel['title'],
                         'register' => $channel['register'],
                         'measure' => $measure,
@@ -197,10 +212,11 @@ class SiteController extends Controller
                 'values' => $values,
                 'stat_categories' => $stat_categories,
                 'stat_values' => $stat_values,
+                'stat_values2' => $stat_values2,
                 'last_measures' => $last_measures,
                 'measures' => $measures,
                 'stats' => $stats,
-                'devices' => $devices,
+                'devices' => $tree,
                 'threads' => $threads,
                 'info' => $info,
                 'threadDataProvider' => $threadDataProvider,

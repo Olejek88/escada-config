@@ -22,8 +22,7 @@ use yii\web\JsExpression;
                 </colgroup>
                 <thead style="background-color: #337ab7; color: white">
                 <tr>
-                    <th align="center" colspan="4" style="background-color: #3c8dbc; color: whitesmoke">Оборудование
-                        системы
+                    <th align="center" colspan="5" style="background-color: #3c8dbc; color: whitesmoke">Оборудование системы
                     </th>
                 </tr>
                 <tr style="background-color: #3c8dbc; color: whitesmoke">

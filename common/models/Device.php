@@ -19,7 +19,7 @@ use yii\db\Expression;
  * @property string $port
  * @property integer $interface
  * @property string $deviceStatusUuid
- * @property string $date
+ * @property string $last_date
  * @property string $nodeUuid
  * @property string $createdAt
  * @property string $changedAt
@@ -77,7 +77,7 @@ class Device extends ActiveRecord
             'deviceStatus' => function ($model) {
                 return $model->deviceStatus;
             },
-            'serial', 'date', 'port', 'interface',
+            'serial', 'last_date', 'port', 'interface',
             'createdAt', 'changedAt'
         ];
     }
@@ -102,7 +102,7 @@ class Device extends ActiveRecord
                 ],
                 'required'
             ],
-            [['date', 'createdAt', 'changedAt'], 'safe'],
+            [['last_date', 'createdAt', 'changedAt'], 'safe'],
             [
                 [
                     'uuid',
@@ -133,7 +133,7 @@ class Device extends ActiveRecord
             'interface' => Yii::t('app', 'Интерфейс'),
             'deviceTypeUuid' => Yii::t('app', 'Тип оборудования'),
             'deviceType' => Yii::t('app', 'Тип'),
-            'date' => Yii::t('app', 'Дата последней связи'),
+            'last_date' => Yii::t('app', 'Дата последней связи'),
             'deviceStatusUuid' => Yii::t('app', 'Статус'),
             'deviceStatus' => Yii::t('app', 'Статус'),
             'nodeUuid' => Yii::t('app', 'Шкаф установки'),

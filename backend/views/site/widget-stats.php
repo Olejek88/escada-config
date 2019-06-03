@@ -1,26 +1,18 @@
 <?php
 
-use yii\helpers\Html;
-
 /* @var $categories
  * @var $values
+ * @var $values2
  */
 
 ?>
 
 <div class="box box-primary">
     <div class="box-header with-border">
-        <h3 class="box-title">Последние измерения</h3>
+        <h3 class="box-title">Статистика работы</h3>
 
         <div class="box-tools pull-right">
             <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <div class="btn-group">
-                <button type="button" class="btn btn-box-tool dropdown-toggle" data-toggle="dropdown">
-                    <i class="fa fa-wrench"></i></button>
-                <ul class="dropdown-menu" role="menu">
-                    <li><?php echo Html::a("Измерения", ['/measures']); ?></li>
-                </ul>
-            </div>
             <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
         </div>
     </div>
@@ -31,10 +23,10 @@ use yii\helpers\Html;
                     <strong>Статистика</strong>
                 </p>
                 <div class="chart">
-                    <div id="container" style="height: 250px;"></div>
+                    <div id="container2" style="height: 250px;"></div>
                     <script type="text/javascript">
                         document.addEventListener("DOMContentLoaded", function () {
-                            Highcharts.chart('container', {
+                            Highcharts.chart('container2', {
                                 data: {
                                     table: 'datatable'
                                 },
@@ -77,7 +69,13 @@ use yii\helpers\Html;
                                         text: 'Статистика'
                                     }
                                 },
-                                series: [<?php echo $values; ?>]
+                                series: [{
+                                    name: 'CPU (%)',
+                                    data: [<?php echo $values; ?>]
+                                },{
+                                    name: 'Memory (%)',
+                                    data: [<?php echo $values2; ?>]
+                                }]
                             });
                         });
                     </script>

@@ -21,70 +21,62 @@ use kartik\grid\GridView;
     <!-- /.box-header -->
     <div class="box-body">
         <?php
-            $gridColumns = [
-                [
-                    'attribute' => 'date',
-                    'contentOptions' => [
-                        'class' => 'table_class'
-                    ],
-                    'headerOptions' => ['class' => 'text-center'],
+        $gridColumns = [
+            [
+                'attribute' => 'date',
+                'contentOptions' => [
+                    'class' => 'table_class'
                 ],
-                [
-                    'attribute' => 'value',
-                    'hAlign' => 'center',
-                    'vAlign' => 'middle',
-                    'headerOptions' => ['class' => 'kv-sticky-column'],
-                    'contentOptions' => ['class' => 'kv-sticky-column'],
+                'headerOptions' => ['class' => 'text-center'],
+            ],
+            [
+                'attribute' => 'value',
+                'hAlign' => 'center',
+                'vAlign' => 'middle',
+                'headerOptions' => ['class' => 'kv-sticky-column'],
+                'contentOptions' => ['class' => 'kv-sticky-column'],
+            ],
+            [
+                'attribute' => 'sensorChannel.title',
+                'hAlign' => 'center',
+                'vAlign' => 'middle',
+                'contentOptions' => [
+                    'class' => 'table_class'
                 ],
-                [
-                    'attribute' => 'sensorChannel.title',
-                    'hAlign' => 'center',
-                    'vAlign' => 'middle',
-                    'contentOptions' => [
-                        'class' => 'table_class'
-                    ],
-                    'headerOptions' => ['class' => 'text-center'],
+                'headerOptions' => ['class' => 'text-center'],
+            ],
+            [
+                'attribute' => 'measureType.title',
+                'hAlign' => 'center',
+                'vAlign' => 'middle',
+                'contentOptions' => [
+                    'class' => 'table_class'
                 ],
-                [
-                    'attribute' => 'measureType.title',
-                    'hAlign' => 'center',
-                    'vAlign' => 'middle',
-                    'contentOptions' => [
-                        'class' => 'table_class'
-                    ],
-                    'headerOptions' => ['class' => 'text-center'],
-                ],
-                [
-                    'class'=>'kartik\grid\BooleanColumn',
-                    'attribute'=>'active',
-                    'vAlign'=>'middle',
-                ],
-            ];
+                'headerOptions' => ['class' => 'text-center'],
+            ]
+        ];
 
         echo GridView::widget([
             'dataProvider' => $measureDataProvider,
             'columns' => $gridColumns,
             'containerOptions' => ['style' => 'overflow: auto'], // only set when $responsive = false
-            'beforeHeader' => [
-                '{toggleData}'
-            ],
             'pjax' => true,
             'showPageSummary' => false,
             'pageSummaryRowOptions' => ['style' => 'line-height: 0; padding: 0'],
-            'summary'=>'',
+            'summary' => '',
             'bordered' => true,
             'striped' => false,
             'condensed' => false,
             'responsive' => true,
             'hover' => true,
+            'export' => false,
             'floatHeader' => false,
             'panel' => [
                 'type' => GridView::TYPE_PRIMARY,
-                'heading' => '<i class="glyphicon glyphicon-calendar"></i>&nbsp; Запланированные события',
-                'headingOptions' => ['style' => 'background: #337ab7']
-
+                'heading' => '<i class="glyphicon glyphicon-calendar"></i>&nbsp; Архив данных',
+                'headingOptions' => ['style' => 'background: #337ab7'],
             ],
-        ]);
+            ]);
 
         ?>
     </div>

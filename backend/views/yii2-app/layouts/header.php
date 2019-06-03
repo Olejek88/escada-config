@@ -30,12 +30,6 @@ $userImage = Yii::$app->view->params['userImage'];
                         <span class="label label-info">0</span>
                     </a>
                 </li>
-                <!-- Notifications: style can be found in dropdown.less -->
-                <li class="dropdown notifications-menu">
-                    <a href="/alarm" class="dropdown-toggle">
-                        <i class="fa fa-bell-o"></i>
-                    </a>
-                </li>
                 <!-- User Account: style can be found in dropdown.less -->
                 <li class="dropdown user user-menu">
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">
