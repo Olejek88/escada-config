@@ -31,7 +31,7 @@ class m190602_123639_fix_light_answer extends Migration
             'address' => $this->string(45)->notNull(),
             'data' => $this->string(512)->notNull(),
             'dateIn' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->notNull(),
-            'dateOut' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
+            'dateOut' => $this->timestamp()->null()->defaultValue(null),
             'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
