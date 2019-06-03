@@ -1,54 +1,90 @@
 <?php
-/* @var $model common\models\User */
 
+use common\models\User;
 use yii\helpers\Html;
-use yii\widgets\DetailView;
 
-$this->title = $model->username;
+/* @var $model User */
+/* @var $user_property */
+/* @var $orders */
+/* @var $events */
+/* @var $tree */
+
+$this->title = 'Профиль пользователя :: ' . $model->name;
 ?>
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>
+            Профиль пользователя
+        </h1>
+    </section>
 
-<div class="order-status-view box-padding">
-
-    <div class="panel panel-default">
-        <div class="panel-heading" style="background: #fff;">
-            <h3 class="text-center" style="color: #333;">
-                <?= Html::encode($this->title) ?>
-            </h3>
-        </div>
-        <div class="panel-body">
-
-            <div id="myTabContent" class="tab-content">
-                <div class="tab-pane fade active in" id="list">
-                    <p class="text-center">
-                        <?= Html::a(Yii::t('app', 'Обновить'), ['update', 'id' => $model->id],
-                            ['class' => 'btn btn-primary']) ?>
-                        <?= Html::a(Yii::t('app', 'Удалить'), ['delete', 'id' => $model->id], [
-                            'class' => 'btn btn-danger',
-                            'data' => [
-                                'confirm' => Yii::t('app', 'Вы действительно хотите удалить данный элемент?'),
-                                'method' => 'post',
-                            ],
-                        ]) ?>
-                    </p>
-                    <h6>
-                        <?= DetailView::widget([
-                            'model' => $model,
-                            'attributes' => [
-                                'id',
-                                'username',
-                                'auth_key',
-                                'password_hash',
-                                'password_reset_token',
-                                'email:email',
-                                'status',
-                                'created_at',
-                                'updated_at',
-                            ],
-                        ]) ?>
-                    </h6>
+    <!-- Main content -->
+    <section class="content">
+        <div class="row">
+            <div class="col-md-3">
+                <!-- Profile Image -->
+                <div class="box box-primary">
+                    <div class="box-body box-profile">
+                        <?php
+                        $path = $model->getPhotoUrl();
+                        if (!$path || !$model['image']) {
+                            $path = '/images/unknown2.png';
+                        }
+                        echo '<img class="profile-user-img img-responsive img-circle" src="' . Html::encode($path) . '">';
+                        ?>
+                        <h3 class="profile-username text-center"><?php echo $model['name'] ?></h3>
+                        <p class="text-muted text-center"><?php echo $model['whoIs'] ?></p>
+                    </div>
                 </div>
-            </div>
 
+                <!-- About Me Box -->
+                <div class="box box-primary">
+                    <div class="box-header with-border">
+                        <h3 class="box-title">Информация</h3>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body">
+                        <strong><i class="fa fa-mobile margin-r-5"></i> Контакт</strong>
+                        <span class="text-muted">
+                            <?php echo $model['contact'] ?>
+                        </span>
+                        <hr>
+                        <strong><i class="fa fa-check-circle margin-r-5"></i> Статус</strong>
+                        <?php
+                        echo '<span class="label label-success">Активен</span>';
+                        ?>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+            <!-- /.col -->
+            <div class="col-md-9">
+                <div class="nav-tabs-custom">
+                    <ul class="nav nav-tabs">
+                        <li class="active" style="margin-right: 0"><a href="#settings" data-toggle="tab">Настройки</a></li>
+                    </ul>
+                    <div class="tab-content">
+                        <div class="tab-pane" id="settings">
+                            <div class="post">
+                                <div class="user-block">
+                                    <?= $this->render('_form', [
+                                        'model' => $model, ['class' => 'form-horizontal']
+                                    ]) ?>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.tab-pane -->
+                    </div>
+                    <!-- /.tab-content -->
+                </div>
+                <!-- /.nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
         </div>
-    </div>
+        <!-- /.row -->
+
+    </section>
+    <!-- /.content -->
 </div>
+<!-- /.content-wrapper -->
