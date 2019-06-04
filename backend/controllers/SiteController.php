@@ -104,7 +104,7 @@ class SiteController extends Controller
         $stat_values2 = "";
         $last_measures = Measure::find()
             ->where(['measureTypeUuid' => MeasureType::POWER])
-            ->andWhere(['type' => 0])
+            ->andWhere(['type' => 1])
             ->orderBy('date')
             ->all();
         $cnt=0;
