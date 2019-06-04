@@ -45,3 +45,6 @@ common/config/conf.d/*
 # dployer
 deploy.php
 
+api
+frontend
+
