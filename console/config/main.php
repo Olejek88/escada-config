@@ -32,6 +32,20 @@ return [
         'export' => [
             'class' => 'console\controllers\ExportController',
         ],
+        'daemon' => [
+            'class' => 'inpassor\daemon\Controller',
+            'uid' => 'daemon',
+            'pidDir' => '@console/runtime/daemon',
+            'logsDir' => '@console/runtime/daemon/logs',
+            'clearLogs' => false,
+            'workersMap' => [
+                'mtm_amqp_worker' => [
+                    'class' => 'console\workers\MtmAmqpWorker',
+                    'active' => true,
+                    'maxProcesses' => 1,
+                ],
+            ],
+        ],
     ],
 
     'params' => $params,

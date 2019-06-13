@@ -36,7 +36,9 @@
     "kartik-v/yii2-editable": "^1.7.8",
     "kartik-v/yii2-widget-select2": "~2.1.3",
     "kartik-v/yii2-builder": "~1.6.6",
-    "ext-json": "*"
+    "ext-json": "*",
+    "inpassor/yii2-daemon": "^0.3.2",
+    "php-amqplib/php-amqplib": "^2.7"
   },
   "config": {
     "process-timeout": 1800,
