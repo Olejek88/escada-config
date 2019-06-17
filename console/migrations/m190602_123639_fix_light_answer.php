@@ -20,7 +20,7 @@ class m190602_123639_fix_light_answer extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
-        $this->alterColumn(self::LIGHT_ANSWER,'data', $this->string(512)->defaultValue(""));
+        $this->alterColumn(self::LIGHT_ANSWER, 'data', $this->string(1024)->defaultValue(""));
         $this->alterColumn(self::LIGHT_ANSWER,'dateOut', $this->timestamp()->null()->defaultValue(null));
         $this->dropColumn(self::LIGHT_ANSWER, 'uuid');
         $this->dropIndex('address', self::LIGHT_ANSWER);
@@ -29,11 +29,11 @@ class m190602_123639_fix_light_answer extends Migration
         $this->createTable(self::LIGHT_MESSAGE, [
             '_id' => $this->primaryKey(),
             'address' => $this->string(45)->notNull(),
-            'data' => $this->string(512)->notNull(),
-            'dateIn' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP')->notNull(),
+            'data' => $this->string(1024)->notNull(),
+            'dateIn' => $this->timestamp()->defaultValue('0000-00-00 00:00:00')->notNull(),
             'dateOut' => $this->timestamp()->null()->defaultValue(null),
             'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
     }
 
