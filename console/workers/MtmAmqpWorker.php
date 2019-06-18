@@ -16,20 +16,23 @@ use yii\db\Expression;
 
 class MtmAmqpWorker extends Worker
 {
-    const ROUTE_TO_LIGHT = 'toLight';
-    const ROUTE_FROM_LIGHT = 'fromLight';
+    const ROUTE_TO_LSERVER = 'routeLServer';
+    const EXCHANGE = 'light';
 
     public $active = true;
     public $maxProcesses = 1;
     public $delay = 60;
     public $run = true;
 
+
     /** @var AMQPStreamConnection */
     private $connection;
     /** @var AMQPChannel $channel */
     private $channel;
-    private $boxName;
-    private $toBoxQueueName;
+    private $boxRoute;
+    private $boxQueueName;
+    private $organizationId;
+    private $boxId;
 
     public function handler($signo)
     {
@@ -57,8 +60,11 @@ class MtmAmqpWorker extends Worker
             exit(-1);
         }
 
-        $this->boxName = 'box-' . $params['box']['oid'] . '-' . $params['box']['bid'];
-        $this->toBoxQueueName = 'toBox-' . $params['box']['oid'] . '-' . $params['box']['bid'];
+        $this->organizationId = $params['box']['oid'];
+        $this->boxId = $params['box']['bid'];
+
+        $this->boxRoute = 'routeBox-' . $this->organizationId . '-' . $this->boxId;
+        $this->boxQueueName = 'queryBox-' . $this->organizationId . '-' . $this->boxId;
 
         $this->connection = new AMQPStreamConnection($params['amqpServer']['host'],
             $params['amqpServer']['port'],
@@ -66,10 +72,10 @@ class MtmAmqpWorker extends Worker
             $params['amqpServer']['password']);
 
         $this->channel = $this->connection->channel();
-        $this->channel->exchange_declare($this->boxName, 'direct', false, true, false);
-        $this->channel->queue_declare($this->toBoxQueueName, false, true, false, false);
-        $this->channel->queue_bind($this->toBoxQueueName, $this->boxName, self::ROUTE_TO_LIGHT);
-        $this->channel->basic_consume($this->toBoxQueueName, '', false, false, false, false, [&$this, 'callback']);
+        $this->channel->exchange_declare(self::EXCHANGE, 'direct', false, true, false);
+        $this->channel->queue_declare($this->boxQueueName, false, true, false, false);
+        $this->channel->queue_bind($this->boxQueueName, self::EXCHANGE, $this->boxRoute);
+        $this->channel->basic_consume($this->boxQueueName, '', false, false, false, false, [&$this, 'callback']);
 
         pcntl_signal(SIGTERM, [&$this, 'handler']);
         pcntl_signal(SIGINT, [&$this, 'handler']);
@@ -100,13 +106,12 @@ class MtmAmqpWorker extends Worker
             }
 
             $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
-//            $answers = LightAnswer::findAll(['is', 'dateOut', new \yii\db\Expression('null')]);
             $this->log('answers to send: ' . count($answers));
             foreach ($answers as $answer) {
                 $this->log('dateOut=' . print_r($answer->dateOut, true));
-                $pkt = ['address' => $answer->address, 'data' => $answer->data];
+                $pkt = ['oid' => $this->organizationId, 'bid' => $this->boxId, 'address' => $answer->address, 'data' => $answer->data];
                 $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
-                $this->channel->basic_publish($msq, $this->boxName, self::ROUTE_FROM_LIGHT);
+                $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
                 $answer->dateOut = date('Y-m-d H:i:s');
                 $answer->save();
             }
@@ -126,18 +131,24 @@ class MtmAmqpWorker extends Worker
     public function callback($msg)
     {
         $this->log('get msg');
-        $lm = new LightMessage();
         $content = json_decode($msg->body);
-        $lm->address = $content->address;
-        $lm->data = $content->data;
-        $lm->dateIn = date('Y-m-d H:i:s');
-        $lm->changedAt = date('Y-m-d H:i:s');
-        if ($lm->save()) {
-            /** @var AMQPChannel $channel */
-            $channel = $msg->delivery_info['channel'];
-            $channel->basic_ack($msg->delivery_info['delivery_tag']);
-        } else {
-            $this->log('msg not saved');
+        switch ($content->type) {
+            case 'light' :
+                $lm = new LightMessage();
+                $lm->address = $content->address;
+                $lm->data = $content->data;
+                $lm->dateIn = date('Y-m-d H:i:s');
+                $lm->changedAt = date('Y-m-d H:i:s');
+                if ($lm->save()) {
+                    /** @var AMQPChannel $channel */
+                    $channel = $msg->delivery_info['channel'];
+                    $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                } else {
+                    $this->log('msg not saved');
+                }
+                break;
+            default:
+                break;
         }
     }
 
