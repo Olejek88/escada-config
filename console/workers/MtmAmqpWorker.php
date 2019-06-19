@@ -29,10 +29,10 @@ class MtmAmqpWorker extends Worker
     private $connection;
     /** @var AMQPChannel $channel */
     private $channel;
-    private $boxRoute;
-    private $boxQueueName;
+    private $nodeRoute;
+    private $nodeQueueName;
     private $organizationId;
-    private $boxId;
+    private $nodeId;
 
     public function handler($signo)
     {
@@ -55,16 +55,16 @@ class MtmAmqpWorker extends Worker
             !isset($params['amqpServer']['port']) ||
             !isset($params['amqpServer']['user']) ||
             !isset($params['amqpServer']['password']) ||
-            !isset($params['box']['oid']) ||
-            !isset($params['box']['bid'])) {
+            !isset($params['node']['oid']) ||
+            !isset($params['node']['nid'])) {
             exit(-1);
         }
 
-        $this->organizationId = $params['box']['oid'];
-        $this->boxId = $params['box']['bid'];
+        $this->organizationId = $params['node']['oid'];
+        $this->nodeId = $params['node']['nid'];
 
-        $this->boxRoute = 'routeBox-' . $this->organizationId . '-' . $this->boxId;
-        $this->boxQueueName = 'queryBox-' . $this->organizationId . '-' . $this->boxId;
+        $this->nodeRoute = 'routeNode-' . $this->organizationId . '-' . $this->nodeId;
+        $this->nodeQueueName = 'queryNode-' . $this->organizationId . '-' . $this->nodeId;
 
         $this->connection = new AMQPStreamConnection($params['amqpServer']['host'],
             $params['amqpServer']['port'],
@@ -73,9 +73,9 @@ class MtmAmqpWorker extends Worker
 
         $this->channel = $this->connection->channel();
         $this->channel->exchange_declare(self::EXCHANGE, 'direct', false, true, false);
-        $this->channel->queue_declare($this->boxQueueName, false, true, false, false);
-        $this->channel->queue_bind($this->boxQueueName, self::EXCHANGE, $this->boxRoute);
-        $this->channel->basic_consume($this->boxQueueName, '', false, false, false, false, [&$this, 'callback']);
+        $this->channel->queue_declare($this->nodeQueueName, false, true, false, false);
+        $this->channel->queue_bind($this->nodeQueueName, self::EXCHANGE, $this->nodeRoute);
+        $this->channel->basic_consume($this->nodeQueueName, '', false, false, false, false, [&$this, 'callback']);
 
         pcntl_signal(SIGTERM, [&$this, 'handler']);
         pcntl_signal(SIGINT, [&$this, 'handler']);
@@ -91,13 +91,13 @@ class MtmAmqpWorker extends Worker
     {
         $this->log('run...');
         while ($this->run) {
-            $this->log('tick...');
+//            $this->log('tick...');
             // TODO: придумать механизм который позволит выбирать все сообщения в очереди, а не по одному с задержкой в секунду
             try {
                 if (count($this->channel->callbacks)) {
-                    $this->log('wait for message...');
+//                    $this->log('wait for message...');
                     $this->channel->wait(null, true);
-                    $this->log('end wait...');
+//                    $this->log('end wait...');
                 }
             } catch (ErrorException $e) {
                 $this->log($e->getMessage());
@@ -106,10 +106,9 @@ class MtmAmqpWorker extends Worker
             }
 
             $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
-            $this->log('answers to send: ' . count($answers));
+//            $this->log('answers to send: ' . count($answers));
             foreach ($answers as $answer) {
-                $this->log('dateOut=' . print_r($answer->dateOut, true));
-                $pkt = ['oid' => $this->organizationId, 'bid' => $this->boxId, 'address' => $answer->address, 'data' => $answer->data];
+                $pkt = ['oid' => $this->organizationId, 'nid' => $this->nodeId, 'type' => 'lightstatus', 'address' => $answer->address, 'data' => $answer->data];
                 $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
                 $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
                 $answer->dateOut = date('Y-m-d H:i:s');
@@ -130,7 +129,7 @@ class MtmAmqpWorker extends Worker
      */
     public function callback($msg)
     {
-        $this->log('get msg');
+//        $this->log('get msg');
         $content = json_decode($msg->body);
         switch ($content->type) {
             case 'light' :
