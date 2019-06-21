@@ -1,0 +1,32 @@
+--- vendor/inpassor/yii2-daemon/Controller.php	2018-11-19 17:10:19.000000000 +0500
++++ vendor/inpassor/yii2-daemon/Controller-new.php	2019-06-17 16:30:50.000000000 +0500
+@@ -208,6 +208,12 @@
+         switch ($signo) {
+             case SIGTERM:
+             case SIGINT:
++                foreach(static::$workersPids as $workersPid) {
++                    foreach ($workersPid as $nextPid) {
++                        posix_kill($nextPid, SIGTERM);
++                    }
++                }
++
+                 static::$_stop = true;
+                 break;
+             case SIGCHLD:
+@@ -300,13 +306,15 @@
+         };
+ 
+         $previousSec = null;
++        $firstStart = true;
+ 
+         while (!static::$_stop) {
+             $currentSec = date('s');
+             $tickPlus = $currentSec === $previousSec ? 0 : 1;
+             if ($tickPlus) {
+                 foreach (static::$_workersData as $workerUid => $workerData) {
+-                    if ($workerData['tick'] >= $workerData['delay']) {
++                    if ($workerData['tick'] >= $workerData['delay'] || $firstStart) {
++                        $firstStart = false;
+                         static::$_workersData[$workerUid]['tick'] = 0;
+                         $pid = 0;
+                         if ($this->_meetRequerements) {

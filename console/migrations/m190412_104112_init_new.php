@@ -430,8 +430,8 @@ class m190412_104112_init_new extends Migration
             'data' => $this->string(45)->notNull()->unique(),
             'dateIn' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
             'dateOut' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
-            'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
+            'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
 
         $this->createTable(self::PROTOCOLS, [
