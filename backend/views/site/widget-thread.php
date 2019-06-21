@@ -19,7 +19,7 @@ use kartik\grid\GridView;
                 'headerOptions' => ['class' => 'text-center'],
             ],
             [
-                'attribute' => 'device.title',
+                'attribute' => 'device.name',
                 'hAlign' => 'center',
                 'vAlign' => 'middle',
                 'headerOptions' => ['class' => 'kv-sticky-column'],

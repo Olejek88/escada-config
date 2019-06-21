@@ -75,19 +75,19 @@ class ThreadController extends Controller
                 ->where(['_id' => $_POST['editableKey']])
                 ->one();
             if ($_POST['editableAttribute'] == 'title') {
-                $model['title'] = $_POST['Thread'][$_POST['editableIndex']]['title'];
+                $model['title'] = $_POST['Threads'][$_POST['editableIndex']]['title'];
             }
             if ($_POST['editableAttribute'] == 'deviceTypeUuid') {
-                $model['deviceTypeUuid'] = $_POST['Thread'][$_POST['editableIndex']]['deviceTypeUuid'];
+                $model['deviceTypeUuid'] = $_POST['Threads'][$_POST['editableIndex']]['deviceTypeUuid'];
             }
             if ($_POST['editableAttribute'] == 'port') {
-                $model['port'] = $_POST['Thread'][$_POST['editableIndex']]['port'];
+                $model['port'] = $_POST['Threads'][$_POST['editableIndex']]['port'];
             }
             if ($_POST['editableAttribute'] == 'status') {
-                $model['status'] = $_POST['Thread'][$_POST['editableIndex']]['status'];
+                $model['status'] = $_POST['Threads'][$_POST['editableIndex']]['status'];
             }
-            if ($_POST['editableAttribute'] == 'port') {
-                $model['speed'] = $_POST['Thread'][$_POST['editableIndex']]['speed'];
+            if ($_POST['editableAttribute'] == 'speed') {
+                $model['speed'] = $_POST['Threads'][$_POST['editableIndex']]['speed'];
             }
             $model->save();
             return json_encode('');

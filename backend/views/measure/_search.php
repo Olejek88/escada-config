@@ -19,25 +19,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'uuid') ?>
 
-    <?= $form->field($model, 'equipment_operation_uuid') ?>
-
-    <?= $form->field($model, 'operation_pattern_step_result') ?>
-
     <?= $form->field($model, 'date') ?>
 
     <?= $form->field($model, 'value') ?>
-
-    <?php // echo $form->field($model, 'value') ?>
-
-    <?php // echo $form->field($model, 'attempt_send_date') ?>
-
-    <?php // echo $form->field($model, 'attempt_count') ?>
-
-    <?php // echo $form->field($model, 'updated') ?>
-
-    <?php // echo $form->field($model, 'createdAt') ?>
-
-    <?php // echo $form->field($model, 'changedAt') ?>
 
     <div class="form-group">
         <?= Html::submitButton(Yii::t('app', 'Search'), ['class' => 'btn btn-primary']) ?>

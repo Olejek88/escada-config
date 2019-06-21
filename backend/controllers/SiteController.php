@@ -104,7 +104,6 @@ class SiteController extends Controller
         $stat_values2 = "";
         $last_measures = Measure::find()
             ->where(['measureTypeUuid' => MeasureType::POWER])
-            ->andWhere(['type' => 0])
             ->orderBy('date')
             ->all();
         $cnt=0;
@@ -128,7 +127,7 @@ class SiteController extends Controller
                 $stat_values.=',';
                 $stat_values2.=',';
             }
-            $stat_categories.= "'".$stat['createdAt']."'";
+            $stat_categories.= "'".substr($stat['changedAt'],11,8)."'";
             $stat_values.= $stat['cpu'];
             $stat_values2.= $stat['mem'];
             $cnt++;

@@ -23,6 +23,7 @@ use yii\db\Expression;
  * @property SensorChannel $sensorChannel
  * @property MeasureType $measureType
  */
+
 class Measure extends ActiveRecord
 {
 

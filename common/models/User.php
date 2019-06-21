@@ -52,8 +52,8 @@ class User extends ActiveRecord implements IdentityInterface
     const PERMISSION_USER = 'permissionUser';
 
     private static $_IMAGE_ROOT = 'users';
-    public const USER_SERVICE_UUID = '00000000-9BF0-4542-B127-F4ECEFCE49DA';
-    public const ORGANISATION_UUID = '00000001-DA70-4FFE-8B40-DC6F2AC8BAB0';
+    const USER_SERVICE_UUID = '00000000-9BF0-4542-B127-F4ECEFCE49DA';
+    const ORGANISATION_UUID = '00000001-DA70-4FFE-8B40-DC6F2AC8BAB0';
 
     /**
      * Table name.

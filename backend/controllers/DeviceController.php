@@ -16,7 +16,6 @@ use common\models\SensorConfig;
 use Yii;
 use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
