@@ -1,0 +1,11 @@
+--- vendor/inpassor/yii2-daemon/Controller.php	2019-06-17 16:48:11.000000000 +0500
++++ vendor/inpassor/yii2-daemon/Controller-new.php	2019-06-21 16:42:21.445265869 +0500
+@@ -331,7 +331,7 @@
+                             static::$workersPids[$workerUid][] = $pid;
+                         } else {
+ 
+-                            $config = ArrayHelper::merge(static::$_workersConfig[$workerUid] ?? [], [
++                            $config = ArrayHelper::merge(isset(static::$_workersConfig[$workerUid]) ? static::$_workersConfig[$workerUid] : [], [
+                                 'uid' => $workerUid
+                             ]);
+ 

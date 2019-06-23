@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-  "content-hash": "0db11bd84e899047ed45678fe1978cec",
+    "content-hash": "d2c0107e1e610896dcbd8320fc1503ae",
     "packages": [
         {
             "name": "2amigos/yii2-date-time-picker-widget",
@@ -70,16 +70,16 @@
         },
         {
             "name": "almasaeed2010/adminlte",
-          "version": "v2.4.12",
+            "version": "v2.4.12",
             "source": {
                 "type": "git",
-              "url": "https://github.com/ColorlibHQ/AdminLTE.git",
-              "reference": "7309e2e5d5f8fb78d97dd5ebf9243f3168ec8f20"
+                "url": "https://github.com/ColorlibHQ/AdminLTE.git",
+                "reference": "7309e2e5d5f8fb78d97dd5ebf9243f3168ec8f20"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/ColorlibHQ/AdminLTE/zipball/7309e2e5d5f8fb78d97dd5ebf9243f3168ec8f20",
-              "reference": "7309e2e5d5f8fb78d97dd5ebf9243f3168ec8f20",
+                "url": "https://api.github.com/repos/ColorlibHQ/AdminLTE/zipball/7309e2e5d5f8fb78d97dd5ebf9243f3168ec8f20",
+                "reference": "7309e2e5d5f8fb78d97dd5ebf9243f3168ec8f20",
                 "shasum": ""
             },
             "require": {
@@ -109,9 +109,9 @@
                 "theme",
                 "web"
             ],
-          "time": "2019-06-11T11:52:23+00:00"
+            "time": "2019-06-11T11:52:23+00:00"
         },
-      {
+        {
             "name": "bower-asset/bootstrap",
             "version": "v3.4.1",
             "source": {
@@ -163,16 +163,16 @@
         },
         {
             "name": "bower-asset/fancytree",
-          "version": "v2.31.0",
+            "version": "v2.31.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mar10/fancytree.git",
-              "reference": "b194c2139b044e49700398b9e5010e5e6c1f0019"
+                "reference": "b194c2139b044e49700398b9e5010e5e6c1f0019"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/mar10/fancytree/zipball/b194c2139b044e49700398b9e5010e5e6c1f0019",
-              "reference": "b194c2139b044e49700398b9e5010e5e6c1f0019",
+                "url": "https://api.github.com/repos/mar10/fancytree/zipball/b194c2139b044e49700398b9e5010e5e6c1f0019",
+                "reference": "b194c2139b044e49700398b9e5010e5e6c1f0019",
                 "shasum": ""
             },
             "require": {
@@ -214,7 +214,7 @@
                 "tree",
                 "treegrid"
             ],
-          "time": "2019-05-31T11:32:49+00:00"
+            "time": "2019-05-31T11:32:49+00:00"
         },
         {
             "name": "bower-asset/inputmask",
@@ -733,46 +733,46 @@
             "time": "2016-10-24T15:52:54+00:00"
         },
         {
-          "name": "inpassor/yii2-daemon",
-          "version": "0.3.4",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/Inpassor/yii2-daemon.git",
-            "reference": "a8efd68efa48e74295ff359938120ac12e1fb1bf"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Inpassor/yii2-daemon/zipball/a8efd68efa48e74295ff359938120ac12e1fb1bf",
-            "reference": "a8efd68efa48e74295ff359938120ac12e1fb1bf",
-            "shasum": ""
-          },
-          "require": {
-            "yiisoft/yii2": "*"
-          },
-          "type": "yii2-extension",
-          "autoload": {
-            "psr-4": {
-              "inpassor\\daemon\\": ""
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Inpassor",
-              "email": "inpassor@yandex.com"
-            }
-          ],
-          "description": "The simple daemon extension for the Yii 2 framework",
-          "keywords": [
-            "daemon",
-            "yii2"
-          ],
-          "time": "2018-11-19T12:10:19+00:00"
+            "name": "inpassor/yii2-daemon",
+            "version": "0.3.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/Inpassor/yii2-daemon.git",
+                "reference": "a8efd68efa48e74295ff359938120ac12e1fb1bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Inpassor/yii2-daemon/zipball/a8efd68efa48e74295ff359938120ac12e1fb1bf",
+                "reference": "a8efd68efa48e74295ff359938120ac12e1fb1bf",
+                "shasum": ""
+            },
+            "require": {
+                "yiisoft/yii2": "*"
+            },
+            "type": "yii2-extension",
+            "autoload": {
+                "psr-4": {
+                    "inpassor\\daemon\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Inpassor",
+                    "email": "inpassor@yandex.com"
+                }
+            ],
+            "description": "The simple daemon extension for the Yii 2 framework",
+            "keywords": [
+                "daemon",
+                "yii2"
+            ],
+            "time": "2018-11-19T12:10:19+00:00"
         },
-      {
+        {
             "name": "kartik-v/bootstrap-fileinput",
             "version": "v4.5.3",
             "source": {
@@ -1016,16 +1016,16 @@
         },
         {
             "name": "kartik-v/yii2-builder",
-          "version": "v1.6.7",
+            "version": "v1.6.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/kartik-v/yii2-builder.git",
-              "reference": "9639b36959094500b1bd519b39b581def5d98e17"
+                "reference": "9639b36959094500b1bd519b39b581def5d98e17"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/kartik-v/yii2-builder/zipball/9639b36959094500b1bd519b39b581def5d98e17",
-              "reference": "9639b36959094500b1bd519b39b581def5d98e17",
+                "url": "https://api.github.com/repos/kartik-v/yii2-builder/zipball/9639b36959094500b1bd519b39b581def5d98e17",
+                "reference": "9639b36959094500b1bd519b39b581def5d98e17",
                 "shasum": ""
             },
             "require": {
@@ -1064,7 +1064,7 @@
                 "widget",
                 "yii2"
             ],
-          "time": "2019-06-18T13:41:07+00:00"
+            "time": "2019-06-18T13:41:07+00:00"
         },
         {
             "name": "kartik-v/yii2-datecontrol",
@@ -2481,560 +2481,649 @@
             "time": "2016-11-16T16:25:21+00:00"
         },
         {
-          "name": "php-amqplib/php-amqplib",
-          "version": "v2.9.2",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/php-amqplib/php-amqplib.git",
-            "reference": "76faddcd668dabb8d4f7c00e86b8a9decd781a59"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/76faddcd668dabb8d4f7c00e86b8a9decd781a59",
-            "reference": "76faddcd668dabb8d4f7c00e86b8a9decd781a59",
-            "shasum": ""
-          },
-          "require": {
-            "ext-bcmath": "*",
-            "ext-sockets": "*",
-            "php": ">=5.4.0"
-          },
-          "replace": {
-            "videlalvaro/php-amqplib": "self.version"
-          },
-          "require-dev": {
-            "ext-curl": "*",
-            "nategood/httpful": "^0.2.20",
-            "phpdocumentor/phpdocumentor": "^2.9",
-            "phpunit/phpunit": "^4.8",
-            "squizlabs/php_codesniffer": "^2.5"
-          },
-          "type": "library",
-          "extra": {
-            "branch-alias": {
-              "dev-master": "2.8-dev"
-            }
-          },
-          "autoload": {
-            "psr-4": {
-              "PhpAmqpLib\\": "PhpAmqpLib/"
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "LGPL-2.1-or-later"
-          ],
-          "authors": [
-            {
-              "name": "Alvaro Videla",
-              "role": "Original Maintainer"
+            "name": "php-amqplib/php-amqplib",
+            "version": "v2.9.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-amqplib/php-amqplib.git",
+                "reference": "76faddcd668dabb8d4f7c00e86b8a9decd781a59"
             },
-            {
-              "name": "John Kelly",
-              "email": "johnmkelly86@gmail.com",
-              "role": "Maintainer"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-amqplib/php-amqplib/zipball/76faddcd668dabb8d4f7c00e86b8a9decd781a59",
+                "reference": "76faddcd668dabb8d4f7c00e86b8a9decd781a59",
+                "shasum": ""
             },
-            {
-              "name": "Raúl Araya",
-              "email": "nubeiro@gmail.com",
-              "role": "Maintainer"
+            "require": {
+                "ext-bcmath": "*",
+                "ext-sockets": "*",
+                "php": ">=5.4.0"
             },
-            {
-              "name": "Luke Bakken",
-              "email": "luke@bakken.io",
-              "role": "Maintainer"
-            }
-          ],
-          "description": "Formerly videlalvaro/php-amqplib.  This library is a pure PHP implementation of the AMQP protocol. It's been tested against RabbitMQ.",
-          "homepage": "https://github.com/php-amqplib/php-amqplib/",
-          "keywords": [
-            "message",
-            "queue",
-            "rabbitmq"
-          ],
-          "time": "2019-04-24T15:36:21+00:00"
+            "replace": {
+                "videlalvaro/php-amqplib": "self.version"
+            },
+            "require-dev": {
+                "ext-curl": "*",
+                "nategood/httpful": "^0.2.20",
+                "phpdocumentor/phpdocumentor": "^2.9",
+                "phpunit/phpunit": "^4.8",
+                "squizlabs/php_codesniffer": "^2.5"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.8-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PhpAmqpLib\\": "PhpAmqpLib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "LGPL-2.1-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Alvaro Videla",
+                    "role": "Original Maintainer"
+                },
+                {
+                    "name": "John Kelly",
+                    "email": "johnmkelly86@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Raúl Araya",
+                    "email": "nubeiro@gmail.com",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Luke Bakken",
+                    "email": "luke@bakken.io",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Formerly videlalvaro/php-amqplib.  This library is a pure PHP implementation of the AMQP protocol. It's been tested against RabbitMQ.",
+            "homepage": "https://github.com/php-amqplib/php-amqplib/",
+            "keywords": [
+                "message",
+                "queue",
+                "rabbitmq"
+            ],
+            "time": "2019-04-24T15:36:21+00:00"
         },
         {
-          "name": "rmrevin/yii2-fontawesome",
-          "version": "2.17.1",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/rmrevin/yii2-fontawesome.git",
-            "reference": "65ce306da864f4d558348aeba040ed7876878090"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/rmrevin/yii2-fontawesome/zipball/65ce306da864f4d558348aeba040ed7876878090",
-            "reference": "65ce306da864f4d558348aeba040ed7876878090",
-            "shasum": ""
-          },
-          "require": {
-            "fortawesome/font-awesome": "~4.7",
-            "php": ">=5.4.0",
-            "yiisoft/yii2": "2.0.*"
-          },
-          "type": "yii2-extension",
-          "extra": {
-            "asset-installer-paths": {
-              "npm-asset-library": "vendor/npm",
-              "bower-asset-library": "vendor/bower"
-            }
-          },
-          "autoload": {
-            "psr-4": {
-              "rmrevin\\yii\\fontawesome\\": ""
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Revin Roman",
-              "email": "roman@rmrevin.com",
-              "homepage": "https://rmrevin.com/"
-            }
-          ],
-          "description": "Asset Bundle for Yii2 with Font Awesome",
-          "keywords": [
-            "asset",
-            "awesome",
-            "bundle",
-            "font",
-            "yii"
-          ],
-          "time": "2017-01-11T14:05:47+00:00"
+            "name": "phpspec/php-diff",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/phpspec/php-diff.git",
+                "reference": "0464787bfa7cd13576c5a1e318709768798bec6a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/phpspec/php-diff/zipball/0464787bfa7cd13576c5a1e318709768798bec6a",
+                "reference": "0464787bfa7cd13576c5a1e318709768798bec6a",
+                "shasum": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "1.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-0": {
+                    "Diff": "lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Boulton",
+                    "homepage": "http://github.com/chrisboulton"
+                }
+            ],
+            "description": "A comprehensive library for generating differences between two hashable objects (strings or arrays).",
+            "time": "2016-04-07T12:29:16+00:00"
         },
         {
-          "name": "swiftmailer/swiftmailer",
-          "version": "v5.4.12",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/swiftmailer/swiftmailer.git",
-            "reference": "181b89f18a90f8925ef805f950d47a7190e9b950"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/181b89f18a90f8925ef805f950d47a7190e9b950",
-            "reference": "181b89f18a90f8925ef805f950d47a7190e9b950",
-            "shasum": ""
-          },
-          "require": {
-            "php": ">=5.3.3"
-          },
-          "require-dev": {
-            "mockery/mockery": "~0.9.1",
-            "symfony/phpunit-bridge": "~3.2"
-          },
-          "type": "library",
-          "extra": {
-            "branch-alias": {
-              "dev-master": "5.4-dev"
-            }
-          },
-          "autoload": {
-            "files": [
-              "lib/swift_required.php"
-            ]
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Chris Corbyn"
+            "name": "rmrevin/yii2-fontawesome",
+            "version": "2.17.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rmrevin/yii2-fontawesome.git",
+                "reference": "65ce306da864f4d558348aeba040ed7876878090"
             },
-            {
-              "name": "Fabien Potencier",
-              "email": "fabien@symfony.com"
-            }
-          ],
-          "description": "Swiftmailer, free feature-rich PHP mailer",
-          "homepage": "https://swiftmailer.symfony.com",
-          "keywords": [
-            "email",
-            "mail",
-            "mailer"
-          ],
-          "time": "2018-07-31T09:26:32+00:00"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rmrevin/yii2-fontawesome/zipball/65ce306da864f4d558348aeba040ed7876878090",
+                "reference": "65ce306da864f4d558348aeba040ed7876878090",
+                "shasum": ""
+            },
+            "require": {
+                "fortawesome/font-awesome": "~4.7",
+                "php": ">=5.4.0",
+                "yiisoft/yii2": "2.0.*"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "rmrevin\\yii\\fontawesome\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Revin Roman",
+                    "email": "roman@rmrevin.com",
+                    "homepage": "https://rmrevin.com/"
+                }
+            ],
+            "description": "Asset Bundle for Yii2 with Font Awesome",
+            "keywords": [
+                "asset",
+                "awesome",
+                "bundle",
+                "font",
+                "yii"
+            ],
+            "time": "2017-01-11T14:05:47+00:00"
         },
         {
-          "name": "wbraganca/yii2-fancytree-widget",
-          "version": "1.0.1",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/wbraganca/yii2-fancytree-widget.git",
-            "reference": "97fd3b72aacb067efce839076f8000d43dd06cae"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/wbraganca/yii2-fancytree-widget/zipball/97fd3b72aacb067efce839076f8000d43dd06cae",
-            "reference": "97fd3b72aacb067efce839076f8000d43dd06cae",
-            "shasum": ""
-          },
-          "require": {
-            "bower-asset/fancytree": ">=2.12",
-            "yiisoft/yii2": "*",
-            "yiisoft/yii2-jui": "*"
-          },
-          "type": "yii2-extension",
-          "extra": {
-            "asset-installer-paths": {
-              "npm-asset-library": "vendor/npm",
-              "bower-asset-library": "vendor/bower"
-            }
-          },
-          "autoload": {
-            "psr-4": {
-              "wbraganca\\fancytree\\": "src"
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "BSD-3-Clause"
-          ],
-          "authors": [
-            {
-              "name": "Wanderson Bragança",
-              "email": "wanderson.wbc@gmail.com"
-            }
-          ],
-          "description": "The yii2-fancytree widget is a Yii 2 wrapper for the [Fancytree](https://github.com/mar10/fancytree). A JavaScript dynamic tree view plugin for jQuery with support for persistence, keyboard, checkboxes, tables, drag'n'drop, and lazy loading",
-          "keywords": [
-            "fancytree",
-            "treeview",
-            "wbraganca",
-            "yii2",
-            "yii2-fancytree-widget"
-          ],
-          "time": "2015-11-08T14:15:16+00:00"
+            "name": "swiftmailer/swiftmailer",
+            "version": "v5.4.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/swiftmailer/swiftmailer.git",
+                "reference": "181b89f18a90f8925ef805f950d47a7190e9b950"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/swiftmailer/swiftmailer/zipball/181b89f18a90f8925ef805f950d47a7190e9b950",
+                "reference": "181b89f18a90f8925ef805f950d47a7190e9b950",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.3"
+            },
+            "require-dev": {
+                "mockery/mockery": "~0.9.1",
+                "symfony/phpunit-bridge": "~3.2"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.4-dev"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "lib/swift_required.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Chris Corbyn"
+                },
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                }
+            ],
+            "description": "Swiftmailer, free feature-rich PHP mailer",
+            "homepage": "https://swiftmailer.symfony.com",
+            "keywords": [
+                "email",
+                "mail",
+                "mailer"
+            ],
+            "time": "2018-07-31T09:26:32+00:00"
         },
         {
-          "name": "yiisoft/yii2",
-          "version": "2.0.21",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/yiisoft/yii2-framework.git",
-            "reference": "7e4622252c5f272373e1339a47d331e4a55e9591"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/7e4622252c5f272373e1339a47d331e4a55e9591",
-            "reference": "7e4622252c5f272373e1339a47d331e4a55e9591",
-            "shasum": ""
-          },
-          "require": {
-            "bower-asset/inputmask": "~3.2.2 | ~3.3.5",
-            "bower-asset/jquery": "3.4.*@stable | 3.3.*@stable | 3.2.*@stable | 3.1.*@stable | 2.2.*@stable | 2.1.*@stable | 1.11.*@stable | 1.12.*@stable",
-            "bower-asset/punycode": "1.3.*",
-            "bower-asset/yii2-pjax": "~2.0.1",
-            "cebe/markdown": "~1.0.0 | ~1.1.0 | ~1.2.0",
-            "ext-ctype": "*",
-            "ext-mbstring": "*",
-            "ezyang/htmlpurifier": "~4.6",
-            "lib-pcre": "*",
-            "php": ">=5.4.0",
-            "yiisoft/yii2-composer": "~2.0.4"
-          },
-          "bin": [
-            "yii"
-          ],
-          "type": "library",
-          "extra": {
-            "branch-alias": {
-              "dev-master": "2.0.x-dev"
-            }
-          },
-          "autoload": {
-            "psr-4": {
-              "yii\\": ""
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "BSD-3-Clause"
-          ],
-          "authors": [
-            {
-              "name": "Qiang Xue",
-              "email": "qiang.xue@gmail.com",
-              "homepage": "http://www.yiiframework.com/",
-              "role": "Founder and project lead"
+            "name": "wbraganca/yii2-fancytree-widget",
+            "version": "1.0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/wbraganca/yii2-fancytree-widget.git",
+                "reference": "97fd3b72aacb067efce839076f8000d43dd06cae"
             },
-            {
-              "name": "Alexander Makarov",
-              "email": "sam@rmcreative.ru",
-              "homepage": "http://rmcreative.ru/",
-              "role": "Core framework development"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/wbraganca/yii2-fancytree-widget/zipball/97fd3b72aacb067efce839076f8000d43dd06cae",
+                "reference": "97fd3b72aacb067efce839076f8000d43dd06cae",
+                "shasum": ""
             },
-            {
-              "name": "Maurizio Domba",
-              "homepage": "http://mdomba.info/",
-              "role": "Core framework development"
+            "require": {
+                "bower-asset/fancytree": ">=2.12",
+                "yiisoft/yii2": "*",
+                "yiisoft/yii2-jui": "*"
             },
-            {
-              "name": "Carsten Brandt",
-              "email": "mail@cebe.cc",
-              "homepage": "http://cebe.cc/",
-              "role": "Core framework development"
+            "type": "yii2-extension",
+            "extra": {
+                "asset-installer-paths": {
+                    "npm-asset-library": "vendor/npm",
+                    "bower-asset-library": "vendor/bower"
+                }
             },
-            {
-              "name": "Timur Ruziev",
-              "email": "resurtm@gmail.com",
-              "homepage": "http://resurtm.com/",
-              "role": "Core framework development"
+            "autoload": {
+                "psr-4": {
+                    "wbraganca\\fancytree\\": "src"
+                }
             },
-            {
-              "name": "Paul Klimov",
-              "email": "klimov.paul@gmail.com",
-              "role": "Core framework development"
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Wanderson Bragança",
+                    "email": "wanderson.wbc@gmail.com"
+                }
+            ],
+            "description": "The yii2-fancytree widget is a Yii 2 wrapper for the [Fancytree](https://github.com/mar10/fancytree). A JavaScript dynamic tree view plugin for jQuery with support for persistence, keyboard, checkboxes, tables, drag'n'drop, and lazy loading",
+            "keywords": [
+                "fancytree",
+                "treeview",
+                "wbraganca",
+                "yii2",
+                "yii2-fancytree-widget"
+            ],
+            "time": "2015-11-08T14:15:16+00:00"
+        },
+        {
+            "name": "yiisoft/yii2",
+            "version": "2.0.21",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-framework.git",
+                "reference": "7e4622252c5f272373e1339a47d331e4a55e9591"
             },
-            {
-              "name": "Dmitry Naumenko",
-              "email": "d.naumenko.a@gmail.com",
-              "role": "Core framework development"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-framework/zipball/7e4622252c5f272373e1339a47d331e4a55e9591",
+                "reference": "7e4622252c5f272373e1339a47d331e4a55e9591",
+                "shasum": ""
             },
-            {
-              "name": "Boudewijn Vahrmeijer",
-              "email": "info@dynasource.eu",
-              "homepage": "http://dynasource.eu",
-              "role": "Core framework development"
-            }
-          ],
-          "description": "Yii PHP Framework Version 2",
-          "homepage": "http://www.yiiframework.com/",
-          "keywords": [
-            "framework",
-            "yii2"
-          ],
-          "time": "2019-06-18T14:25:08+00:00"
+            "require": {
+                "bower-asset/inputmask": "~3.2.2 | ~3.3.5",
+                "bower-asset/jquery": "3.4.*@stable | 3.3.*@stable | 3.2.*@stable | 3.1.*@stable | 2.2.*@stable | 2.1.*@stable | 1.11.*@stable | 1.12.*@stable",
+                "bower-asset/punycode": "1.3.*",
+                "bower-asset/yii2-pjax": "~2.0.1",
+                "cebe/markdown": "~1.0.0 | ~1.1.0 | ~1.2.0",
+                "ext-ctype": "*",
+                "ext-mbstring": "*",
+                "ezyang/htmlpurifier": "~4.6",
+                "lib-pcre": "*",
+                "php": ">=5.4.0",
+                "yiisoft/yii2-composer": "~2.0.4"
+            },
+            "bin": [
+                "yii"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Qiang Xue",
+                    "email": "qiang.xue@gmail.com",
+                    "homepage": "http://www.yiiframework.com/",
+                    "role": "Founder and project lead"
+                },
+                {
+                    "name": "Alexander Makarov",
+                    "email": "sam@rmcreative.ru",
+                    "homepage": "http://rmcreative.ru/",
+                    "role": "Core framework development"
+                },
+                {
+                    "name": "Maurizio Domba",
+                    "homepage": "http://mdomba.info/",
+                    "role": "Core framework development"
+                },
+                {
+                    "name": "Carsten Brandt",
+                    "email": "mail@cebe.cc",
+                    "homepage": "http://cebe.cc/",
+                    "role": "Core framework development"
+                },
+                {
+                    "name": "Timur Ruziev",
+                    "email": "resurtm@gmail.com",
+                    "homepage": "http://resurtm.com/",
+                    "role": "Core framework development"
+                },
+                {
+                    "name": "Paul Klimov",
+                    "email": "klimov.paul@gmail.com",
+                    "role": "Core framework development"
+                },
+                {
+                    "name": "Dmitry Naumenko",
+                    "email": "d.naumenko.a@gmail.com",
+                    "role": "Core framework development"
+                },
+                {
+                    "name": "Boudewijn Vahrmeijer",
+                    "email": "info@dynasource.eu",
+                    "homepage": "http://dynasource.eu",
+                    "role": "Core framework development"
+                }
+            ],
+            "description": "Yii PHP Framework Version 2",
+            "homepage": "http://www.yiiframework.com/",
+            "keywords": [
+                "framework",
+                "yii2"
+            ],
+            "time": "2019-06-18T14:25:08+00:00"
         },
-      {
-        "name": "yiisoft/yii2-bootstrap",
-        "version": "2.0.10",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/yiisoft/yii2-bootstrap.git",
-          "reference": "073c9ab0a4eb71f2485d84c96a1967130300d8fc"
+        {
+            "name": "yiisoft/yii2-bootstrap",
+            "version": "2.0.10",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-bootstrap.git",
+                "reference": "073c9ab0a4eb71f2485d84c96a1967130300d8fc"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/073c9ab0a4eb71f2485d84c96a1967130300d8fc",
+                "reference": "073c9ab0a4eb71f2485d84c96a1967130300d8fc",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/bootstrap": "3.4.* | 3.3.* | 3.2.* | 3.1.*",
+                "yiisoft/yii2": "~2.0.6"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<7"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\bootstrap\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Klimov",
+                    "email": "klimov.paul@gmail.com"
+                },
+                {
+                    "name": "Alexander Makarov",
+                    "email": "sam@rmcreative.ru",
+                    "homepage": "http://rmcreative.ru/"
+                },
+                {
+                    "name": "Antonio Ramirez",
+                    "email": "amigo.cobos@gmail.com"
+                },
+                {
+                    "name": "Qiang Xue",
+                    "email": "qiang.xue@gmail.com",
+                    "homepage": "http://www.yiiframework.com/"
+                }
+            ],
+            "description": "The Twitter Bootstrap extension for the Yii framework",
+            "keywords": [
+                "bootstrap",
+                "yii2"
+            ],
+            "time": "2019-04-23T13:18:43+00:00"
         },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/yiisoft/yii2-bootstrap/zipball/073c9ab0a4eb71f2485d84c96a1967130300d8fc",
-          "reference": "073c9ab0a4eb71f2485d84c96a1967130300d8fc",
-          "shasum": ""
+        {
+            "name": "yiisoft/yii2-composer",
+            "version": "2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-composer.git",
+                "reference": "1439e78be1218c492e6cde251ed87d3f128b9534"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/1439e78be1218c492e6cde251ed87d3f128b9534",
+                "reference": "1439e78be1218c492e6cde251ed87d3f128b9534",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0"
+            },
+            "require-dev": {
+                "composer/composer": "^1.0"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "yii\\composer\\Plugin",
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\composer\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Qiang Xue",
+                    "email": "qiang.xue@gmail.com"
+                },
+                {
+                    "name": "Carsten Brandt",
+                    "email": "mail@cebe.cc"
+                }
+            ],
+            "description": "The composer plugin for Yii extension installer",
+            "keywords": [
+                "composer",
+                "extension installer",
+                "yii2"
+            ],
+            "time": "2018-07-05T15:44:47+00:00"
         },
-        "require": {
-          "bower-asset/bootstrap": "3.4.* | 3.3.* | 3.2.* | 3.1.*",
-          "yiisoft/yii2": "~2.0.6"
+        {
+            "name": "yiisoft/yii2-gii",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-gii.git",
+                "reference": "d1c18f0dcbd72ab285acd320c56b1aa2554e06fa"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-gii/zipball/d1c18f0dcbd72ab285acd320c56b1aa2554e06fa",
+                "reference": "d1c18f0dcbd72ab285acd320c56b1aa2554e06fa",
+                "shasum": ""
+            },
+            "require": {
+                "phpspec/php-diff": "^1.1.0",
+                "yiisoft/yii2": "~2.0.14"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "<7",
+                "yiisoft/yii2-coding-standards": "~2.0"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\gii\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Qiang Xue",
+                    "email": "qiang.xue@gmail.com"
+                }
+            ],
+            "description": "The Gii extension for the Yii framework",
+            "keywords": [
+                "code generator",
+                "gii",
+                "yii2"
+            ],
+            "time": "2019-03-17T19:23:15+00:00"
         },
-        "require-dev": {
-          "phpunit/phpunit": "<7"
+        {
+            "name": "yiisoft/yii2-jui",
+            "version": "2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-jui.git",
+                "reference": "ce45c16d4fbbe7d1c516d8d0e8311e07f6138eed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-jui/zipball/ce45c16d4fbbe7d1c516d8d0e8311e07f6138eed",
+                "reference": "ce45c16d4fbbe7d1c516d8d0e8311e07f6138eed",
+                "shasum": ""
+            },
+            "require": {
+                "bower-asset/jquery-ui": "~1.12.1",
+                "yiisoft/yii2": "~2.0.4"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\jui\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Qiang Xue",
+                    "email": "qiang.xue@gmail.com"
+                }
+            ],
+            "description": "The Jquery UI extension for the Yii framework",
+            "keywords": [
+                "jQuery UI",
+                "yii2"
+            ],
+            "time": "2017-11-25T15:32:29+00:00"
         },
-        "type": "yii2-extension",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "2.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "yii\\bootstrap\\": "src"
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "BSD-3-Clause"
-        ],
-        "authors": [
-          {
-            "name": "Paul Klimov",
-            "email": "klimov.paul@gmail.com"
-          },
-          {
-            "name": "Alexander Makarov",
-            "email": "sam@rmcreative.ru",
-            "homepage": "http://rmcreative.ru/"
-          },
-          {
-            "name": "Antonio Ramirez",
-            "email": "amigo.cobos@gmail.com"
-          },
-          {
-            "name": "Qiang Xue",
-            "email": "qiang.xue@gmail.com",
-            "homepage": "http://www.yiiframework.com/"
-          }
-        ],
-        "description": "The Twitter Bootstrap extension for the Yii framework",
-        "keywords": [
-          "bootstrap",
-          "yii2"
-        ],
-        "time": "2019-04-23T13:18:43+00:00"
-      },
-      {
-        "name": "yiisoft/yii2-composer",
-        "version": "2.0.7",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/yiisoft/yii2-composer.git",
-          "reference": "1439e78be1218c492e6cde251ed87d3f128b9534"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/yiisoft/yii2-composer/zipball/1439e78be1218c492e6cde251ed87d3f128b9534",
-          "reference": "1439e78be1218c492e6cde251ed87d3f128b9534",
-          "shasum": ""
-        },
-        "require": {
-          "composer-plugin-api": "^1.0"
-        },
-        "require-dev": {
-          "composer/composer": "^1.0"
-        },
-        "type": "composer-plugin",
-        "extra": {
-          "class": "yii\\composer\\Plugin",
-          "branch-alias": {
-            "dev-master": "2.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "yii\\composer\\": ""
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "BSD-3-Clause"
-        ],
-        "authors": [
-          {
-            "name": "Qiang Xue",
-            "email": "qiang.xue@gmail.com"
-          },
-          {
-            "name": "Carsten Brandt",
-            "email": "mail@cebe.cc"
-          }
-        ],
-        "description": "The composer plugin for Yii extension installer",
-        "keywords": [
-          "composer",
-          "extension installer",
-          "yii2"
-        ],
-        "time": "2018-07-05T15:44:47+00:00"
-      },
-      {
-        "name": "yiisoft/yii2-jui",
-        "version": "2.0.7",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/yiisoft/yii2-jui.git",
-          "reference": "ce45c16d4fbbe7d1c516d8d0e8311e07f6138eed"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/yiisoft/yii2-jui/zipball/ce45c16d4fbbe7d1c516d8d0e8311e07f6138eed",
-          "reference": "ce45c16d4fbbe7d1c516d8d0e8311e07f6138eed",
-          "shasum": ""
-        },
-        "require": {
-          "bower-asset/jquery-ui": "~1.12.1",
-          "yiisoft/yii2": "~2.0.4"
-        },
-        "type": "yii2-extension",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "2.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "yii\\jui\\": ""
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "BSD-3-Clause"
-        ],
-        "authors": [
-          {
-            "name": "Qiang Xue",
-            "email": "qiang.xue@gmail.com"
-          }
-        ],
-        "description": "The Jquery UI extension for the Yii framework",
-        "keywords": [
-          "jQuery UI",
-          "yii2"
-        ],
-        "time": "2017-11-25T15:32:29+00:00"
-      },
-      {
-        "name": "yiisoft/yii2-swiftmailer",
-        "version": "2.0.7",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/yiisoft/yii2-swiftmailer.git",
-          "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
-          "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
-          "shasum": ""
-        },
-        "require": {
-          "swiftmailer/swiftmailer": "~5.0",
-          "yiisoft/yii2": "~2.0.4"
-        },
-        "type": "yii2-extension",
-        "extra": {
-          "branch-alias": {
-            "dev-master": "2.0.x-dev"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "yii\\swiftmailer\\": ""
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "BSD-3-Clause"
-        ],
-        "authors": [
-          {
-            "name": "Paul Klimov",
-            "email": "klimov.paul@gmail.com"
-          }
-        ],
-        "description": "The SwiftMailer integration for the Yii framework",
-        "keywords": [
-          "email",
-          "mail",
-          "mailer",
-          "swift",
-          "swiftmailer",
-          "yii2"
-        ],
-        "time": "2017-05-01T08:29:00+00:00"
-      }
+        {
+            "name": "yiisoft/yii2-swiftmailer",
+            "version": "2.0.7",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/yiisoft/yii2-swiftmailer.git",
+                "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/yiisoft/yii2-swiftmailer/zipball/8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
+                "reference": "8a03a62cbcb82e7697d3002eb43a8d2637f566ec",
+                "shasum": ""
+            },
+            "require": {
+                "swiftmailer/swiftmailer": "~5.0",
+                "yiisoft/yii2": "~2.0.4"
+            },
+            "type": "yii2-extension",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "yii\\swiftmailer\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Paul Klimov",
+                    "email": "klimov.paul@gmail.com"
+                }
+            ],
+            "description": "The SwiftMailer integration for the Yii framework",
+            "keywords": [
+                "email",
+                "mail",
+                "mailer",
+                "swift",
+                "swiftmailer",
+                "yii2"
+            ],
+            "time": "2017-05-01T08:29:00+00:00"
+        }
     ],
-  "packages-dev": [],
+    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-      "php": ">=5.6",
-      "ext-json": "*",
-      "ext-pcntl": "*"
+        "php": ">=5.6",
+        "ext-json": "*",
+        "ext-pcntl": "*"
     },
     "platform-dev": []
 }
