@@ -2,6 +2,7 @@
 
 namespace console\workers;
 
+use common\models\Camera;
 use common\models\LightAnswer;
 use common\models\LightMessage;
 use inpassor\daemon\Worker;
@@ -57,7 +58,9 @@ class MtmAmqpWorker extends Worker
             !isset($params['amqpServer']['password']) ||
             !isset($params['node']['oid']) ||
             !isset($params['node']['nid'])) {
-            exit(-1);
+            $this->log('Не задана конфигурация сервера сообщений и шкафа.');
+            $this->run = false;
+            return;
         }
 
         $this->organizationId = $params['node']['oid'];
@@ -66,16 +69,23 @@ class MtmAmqpWorker extends Worker
         $this->nodeRoute = 'routeNode-' . $this->organizationId . '-' . $this->nodeId;
         $this->nodeQueueName = 'queryNode-' . $this->organizationId . '-' . $this->nodeId;
 
-        $this->connection = new AMQPStreamConnection($params['amqpServer']['host'],
-            $params['amqpServer']['port'],
-            $params['amqpServer']['user'],
-            $params['amqpServer']['password']);
+        try {
+            $this->connection = new AMQPStreamConnection($params['amqpServer']['host'],
+                $params['amqpServer']['port'],
+                $params['amqpServer']['user'],
+                $params['amqpServer']['password']);
 
-        $this->channel = $this->connection->channel();
-        $this->channel->exchange_declare(self::EXCHANGE, 'direct', false, true, false);
-        $this->channel->queue_declare($this->nodeQueueName, false, true, false, false);
-        $this->channel->queue_bind($this->nodeQueueName, self::EXCHANGE, $this->nodeRoute);
-        $this->channel->basic_consume($this->nodeQueueName, '', false, false, false, false, [&$this, 'callback']);
+            $this->channel = $this->connection->channel();
+            $this->channel->exchange_declare(self::EXCHANGE, 'direct', false, true, false);
+            $this->channel->queue_declare($this->nodeQueueName, false, true, false, false);
+            $this->channel->queue_bind($this->nodeQueueName, self::EXCHANGE, $this->nodeRoute);
+            $this->channel->basic_consume($this->nodeQueueName, '', false, false, false, false, [&$this, 'callback']);
+        } catch (Exception $e) {
+            $this->log($e->getMessage());
+            $this->log('init not complete');
+            $this->run = false;
+            return;
+        }
 
         pcntl_signal(SIGTERM, [&$this, 'handler']);
         pcntl_signal(SIGINT, [&$this, 'handler']);
@@ -101,16 +111,27 @@ class MtmAmqpWorker extends Worker
                 }
             } catch (ErrorException $e) {
                 $this->log($e->getMessage());
+                return;
             } catch (AMQPTimeoutException $e) {
                 $this->log($e->getMessage());
+                return;
+            } catch (Exception $e) {
+                $this->log($e->getMessage());
+                return;
             }
 
             $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
 //            $this->log('answers to send: ' . count($answers));
             foreach ($answers as $answer) {
                 $pkt = ['oid' => $this->organizationId, 'nid' => $this->nodeId, 'type' => 'lightstatus', 'address' => $answer->address, 'data' => $answer->data];
-                $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
-                $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
+                try {
+                    $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
+                    $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
+                } catch (Exception $e) {
+                    $this->log($e->getMessage());
+                    return;
+                }
+
                 $answer->dateOut = date('Y-m-d H:i:s');
                 $answer->save();
             }
@@ -119,8 +140,11 @@ class MtmAmqpWorker extends Worker
             sleep(1);
         }
 
-        $this->channel->close();
-        $this->connection->close();
+        if ($this->connection != null) {
+            $this->channel->close();
+            $this->connection->close();
+        }
+
         $this->log('finish...');
     }
 
@@ -131,6 +155,11 @@ class MtmAmqpWorker extends Worker
     {
 //        $this->log('get msg');
         $content = json_decode($msg->body);
+        if (!isset($content->type)) {
+            $this->log('Нет поля type.');
+            return;
+        }
+
         switch ($content->type) {
             case 'light' :
                 $lm = new LightMessage();
@@ -146,7 +175,43 @@ class MtmAmqpWorker extends Worker
                     $this->log('msg not saved');
                 }
                 break;
+            case 'camera' :
+                switch ($content->action) {
+                    case 'publish' :
+                        $params = Yii::$app->params;
+                        if (!isset($params['videoServer']['host']) ||
+                            !isset($params['videoServer']['port']) ||
+                            !isset($params['videoServer']['app'])) {
+                            $this->log('Не указана конфигурация сервера публикации видео.');
+                            return;
+                        }
+
+                        $vHost = $params['videoServer']['host'];
+                        $vPort = $params['videoServer']['port'];
+                        $vApp = $params['videoServer']['app'];
+
+                        // Запустить процесс на 3 минуты
+                        $camera = Camera::find()->where(['uuid' => $content->uuid])->one();
+                        if ($camera == null) {
+                            $this->log('Камеру не нашли. uuid: ' . $content->uuid);
+                            return;
+                        }
+
+                        $cmd = '/usr/bin/avconv -i "' . $camera->address . '" -t 180 -codec copy -an -f flv "rtmp://' .
+                            $vHost . ':' . $vPort . '/' . $vApp . '/' . $camera->uuid . '" > /dev/null 2>&1 &';
+//                        $this->log('cmd: ' . $cmd);
+                        exec($cmd);
+                        /** @var AMQPChannel $channel */
+                        $channel = $msg->delivery_info['channel'];
+                        $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                        break;
+                    default:
+                        $this->log('unknown action');
+                        break;
+                }
+                break;
             default:
+                $this->log('unknown type of message: ' . $content->type);
                 break;
         }
     }
