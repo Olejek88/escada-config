@@ -188,7 +188,8 @@ class MtmAmqpWorker extends Worker
                         $params = Yii::$app->params;
                         if (!isset($params['videoServer']['host']) ||
                             !isset($params['videoServer']['port']) ||
-                            !isset($params['videoServer']['app'])) {
+                            !isset($params['videoServer']['app']) ||
+                            !isset($params['videoServer']['publishTime'])) {
                             $this->log('Не указана конфигурация сервера публикации видео.');
                             return;
                         }
@@ -196,18 +197,27 @@ class MtmAmqpWorker extends Worker
                         $vHost = $params['videoServer']['host'];
                         $vPort = $params['videoServer']['port'];
                         $vApp = $params['videoServer']['app'];
+                        $publishTime = $params['videoServer']['publishTime'];
 
-                        // Запустить процесс на 3 минуты
                         $camera = Camera::find()->where(['uuid' => $content->uuid])->one();
                         if ($camera == null) {
                             $this->log('Камеру не нашли. uuid: ' . $content->uuid);
                             return;
                         }
 
-                        $cmd = '/usr/bin/avconv -i "' . $camera->address . '" -t 180 -codec copy -an -f flv "rtmp://' .
-                            $vHost . ':' . $vPort . '/' . $vApp . '/' . $camera->uuid . '" > /dev/null 2>&1 &';
+                        // проверяем на уже запущенный процес публикации
+                        $cmd = 'ps aux | grep avconv | grep ' . $camera->uuid;
+                        exec($cmd, $output);
+
+                        if (count($output) <= 1) {
+                            $cmd = 'touch /tmp/' . $vApp . '/' . $camera->uuid . '.m3u8';
+                            exec($cmd);
+                            $cmd = '/usr/bin/avconv -i "' . $camera->address . '" -t ' . $publishTime . ' -codec copy -an -f flv "rtmp://' .
+                                $vHost . ':' . $vPort . '/' . $vApp . '/' . $camera->uuid . '" > /dev/null 2>&1 &';
+                            exec($cmd);
 //                        $this->log('cmd: ' . $cmd);
-                        exec($cmd);
+                        }
+
                         /** @var AMQPChannel $channel */
                         $channel = $msg->delivery_info['channel'];
                         $channel->basic_ack($msg->delivery_info['delivery_tag']);
