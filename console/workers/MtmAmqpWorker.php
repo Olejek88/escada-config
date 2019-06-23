@@ -14,6 +14,7 @@ use Yii;
 use ErrorException;
 use Exception;
 use yii\db\Expression;
+use Throwable;
 
 class MtmAmqpWorker extends Worker
 {
@@ -132,8 +133,14 @@ class MtmAmqpWorker extends Worker
                     return;
                 }
 
-                $answer->dateOut = date('Y-m-d H:i:s');
-                $answer->save();
+//                $answer->dateOut = date('Y-m-d H:i:s');
+//                $answer->save();
+                try {
+                    $answer->delete();
+                } catch (Throwable $e) {
+                    $this->log($e->getMessage());
+                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
+                }
             }
 
             pcntl_signal_dispatch();
