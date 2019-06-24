@@ -46,7 +46,7 @@ use kartik\grid\GridView;
                 'headerOptions' => ['class' => 'text-center'],
             ],
             [
-                'attribute' => 'measureType.title',
+                'attribute' => 'sensorChannel.measureType.title',
                 'hAlign' => 'center',
                 'vAlign' => 'middle',
                 'contentOptions' => [

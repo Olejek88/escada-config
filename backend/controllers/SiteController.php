@@ -102,10 +102,17 @@ class SiteController extends Controller
         $stat_categories = "";
         $stat_values = "";
         $stat_values2 = "";
-        $last_measures = Measure::find()
-            ->where(['measureTypeUuid' => MeasureType::POWER])
-            ->orderBy('date')
-            ->all();
+        $channel_power = SensorChannel::find()->where(['measureTypeUuid' => MeasureType::POWER])->one();
+        if ($channel_power) {
+            $last_measures = Measure::find()
+                ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->orderBy('date')
+                ->all();
+        } else {
+            $last_measures = Measure::find()
+                ->orderBy('date')
+                ->all();
+        }
         $cnt=0;
         foreach ($last_measures as $measure) {
             if ($cnt>0) {
@@ -133,11 +140,18 @@ class SiteController extends Controller
             $cnt++;
         }
 
-        $measures = Measure::find()
-            ->where(['measureTypeUuid' => MeasureType::POWER])
-            ->andWhere(['type' => 1])
-            ->orderBy('date')
-            ->all();
+        if ($channel_power) {
+            $measures = Measure::find()
+                ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->andWhere(['type' => 1])
+                ->orderBy('date')
+                ->all();
+        } else {
+            $measures = Measure::find()
+                ->andWhere(['type' => 1])
+                ->orderBy('date')
+                ->all();
+        }
 
         $measureSearchModel = new MeasureSearch();
         $measureDataProvider = $measureSearchModel->search(Yii::$app->request->queryParams);
