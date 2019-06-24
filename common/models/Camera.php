@@ -16,7 +16,6 @@ use yii\db\Expression;
  * @property string $nodeUuid
  * @property string $deviceStatusUuid
  * @property string $address
- * @property integer $port
  * @property string $createdAt
  * @property string $changedAt
  *
@@ -89,7 +88,6 @@ class Camera extends ActiveRecord
                 'required'
             ],
             [['createdAt', 'changedAt'], 'safe'],
-            ['port', 'integer'],
             [
                 [
                     'uuid',

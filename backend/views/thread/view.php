@@ -1,6 +1,5 @@
 <?php
 
-use common\models\Device;
 use common\models\Threads;
 use yii\helpers\Html;
 use yii\widgets\DetailView;

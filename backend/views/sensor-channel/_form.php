@@ -1,19 +1,16 @@
 <?php
 
 use common\components\MainFunctions;
+use common\models\Device;
 use common\models\MeasureType;
-use common\models\Config;
-use common\models\Protocols;
-use common\models\SensorChannel;
+use common\models\requestStatus;
 use common\models\Task;
 use common\models\User;
 use common\models\Users;
 use kartik\widgets\Select2;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
-use yii\helpers\ArrayHelper;
-use common\models\Device;
-use common\models\requestStatus;
 
 /* @var $this yii\web\View */
 /* @var $model common\models\SensorChannel */

@@ -3,7 +3,6 @@
 
 use common\models\DeviceStatus;
 use common\models\DeviceType;
-use kartik\datecontrol\DateControl;
 use kartik\editable\Editable;
 use kartik\grid\GridView;
 use yii\helpers\ArrayHelper;

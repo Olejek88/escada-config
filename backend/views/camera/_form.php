@@ -3,10 +3,6 @@
 use common\components\MainFunctions;
 use common\models\DeviceStatus;
 use common\models\Node;
-use common\models\Protocols;
-use common\models\User;
-use kartik\widgets\Select2;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\ActiveForm;
 
@@ -37,7 +33,6 @@ use yii\widgets\ActiveForm;
 
     <?php echo $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
     <?php echo $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
-    <?php echo $form->field($model, 'port')->textInput(['maxlength' => true]) ?>
     <?php echo $form->field($model, 'deviceStatusUuid')->hiddenInput(['value' => DeviceStatus::WORK])->label(false); ?>
     <?php
         $node = Node::find()->one();

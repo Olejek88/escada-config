@@ -1,7 +1,6 @@
 <?php
 
 use common\components\MainFunctions;
-use common\models\Stat;
 use common\models\SensorChannel;
 use common\models\User;
 use kartik\widgets\Select2;
