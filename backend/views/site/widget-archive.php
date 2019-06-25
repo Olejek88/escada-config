@@ -45,15 +45,15 @@ use kartik\grid\GridView;
                 ],
                 'headerOptions' => ['class' => 'text-center'],
             ],
-//            [
-//                'attribute' => 'measureType.title',
-//                'hAlign' => 'center',
-//                'vAlign' => 'middle',
-//                'contentOptions' => [
-//                    'class' => 'table_class'
-//                ],
-//                'headerOptions' => ['class' => 'text-center'],
-//            ]
+            [
+                'attribute' => 'sensorChannel.measureType.title',
+                'hAlign' => 'center',
+                'vAlign' => 'middle',
+                'contentOptions' => [
+                    'class' => 'table_class'
+                ],
+                'headerOptions' => ['class' => 'text-center'],
+            ]
         ];
 
         echo GridView::widget([

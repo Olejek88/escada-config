@@ -2,12 +2,7 @@
 
 use common\components\MainFunctions;
 use common\models\DeviceStatus;
-use common\models\DeviceType;
-use common\models\Node;
-use common\models\Protocols;
-use common\models\User;
 use common\models\Users;
-use kartik\date\DatePicker;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

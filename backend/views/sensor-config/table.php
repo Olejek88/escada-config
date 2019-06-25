@@ -1,12 +1,7 @@
 <?php
 /* @var $searchModel backend\models\SensorChannelSearch */
 
-use common\models\DeviceStatus;
-use common\models\MeasureType;
-use common\models\SensorChannel;
-use kartik\editable\Editable;
 use kartik\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'Каналы измерения');

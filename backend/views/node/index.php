@@ -1,14 +1,8 @@
 <?php
 /* @var $searchModel backend\models\NodeSearch */
 
-use common\models\Device;
-use common\models\DeviceStatus;
-use common\models\DeviceType;
 use common\models\Operation;
-use kartik\datecontrol\DateControl;
-use kartik\editable\Editable;
 use kartik\grid\GridView;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'Контроллера');

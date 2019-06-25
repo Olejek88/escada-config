@@ -3,18 +3,16 @@
 namespace backend\controllers;
 
 use backend\models\NodeSearch;
-use common\models\Device;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
+use common\models\Info;
+use common\models\Measure;
+use common\models\Message;
 use common\models\Node;
 use common\models\Protocols;
 use common\models\Stat;
-use common\models\Measure;
-use common\models\Message;
-use common\models\Info;
 use common\models\Threads;
 use Yii;
-use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii\web\Controller;

@@ -1,6 +1,5 @@
 <?php
 
-use common\models\Device;
 use yii\helpers\Html;
 
 /* @var $model Node */

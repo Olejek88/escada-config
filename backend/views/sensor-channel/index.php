@@ -1,8 +1,8 @@
 <?php
 
 use backend\models\SensorChannelSearch;
-use yii\helpers\Html;
 use yii\grid\GridView;
+use yii\helpers\Html;
 
 /* @var $searchModel SensorChannelSearch */
 

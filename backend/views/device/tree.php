@@ -1,6 +1,5 @@
 <?php
 
-use kartik\select2\Select2;
 use wbraganca\fancytree\FancytreeWidget;
 use yii\web\JsExpression;
 
