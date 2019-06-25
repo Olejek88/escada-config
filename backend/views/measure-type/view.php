@@ -3,7 +3,6 @@
 
 use yii\helpers\Html;
 use yii\widgets\DetailView;
-use common\components\MyHelpers;
 
 $this->title = $model->title;
 ?>

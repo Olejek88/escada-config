@@ -1,8 +1,5 @@
 <?php
 
-use yii\helpers\Html;
-use yii\widgets\Pjax;
-
 /* @var $accountUser */
 /* @var $equipment */
 /* @var $js */

@@ -13,8 +13,6 @@
  * @var $threadDataProvider
  */
 
-use common\models\Device;
-use common\models\User;
 use yii\helpers\Html;
 
 $this->title = Yii::t('app', 'Сводная');

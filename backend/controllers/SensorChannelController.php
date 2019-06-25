@@ -2,10 +2,9 @@
 namespace backend\controllers;
 
 use backend\models\SensorChannelSearch;
-use common\components\Errors;
 use common\components\FancyTreeHelper;
-use Yii;
 use common\models\SensorChannel;
+use Yii;
 use yii\db\StaleObjectException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;

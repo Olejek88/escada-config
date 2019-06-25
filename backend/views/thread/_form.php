@@ -1,10 +1,7 @@
 <?php
 
 use common\components\MainFunctions;
-use common\models\DeviceStatus;
 use common\models\DeviceType;
-use common\models\Node;
-use common\models\Threads;
 use kartik\widgets\Select2;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

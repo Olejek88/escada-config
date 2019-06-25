@@ -3,8 +3,8 @@
 namespace backend\controllers;
 
 use backend\models\ObjectsSearch;
-use common\models\Stat;
 use common\models\Protocols;
+use common\models\Stat;
 use common\models\Threads;
 use Yii;
 use yii\db\StaleObjectException;

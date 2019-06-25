@@ -17,8 +17,8 @@ use yii\web\JsExpression;
                     <col width="*">
                     <col width="120px">
                     <col width="140px">
+                    <col width="80px">
                     <col width="120px">
-                    <col width="150px">
                 </colgroup>
                 <thead style="background-color: #337ab7; color: white">
                 <tr>

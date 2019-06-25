@@ -24,10 +24,8 @@ use yii\widgets\ActiveForm;
     ); ?>
 
     <?php
-
     if (!$model->isNewRecord) {
-        echo $form->field($model, 'uuid')
-            ->textInput(['maxlength' => true, 'readonly' => true]);
+        echo $form->field($model, 'uuid')->hiddenInput()->label(false);
     } else {
         echo $form->field($model, 'uuid')->hiddenInput(['value' => (new MainFunctions)->GUID()])->label(false);
     }
@@ -36,7 +34,12 @@ use yii\widgets\ActiveForm;
     <?php echo $form->field($model, 'title')->textInput(['maxlength' => true]) ?>
     <?php echo $form->field($model, 'address')->textInput(['maxlength' => true]) ?>
     <?php echo $form->field($model, 'deviceStatusUuid')->hiddenInput(['value' => DeviceStatus::WORK])->label(false); ?>
-    <?php echo $form->field($model, 'nodeUuid')->hiddenInput(['value' => NODE::CURRENT_NODE])->label(false); ?>
+    <?php
+        $node = Node::find()->one();
+        if ($node) {
+            echo $form->field($model, 'nodeUuid')->hiddenInput(['value' => $node['uuid']])->label(false);
+        }
+    ?>
 
     <div class="form-group text-center">
 

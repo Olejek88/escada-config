@@ -2,7 +2,8 @@
 
 namespace backend\controllers;
 
-use common\components\MainFunctions;
+use backend\models\MessageSearch;
+use common\models\Message;
 use common\models\Users;
 use Exception;
 use Yii;
@@ -10,8 +11,6 @@ use yii\db\StaleObjectException;
 use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
-use common\models\Message;
-use backend\models\MessageSearch;
 
 /**
  * MessageController implements the CRUD actions for Message model.

@@ -113,7 +113,12 @@ use yii\widgets\ActiveForm;
 
     <?php echo $form->field($model, 'serial')->textInput(['maxlength' => true]) ?>
 
-    <?php echo $form->field($model, 'nodeUuid')->hiddenInput(['value' => NODE::CURRENT_NODE])->label(false); ?>
+    <?php
+    $node = Node::find()->one();
+    if ($node) {
+        echo $form->field($model, 'nodeUuid')->hiddenInput(['value' => $node['uuid']])->label(false);
+    }
+    ?>
 
     <div class="form-group text-center">
 

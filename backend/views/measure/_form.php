@@ -1,8 +1,6 @@
 <?php
 
 use common\components\MainFunctions;
-use common\models\Device;
-use common\models\MeasureType;
 use common\models\SensorChannel;
 use common\models\User;
 use common\models\Users;

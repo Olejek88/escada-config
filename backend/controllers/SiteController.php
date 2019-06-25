@@ -2,34 +2,20 @@
 namespace backend\controllers;
 
 use backend\models\MeasureSearch;
-use backend\models\RequestSearch;
 use backend\models\ThreadsSearch;
-use backend\models\UserSearch;
-use backend\models\UsersSearch;
 use common\components\MainFunctions;
-use common\models\City;
-use common\models\Defect;
+use common\models\Device;
 use common\models\DeviceStatus;
-use common\models\EquipmentRegister;
-use common\models\ExternalEvent;
+use common\models\DeviceType;
 use common\models\Info;
 use common\models\Journal;
-use common\models\MeasureType;
-use common\models\Node;
-use common\models\Orders;
-use common\models\OrderStatus;
-use common\models\Config;
-use common\models\Device;
-use common\models\DeviceType;
-use common\models\Protocols;
 use common\models\LoginForm;
 use common\models\Measure;
+use common\models\MeasureType;
 use common\models\SensorChannel;
 use common\models\SensorConfig;
 use common\models\Stat;
 use common\models\Threads;
-use common\models\User;
-use common\models\UsersAttribute;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
@@ -102,10 +88,17 @@ class SiteController extends Controller
         $stat_categories = "";
         $stat_values = "";
         $stat_values2 = "";
-        $last_measures = Measure::find()
-//            ->where(['measureTypeUuid' => MeasureType::POWER])
-            ->orderBy('date')
-            ->all();
+        $channel_power = SensorChannel::find()->where(['measureTypeUuid' => MeasureType::POWER])->one();
+        if ($channel_power) {
+            $last_measures = Measure::find()
+                ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->orderBy('date')
+                ->all();
+        } else {
+            $last_measures = Measure::find()
+                ->orderBy('date')
+                ->all();
+        }
         $cnt=0;
         foreach ($last_measures as $measure) {
             if ($cnt>0) {
@@ -133,11 +126,18 @@ class SiteController extends Controller
             $cnt++;
         }
 
-        $measures = Measure::find()
-//            ->where(['measureTypeUuid' => MeasureType::POWER])
-            ->andWhere(['type' => 1])
-            ->orderBy('date')
-            ->all();
+        if ($channel_power) {
+            $measures = Measure::find()
+                ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->andWhere(['type' => 1])
+                ->orderBy('date')
+                ->all();
+        } else {
+            $measures = Measure::find()
+                ->andWhere(['type' => 1])
+                ->orderBy('date')
+                ->all();
+        }
 
         $measureSearchModel = new MeasureSearch();
         $measureDataProvider = $measureSearchModel->search(Yii::$app->request->queryParams);
