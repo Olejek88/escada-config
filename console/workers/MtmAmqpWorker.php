@@ -121,27 +121,27 @@ class MtmAmqpWorker extends Worker
                 return;
             }
 
-            $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
+//            $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
 //            $this->log('answers to send: ' . count($answers));
-            foreach ($answers as $answer) {
-                $pkt = ['oid' => $this->organizationId, 'nid' => $this->nodeId, 'type' => 'lightstatus', 'address' => $answer->address, 'data' => $answer->data];
-                try {
-                    $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
-                    $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
-                } catch (Exception $e) {
-                    $this->log($e->getMessage());
-                    return;
-                }
-
+//            foreach ($answers as $answer) {
+//                $pkt = ['oid' => $this->organizationId, 'nid' => $this->nodeId, 'type' => 'lightstatus', 'address' => $answer->address, 'data' => $answer->data];
+//                try {
+//                    $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
+//                    $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
+//                } catch (Exception $e) {
+//                    $this->log($e->getMessage());
+//                    return;
+//                }
+//
 //                $answer->dateOut = date('Y-m-d H:i:s');
 //                $answer->save();
-                try {
-                    $answer->delete();
-                } catch (Throwable $e) {
-                    $this->log($e->getMessage());
-                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
-                }
-            }
+//                try {
+//                    $answer->delete();
+//                } catch (Throwable $e) {
+//                    $this->log($e->getMessage());
+//                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
+//                }
+//            }
 
             pcntl_signal_dispatch();
             sleep(1);
