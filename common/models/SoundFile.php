@@ -174,6 +174,6 @@ class SoundFile extends ActiveRecord
      */
     public function getUploadPath()
     {
-        return 'files/sound/';
+        return 'files/sound';
     }
 }

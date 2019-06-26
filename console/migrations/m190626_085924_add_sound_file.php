@@ -25,7 +25,7 @@ class m190626_085924_add_sound_file extends Migration
             'soundFile' => $this->string(512)->notNull(),
             'nodeUuid' => $this->string(45)->notNull(),
             'deleted' => $this->smallInteger()->defaultValue(0),
-            'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'createdAt' => $this->dateTime()->notNull()->defaultExpression('0000-00-00 00:00:00'),
             'changedAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 

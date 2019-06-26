@@ -3,8 +3,8 @@
 namespace console\workers;
 
 use common\models\Camera;
-use common\models\LightAnswer;
 use common\models\LightMessage;
+use common\models\SoundFile;
 use inpassor\daemon\Worker;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -13,8 +13,6 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use ErrorException;
 use Exception;
-use yii\db\Expression;
-use Throwable;
 
 class MtmAmqpWorker extends Worker
 {
@@ -224,6 +222,33 @@ class MtmAmqpWorker extends Worker
                         break;
                     default:
                         $this->log('unknown action');
+                        break;
+                }
+                break;
+            case 'sound' :
+                switch ($content->action) {
+                    case 'play' :
+                        $sound = SoundFile::find()->where(['uuid' => $content->uuid])->one();
+                        if ($sound == null) {
+                            $this->log('Звуковой файл не нашли. uuid: ' . $sound->uuid);
+                            return;
+                        }
+
+                        // проверяем на уже запущенный процес воспроизведения файла
+                        $cmd = 'ps aux | grep mpg123 | grep ' . $sound->uuid;
+                        exec($cmd, $output);
+
+                        if (count($output) <= 1) {
+                            $cmd = '/usr/bin/mpg123 ' . Yii::getAlias('@backend/web/' . $sound->getSoundFile()) . ' > /dev/null 2>&1 &';
+                            exec($cmd);
+                            $this->log('cmd: ' . $cmd);
+                        }
+
+                        /** @var AMQPChannel $channel */
+                        $channel = $msg->delivery_info['channel'];
+                        $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                        break;
+                    default:
                         break;
                 }
                 break;
