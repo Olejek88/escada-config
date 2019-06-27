@@ -3,8 +3,10 @@
 namespace console\workers;
 
 use common\models\Camera;
+use common\models\LastUpdate;
 use common\models\LightMessage;
 use common\models\SoundFile;
+use yii\httpclient\Client;
 use inpassor\daemon\Worker;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -13,6 +15,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use ErrorException;
 use Exception;
+use yii\httpclient\CurlTransport;
 
 class MtmAmqpWorker extends Worker
 {
@@ -33,6 +36,9 @@ class MtmAmqpWorker extends Worker
     private $nodeQueueName;
     private $organizationId;
     private $nodeId;
+
+    private $apiServer;
+    private $fileServer;
 
     public function handler($signo)
     {
@@ -56,11 +62,16 @@ class MtmAmqpWorker extends Worker
             !isset($params['amqpServer']['user']) ||
             !isset($params['amqpServer']['password']) ||
             !isset($params['node']['oid']) ||
-            !isset($params['node']['nid'])) {
+            !isset($params['node']['nid']) ||
+            !isset($params['apiServer']) ||
+            !isset($params['fileServer'])) {
             $this->log('Не задана конфигурация сервера сообщений и шкафа.');
             $this->run = false;
             return;
         }
+
+        $this->apiServer = $params['apiServer'];
+        $this->fileServer = $params['fileServer'];
 
         $this->organizationId = $params['node']['oid'];
         $this->nodeId = $params['node']['nid'];
@@ -98,6 +109,7 @@ class MtmAmqpWorker extends Worker
      */
     public function run()
     {
+        $checkSoundFile = 0;
         $this->log('run...');
         while ($this->run) {
 //            $this->log('tick...');
@@ -140,6 +152,77 @@ class MtmAmqpWorker extends Worker
 //                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
 //                }
 //            }
+
+            // проверяем наличие новых или обновлённых звуковых файлов на сервере
+            if ($checkSoundFile + 10 < time()) {
+                $checkSoundFile = time();
+                $this->log('checkSoundFile');
+                // где-то нужно хранить дату последней проверки - нужно ли?
+                $currentDate = date('Y-m-d H:i:s');
+                $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'sound_file'])->one();
+                if ($lastUpdateModel == null) {
+                    $lastUpdateModel = new LastUpdate();
+                    $lastUpdateModel->entityName = 'sound_file';
+                    $lastUpdateModel->date = $currentDate;
+                }
+
+                $lastDate = $lastUpdateModel->date;
+                $httpClient = new Client();
+                $q = $this->apiServer . '/sound-file?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('GET')
+                    ->setUrl($q)
+                    ->send();
+                if ($response->isOk) {
+                    $lastUpdateModel->date = $currentDate;
+                    if (!$lastUpdateModel->save()) {
+                        $this->log('Last update date not saved');
+                        foreach ($lastUpdateModel->errors as $error) {
+                            $this->log($error);
+                        }
+                    }
+
+                    foreach ($response->data as $f) {
+                        $this->log($f['soundFile']);
+                        $model = SoundFile::findOne($f['_id']);
+                        if ($model == null) {
+                            $model = new SoundFile();
+                        }
+//                        $soundFile->load($f, 'forma');
+                        $model->scenario = 'update';
+                        $model->_id = $f['_id'];
+                        $model->uuid = $f['uuid'];
+                        $model->title = $f['title'];
+                        $model->soundFile = $f['soundFile'];
+                        $model->nodeUuid = $f['nodeUuid'];
+                        $model->deleted = $f['deleted'];
+                        $model->createdAt = $f['createdAt'];
+                        $model->changedAt = $f['changedAt'];
+                        if ($model->save()) {
+                            $this->log('sound file model saved: uuid' . $model->uuid);
+                            $file = Yii::getAlias('@backend/web/' . $model->getSoundFile());
+                            $this->log($file);
+                            $fh = fopen($file, 'w');
+                            $fileClient = new Client(['transport' => CurlTransport::class]);
+                            $url = $this->fileServer . '/files/sound/' . $this->organizationId . '/' . $this->nodeId . '/' . $model->soundFile;
+                            $this->log($url);
+                            $response = $fileClient->createRequest()
+                                ->setMethod('GET')
+                                ->setUrl($url)
+                                ->setOutputFile($fh)
+                                ->send();
+                            fclose($fh);
+                            $this->log('response: ' . $response);
+                        } else {
+                            $this->log('sound file model not saved: uuid' . $model->uuid);
+                            foreach ($model->errors as $error) {
+                                $this->log($error);
+                            }
+                        }
+                    }
+                }
+            }
 
             pcntl_signal_dispatch();
             sleep(1);
