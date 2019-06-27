@@ -17,7 +17,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use ErrorException;
 use Exception;
-use yii\httpclient\CurlTransport;
+use yii\httpclient\StreamTransport;
 
 class MtmAmqpWorker extends Worker
 {
@@ -207,17 +207,18 @@ class MtmAmqpWorker extends Worker
                             $file = Yii::getAlias('@backend/web/' . $model->getSoundFile());
                             $this->log($file);
                             $fh = fopen($file, 'w');
-                            $fileClient = new Client(['transport' => CurlTransport::class]);
+                            $fileClient = new Client(['transport' => StreamTransport::class]);
                             $url = $this->fileServer . '/files/sound/' . $this->organizationId . '/' . $this->nodeId . '/' . $model->soundFile;
 //                            $this->log($url);
                             $response = $fileClient->createRequest()
                                 ->setMethod('GET')
                                 ->setUrl($url)
-                                ->setOutputFile($fh)
+//                                ->setOutputFile($fh)
                                 ->send();
+                            fwrite($fh, $response);
                             fclose($fh);
 //                            $this->log('response: ' . $response);
-                            unset($response);
+//                            unset($response);
                         } else {
                             $this->log('sound file model not saved: uuid' . $model->uuid);
                             foreach ($model->errors as $error) {
