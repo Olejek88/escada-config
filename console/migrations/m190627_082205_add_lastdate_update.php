@@ -20,7 +20,7 @@ class m190627_082205_add_lastdate_update extends Migration
         $this->createTable('{{%last_update}}', [
             '_id' => $this->primaryKey(),
             'entityName' => $this->string(50)->notNull()->unique(),
-            'date' => $this->timestamp()->notNull(),
+            'date' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
             'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
