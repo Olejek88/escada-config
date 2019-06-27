@@ -5,6 +5,8 @@ namespace console\workers;
 use common\models\Camera;
 use common\models\LastUpdate;
 use common\models\LightMessage;
+use common\models\Measure;
+use common\models\SensorChannel;
 use common\models\SoundFile;
 use yii\httpclient\Client;
 use inpassor\daemon\Worker;
@@ -110,6 +112,7 @@ class MtmAmqpWorker extends Worker
     public function run()
     {
         $checkSoundFile = 0;
+        $checkChannels = 0;
         $this->log('run...');
         while ($this->run) {
 //            $this->log('tick...');
@@ -156,20 +159,20 @@ class MtmAmqpWorker extends Worker
             // проверяем наличие новых или обновлённых звуковых файлов на сервере
             if ($checkSoundFile + 10 < time()) {
                 $checkSoundFile = time();
-                $this->log('checkSoundFile');
+//                $this->log('checkSoundFile');
                 // где-то нужно хранить дату последней проверки - нужно ли?
                 $currentDate = date('Y-m-d H:i:s');
                 $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'sound_file'])->one();
                 if ($lastUpdateModel == null) {
                     $lastUpdateModel = new LastUpdate();
                     $lastUpdateModel->entityName = 'sound_file';
-                    $lastUpdateModel->date = $currentDate;
+                    $lastUpdateModel->date = '0000-00-00 00:00:00';
                 }
 
                 $lastDate = $lastUpdateModel->date;
                 $httpClient = new Client();
                 $q = $this->apiServer . '/sound-file?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-                $this->log($q);
+//                $this->log($q);
                 $response = $httpClient->createRequest()
                     ->setMethod('GET')
                     ->setUrl($q)
@@ -184,7 +187,7 @@ class MtmAmqpWorker extends Worker
                     }
 
                     foreach ($response->data as $f) {
-                        $this->log($f['soundFile']);
+//                        $this->log($f['soundFile']);
                         $model = SoundFile::findOne($f['_id']);
                         if ($model == null) {
                             $model = new SoundFile();
@@ -206,19 +209,98 @@ class MtmAmqpWorker extends Worker
                             $fh = fopen($file, 'w');
                             $fileClient = new Client(['transport' => CurlTransport::class]);
                             $url = $this->fileServer . '/files/sound/' . $this->organizationId . '/' . $this->nodeId . '/' . $model->soundFile;
-                            $this->log($url);
+//                            $this->log($url);
                             $response = $fileClient->createRequest()
                                 ->setMethod('GET')
                                 ->setUrl($url)
                                 ->setOutputFile($fh)
                                 ->send();
                             fclose($fh);
-                            $this->log('response: ' . $response);
+//                            $this->log('response: ' . $response);
+                            unset($response);
                         } else {
                             $this->log('sound file model not saved: uuid' . $model->uuid);
                             foreach ($model->errors as $error) {
                                 $this->log($error);
                             }
+                        }
+                    }
+                }
+            }
+
+            // проверяем наличие новых данных по сенсорам и измерениям
+            if ($checkChannels + 10 < time()) {
+                $checkChannels = time();
+//                $this->log('checkChannels');
+                $currentDate = date('Y-m-d H:i:s');
+                $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'channel'])->one();
+                if ($lastUpdateModel == null) {
+                    $lastUpdateModel = new LastUpdate();
+                    $lastUpdateModel->entityName = 'channel';
+                    $lastUpdateModel->date = '0000-00-00 00:00:00';
+                }
+
+                $lastDate = $lastUpdateModel->date;
+                $items = SensorChannel::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+//                $this->log('date: ' . $lastDate);
+//                $this->log('items: ' . count($items));
+//                $this->log('items: ' . print_r($items, true));
+
+                $httpClient = new Client();
+                $q = $this->apiServer . '/sensor-channel/send?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl($q)
+                    ->setData([
+                        'oid' => $this->organizationId,
+                        'nid' => $this->nodeId,
+                        'items' => $items,
+                    ])
+                    ->send();
+                if ($response->isOk) {
+                    $lastUpdateModel->date = $currentDate;
+                    if (!$lastUpdateModel->save()) {
+                        $this->log('Last update date not saved');
+                        foreach ($lastUpdateModel->errors as $error) {
+                            $this->log($error);
+                        }
+                    }
+                }
+
+//                $this->log('checkMeasure');
+                $currentDate = date('Y-m-d H:i:s');
+                $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'measure'])->one();
+                if ($lastUpdateModel == null) {
+                    $lastUpdateModel = new LastUpdate();
+                    $lastUpdateModel->entityName = 'measure';
+                    $lastUpdateModel->date = '0000-00-00 00:00:00';
+                }
+
+                $lastDate = $lastUpdateModel->date;
+                $items = Measure::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+//                $this->log('date: ' . $lastDate);
+//                $this->log('items: ' . count($items));
+//                $this->log('items: ' . print_r($items, true));
+
+                $httpClient = new Client();
+                $q = $this->apiServer . '/measure/send?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl($q)
+                    ->setData([
+                        'oid' => $this->organizationId,
+                        'nid' => $this->nodeId,
+                        'items' => $items,
+                    ])
+                    ->send();
+                if ($response->isOk) {
+                    $lastUpdateModel->date = $currentDate;
+                    if (!$lastUpdateModel->save()) {
+                        $this->log('Last update date not saved');
+                        foreach ($lastUpdateModel->errors as $error) {
+                            $this->log($error);
                         }
                     }
                 }
