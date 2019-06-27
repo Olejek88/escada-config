@@ -40,7 +40,7 @@ $this->title = Yii::t('app', 'Журнал оборудования');
                                     ],
                                     'headerOptions' => ['class' => 'text-center'],
                                     'content' => function ($data) {
-                                        return $data['device']->getFullTitle();
+                                        return $data['device']->name;
                                     }
                                 ],
                                 [
