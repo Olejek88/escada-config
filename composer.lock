@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "d2c0107e1e610896dcbd8320fc1503ae",
+  "content-hash": "6fa32d3693b28223b25befaf55abdbde",
     "packages": [
         {
             "name": "2amigos/yii2-date-time-picker-widget",
@@ -3018,6 +3018,56 @@
             "time": "2019-03-17T19:23:15+00:00"
         },
         {
+          "name": "yiisoft/yii2-httpclient",
+          "version": "2.0.11",
+          "source": {
+            "type": "git",
+            "url": "https://github.com/yiisoft/yii2-httpclient.git",
+            "reference": "cf532447447216bd8cb167689ac18f4e7dc1c1a7"
+          },
+          "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/yiisoft/yii2-httpclient/zipball/cf532447447216bd8cb167689ac18f4e7dc1c1a7",
+            "reference": "cf532447447216bd8cb167689ac18f4e7dc1c1a7",
+            "shasum": ""
+          },
+          "require": {
+            "yiisoft/yii2": "~2.0.13"
+          },
+          "require-dev": {
+            "phpunit/phpunit": "4.8.27|~5.7.21|^6.2"
+          },
+          "type": "yii2-extension",
+          "extra": {
+            "branch-alias": {
+              "dev-master": "2.0.x-dev"
+            }
+          },
+          "autoload": {
+            "psr-4": {
+              "yii\\httpclient\\": "src"
+            }
+          },
+          "notification-url": "https://packagist.org/downloads/",
+          "license": [
+            "BSD-3-Clause"
+          ],
+          "authors": [
+            {
+              "name": "Paul Klimov",
+              "email": "klimov.paul@gmail.com"
+            }
+          ],
+          "description": "HTTP client extension for the Yii framework",
+          "keywords": [
+            "curl",
+            "http",
+            "httpclient",
+            "yii2"
+          ],
+          "time": "2019-05-14T13:33:37+00:00"
+        },
+      {
             "name": "yiisoft/yii2-jui",
             "version": "2.0.7",
             "source": {
@@ -3123,7 +3173,8 @@
     "platform": {
         "php": ">=5.6",
         "ext-json": "*",
-        "ext-pcntl": "*"
+      "ext-pcntl": "*",
+      "ext-http": "^3.2"
     },
     "platform-dev": []
 }
