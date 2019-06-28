@@ -21,8 +21,16 @@ use yii\db\Expression;
  * @property string $deviceStatusUuid
  * @property string $last_date
  * @property string $nodeUuid
+ * @property string $object
  * @property string $createdAt
  * @property string $changedAt
+ *
+ * @property int $thread [int(11)]
+ * @property int $q_att [int(11)]
+ * @property int $q_errors [int(11)]
+ * @property int $dev_time [timestamp]
+ * @property int $protocol [int(11)]
+ * @property string $number [varchar(150)]
  *
  * @property DeviceStatus $deviceStatus
  * @property DeviceType $deviceType
