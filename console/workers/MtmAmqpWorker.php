@@ -3,8 +3,12 @@
 namespace console\workers;
 
 use common\models\Camera;
-use common\models\LightAnswer;
+use common\models\LastUpdate;
 use common\models\LightMessage;
+use common\models\Measure;
+use common\models\SensorChannel;
+use common\models\SoundFile;
+use yii\httpclient\Client;
 use inpassor\daemon\Worker;
 use PhpAmqpLib\Channel\AMQPChannel;
 use PhpAmqpLib\Connection\AMQPStreamConnection;
@@ -13,8 +17,7 @@ use PhpAmqpLib\Message\AMQPMessage;
 use Yii;
 use ErrorException;
 use Exception;
-use yii\db\Expression;
-use Throwable;
+use yii\httpclient\StreamTransport;
 
 class MtmAmqpWorker extends Worker
 {
@@ -35,6 +38,9 @@ class MtmAmqpWorker extends Worker
     private $nodeQueueName;
     private $organizationId;
     private $nodeId;
+
+    private $apiServer;
+    private $fileServer;
 
     public function handler($signo)
     {
@@ -58,11 +64,16 @@ class MtmAmqpWorker extends Worker
             !isset($params['amqpServer']['user']) ||
             !isset($params['amqpServer']['password']) ||
             !isset($params['node']['oid']) ||
-            !isset($params['node']['nid'])) {
+            !isset($params['node']['nid']) ||
+            !isset($params['apiServer']) ||
+            !isset($params['fileServer'])) {
             $this->log('Не задана конфигурация сервера сообщений и шкафа.');
             $this->run = false;
             return;
         }
+
+        $this->apiServer = $params['apiServer'];
+        $this->fileServer = $params['fileServer'];
 
         $this->organizationId = $params['node']['oid'];
         $this->nodeId = $params['node']['nid'];
@@ -100,6 +111,8 @@ class MtmAmqpWorker extends Worker
      */
     public function run()
     {
+        $checkSoundFile = 0;
+        $checkChannels = 0;
         $this->log('run...');
         while ($this->run) {
 //            $this->log('tick...');
@@ -121,25 +134,176 @@ class MtmAmqpWorker extends Worker
                 return;
             }
 
-            $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
+//            $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
 //            $this->log('answers to send: ' . count($answers));
-            foreach ($answers as $answer) {
-                $pkt = ['oid' => $this->organizationId, 'nid' => $this->nodeId, 'type' => 'lightstatus', 'address' => $answer->address, 'data' => $answer->data];
-                try {
-                    $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
-                    $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
-                } catch (Exception $e) {
-                    $this->log($e->getMessage());
-                    return;
-                }
-
+//            foreach ($answers as $answer) {
+//                $pkt = ['oid' => $this->organizationId, 'nid' => $this->nodeId, 'type' => 'lightstatus', 'address' => $answer->address, 'data' => $answer->data];
+//                try {
+//                    $msq = new AMQPMessage(json_encode($pkt), array('delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT));
+//                    $this->channel->basic_publish($msq, self::EXCHANGE, self::ROUTE_TO_LSERVER);
+//                } catch (Exception $e) {
+//                    $this->log($e->getMessage());
+//                    return;
+//                }
+//
 //                $answer->dateOut = date('Y-m-d H:i:s');
 //                $answer->save();
-                try {
-                    $answer->delete();
-                } catch (Throwable $e) {
-                    $this->log($e->getMessage());
-                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
+//                try {
+//                    $answer->delete();
+//                } catch (Throwable $e) {
+//                    $this->log($e->getMessage());
+//                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
+//                }
+//            }
+
+            // проверяем наличие новых или обновлённых звуковых файлов на сервере
+            if ($checkSoundFile + 10 < time()) {
+                $checkSoundFile = time();
+//                $this->log('checkSoundFile');
+                // где-то нужно хранить дату последней проверки - нужно ли?
+                $currentDate = date('Y-m-d H:i:s');
+                $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'sound_file'])->one();
+                if ($lastUpdateModel == null) {
+                    $lastUpdateModel = new LastUpdate();
+                    $lastUpdateModel->entityName = 'sound_file';
+                    $lastUpdateModel->date = '0000-00-00 00:00:00';
+                }
+
+                $lastDate = $lastUpdateModel->date;
+                $httpClient = new Client();
+                $q = $this->apiServer . '/sound-file?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('GET')
+                    ->setUrl($q)
+                    ->send();
+                if ($response->isOk) {
+                    $lastUpdateModel->date = $currentDate;
+                    if (!$lastUpdateModel->save()) {
+                        $this->log('Last update date not saved');
+                        foreach ($lastUpdateModel->errors as $error) {
+                            $this->log($error);
+                        }
+                    }
+
+                    foreach ($response->data as $f) {
+//                        $this->log($f['soundFile']);
+                        $model = SoundFile::findOne($f['_id']);
+                        if ($model == null) {
+                            $model = new SoundFile();
+                        }
+//                        $soundFile->load($f, 'forma');
+                        $model->scenario = 'update';
+                        $model->_id = $f['_id'];
+                        $model->uuid = $f['uuid'];
+                        $model->title = $f['title'];
+                        $model->soundFile = $f['soundFile'];
+                        $model->nodeUuid = $f['nodeUuid'];
+                        $model->deleted = $f['deleted'];
+                        $model->createdAt = $f['createdAt'];
+                        $model->changedAt = $f['changedAt'];
+                        if ($model->save()) {
+                            $this->log('sound file model saved: uuid' . $model->uuid);
+                            $file = Yii::getAlias('@backend/web/' . $model->getSoundFile());
+                            $this->log($file);
+                            $fh = fopen($file, 'w');
+                            $fileClient = new Client(['transport' => StreamTransport::class]);
+                            $url = $this->fileServer . '/files/sound/' . $this->organizationId . '/' . $this->nodeId . '/' . $model->soundFile;
+//                            $this->log($url);
+                            $response = $fileClient->createRequest()
+                                ->setMethod('GET')
+                                ->setUrl($url)
+//                                ->setOutputFile($fh)
+                                ->send();
+                            fwrite($fh, $response);
+                            fclose($fh);
+//                            $this->log('response: ' . $response);
+//                            unset($response);
+                        } else {
+                            $this->log('sound file model not saved: uuid' . $model->uuid);
+                            foreach ($model->errors as $error) {
+                                $this->log($error);
+                            }
+                        }
+                    }
+                }
+            }
+
+            // проверяем наличие новых данных по сенсорам и измерениям
+            if ($checkChannels + 10 < time()) {
+                $checkChannels = time();
+//                $this->log('checkChannels');
+                $currentDate = date('Y-m-d H:i:s');
+                $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'channel'])->one();
+                if ($lastUpdateModel == null) {
+                    $lastUpdateModel = new LastUpdate();
+                    $lastUpdateModel->entityName = 'channel';
+                    $lastUpdateModel->date = '0000-00-00 00:00:00';
+                }
+
+                $lastDate = $lastUpdateModel->date;
+                $items = SensorChannel::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+//                $this->log('date: ' . $lastDate);
+//                $this->log('items: ' . count($items));
+//                $this->log('items: ' . print_r($items, true));
+
+                $httpClient = new Client();
+                $q = $this->apiServer . '/sensor-channel/send?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl($q)
+                    ->setData([
+                        'oid' => $this->organizationId,
+                        'nid' => $this->nodeId,
+                        'items' => $items,
+                    ])
+                    ->send();
+                if ($response->isOk) {
+                    $lastUpdateModel->date = $currentDate;
+                    if (!$lastUpdateModel->save()) {
+                        $this->log('Last update date not saved');
+                        foreach ($lastUpdateModel->errors as $error) {
+                            $this->log($error);
+                        }
+                    }
+                }
+
+//                $this->log('checkMeasure');
+                $currentDate = date('Y-m-d H:i:s');
+                $lastUpdateModel = LastUpdate::find()->where(['entityName' => 'measure'])->one();
+                if ($lastUpdateModel == null) {
+                    $lastUpdateModel = new LastUpdate();
+                    $lastUpdateModel->entityName = 'measure';
+                    $lastUpdateModel->date = '0000-00-00 00:00:00';
+                }
+
+                $lastDate = $lastUpdateModel->date;
+                $items = Measure::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+//                $this->log('date: ' . $lastDate);
+//                $this->log('items: ' . count($items));
+//                $this->log('items: ' . print_r($items, true));
+
+                $httpClient = new Client();
+                $q = $this->apiServer . '/measure/send?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl($q)
+                    ->setData([
+                        'oid' => $this->organizationId,
+                        'nid' => $this->nodeId,
+                        'items' => $items,
+                    ])
+                    ->send();
+                if ($response->isOk) {
+                    $lastUpdateModel->date = $currentDate;
+                    if (!$lastUpdateModel->save()) {
+                        $this->log('Last update date not saved');
+                        foreach ($lastUpdateModel->errors as $error) {
+                            $this->log($error);
+                        }
+                    }
                 }
             }
 
@@ -224,6 +388,33 @@ class MtmAmqpWorker extends Worker
                         break;
                     default:
                         $this->log('unknown action');
+                        break;
+                }
+                break;
+            case 'sound' :
+                switch ($content->action) {
+                    case 'play' :
+                        $sound = SoundFile::find()->where(['uuid' => $content->uuid])->one();
+                        if ($sound == null) {
+                            $this->log('Звуковой файл не нашли. uuid: ' . $sound->uuid);
+                            return;
+                        }
+
+                        // проверяем на уже запущенный процес воспроизведения файла
+                        $cmd = 'ps aux | grep mpg123 | grep ' . $sound->uuid;
+                        exec($cmd, $output);
+
+                        if (count($output) <= 1) {
+                            $cmd = '/usr/bin/mpg123 ' . Yii::getAlias('@backend/web/' . $sound->getSoundFile()) . ' > /dev/null 2>&1 &';
+                            exec($cmd);
+                            $this->log('cmd: ' . $cmd);
+                        }
+
+                        /** @var AMQPChannel $channel */
+                        $channel = $msg->delivery_info['channel'];
+                        $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                        break;
+                    default:
                         break;
                 }
                 break;
