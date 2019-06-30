@@ -1,10 +1,10 @@
 <?php
 namespace common\models;
 
+use common\components\MtmActiveRecord;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
@@ -33,9 +33,10 @@ use yii\db\Expression;
  * @property string $number [varchar(150)]
  *
  * @property DeviceStatus $deviceStatus
+ * @property Node $node
  * @property DeviceType $deviceType
  */
-class Device extends ActiveRecord
+class Device extends MtmActiveRecord
 {
 
     /**
@@ -50,7 +51,9 @@ class Device extends ActiveRecord
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'createdAt',
                 'updatedAtAttribute' => 'changedAt',
-                'value' => new Expression('NOW()'),
+                'value' => function () {
+                    return $this->scenario == self::SCENARIO_CUSTOM_UPDATE ? $this->changedAt : new Expression('NOW()');
+                },
             ],
         ];
     }
@@ -111,6 +114,7 @@ class Device extends ActiveRecord
                 'required'
             ],
             [['last_date', 'createdAt', 'changedAt'], 'safe'],
+            [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [
                 [
                     'uuid',
