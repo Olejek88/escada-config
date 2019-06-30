@@ -4,6 +4,7 @@ namespace console\workers;
 
 use common\models\Camera;
 use common\models\Device;
+use common\models\DeviceRegister;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
 use common\models\LastUpdate;
@@ -183,6 +184,9 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkMeasure');
                 $this->uploadMeasure();
+
+//                $this->log('checkDeviceRegister');
+                $this->uploadDeviceRegister();
             }
 
             // проверяем наличие новых данных по оборудованию, камерам на сервере
@@ -420,6 +424,9 @@ class MtmAmqpWorker extends Worker
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
+        if (count($items) == 0) {
+            return;
+        }
 
         $httpClient = new Client();
         $q = $this->apiServer . '/sensor-channel/send?XDEBUG_SESSION_START=xdebug';
@@ -463,6 +470,9 @@ class MtmAmqpWorker extends Worker
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
+        if (count($items) == 0) {
+            return;
+        }
 
         $httpClient = new Client();
         $q = $this->apiServer . '/measure/send?XDEBUG_SESSION_START=xdebug';
@@ -758,6 +768,52 @@ class MtmAmqpWorker extends Worker
             }
         } else {
             return false;
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    private function uploadDeviceRegister()
+    {
+        $lastUpdateKey = 'device_register';
+        $currentDate = date('Y-m-d H:i:s');
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $items = DeviceRegister::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+//                $this->log('date: ' . $lastDate);
+//                $this->log('items: ' . count($items));
+//                $this->log('items: ' . print_r($items, true));
+        if (count($items) == 0) {
+            return;
+        }
+
+        $httpClient = new Client();
+        $q = $this->apiServer . '/device-register/send?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('POST')
+            ->setUrl($q)
+            ->setData([
+                'oid' => $this->organizationId,
+                'nid' => $this->nodeId,
+                'items' => $items,
+            ])
+            ->send();
+        if ($response->isOk) {
+            $lastUpdateModel->date = $currentDate;
+            if (!$lastUpdateModel->save()) {
+                $this->log('Last update date not saved');
+                foreach ($lastUpdateModel->errors as $error) {
+                    $this->log($error);
+                }
+            }
         }
     }
 }
