@@ -682,12 +682,10 @@ class MtmAmqpWorker extends Worker
 
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = SensorChannel::findOne($f['_id']);
+                $model = SensorChannel::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new SensorChannel();
-                    $model->_id = $f['_id'];
                     $model->uuid = $f['uuid'];
-                    $model->createdAt = $f['createdAt'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
@@ -695,13 +693,16 @@ class MtmAmqpWorker extends Worker
                 $model->register = $f['register'];
                 $model->deviceUuid = $f['deviceUuid'];
                 $model->measureTypeUuid = $f['measureTypeUuid'];
-                $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
                     $this->log('sensor channel model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
+                } else {
+                    $model->createdAt = $f['createdAt'];
+                    $model->changedAt = $f['changedAt'];
+                    $model->save();
                 }
             }
         }
@@ -744,21 +745,22 @@ class MtmAmqpWorker extends Worker
                 $model = SensorConfig::findOne($f['_id']);
                 if ($model == null) {
                     $model = new SensorConfig();
-                    $model->_id = $f['_id'];
                     $model->uuid = $f['uuid'];
-                    $model->createdAt = $f['createdAt'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
                 $model->config = $f['config'];
                 $model->sensorChannelUuid = $f['sensorChannelUuid'];
-                $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
                     $this->log('sensor config model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
+                } else {
+                    $model->createdAt = $f['createdAt'];
+                    $model->changedAt = $f['changedAt'];
+                    $model->save();
                 }
             }
         }
@@ -801,9 +803,7 @@ class MtmAmqpWorker extends Worker
                 $model = Threads::findOne($f['_id']);
                 if ($model == null) {
                     $model = new Threads();
-                    $model->_id = $f['_id'];
                     $model->uuid = $f['uuid'];
-                    $model->createdAt = $f['createdAt'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
@@ -824,6 +824,10 @@ class MtmAmqpWorker extends Worker
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
+                } else {
+                    $model->createdAt = $f['createdAt'];
+                    $model->changedAt = $f['changedAt'];
+                    $model->save();
                 }
             }
         }
