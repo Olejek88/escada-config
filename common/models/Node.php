@@ -57,13 +57,9 @@ class Node extends ActiveRecord
     public function fields()
     {
         return ['_id', 'uuid', 'oid',
-            'nodeUuid',
-            'node' => function ($model) {
-                return $model->node;
-            },
             'deviceStatusUuid',
             'deviceStatus' => function ($model) {
-                return $model->node;
+                return $model->deviceStatus;
             },
             'address', 'createdAt', 'changedAt'
         ];

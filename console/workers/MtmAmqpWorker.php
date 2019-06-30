@@ -112,12 +112,6 @@ class MtmAmqpWorker extends Worker
         pcntl_signal(SIGTERM, [&$this, 'handler']);
         pcntl_signal(SIGINT, [&$this, 'handler']);
 
-        // "инициализируем" контроллер (создаём запись в таблце node)
-        if (!$this->downloadNode()) {
-            $this->run = false;
-            return;
-        }
-
         $this->log('init complete');
     }
 
@@ -130,6 +124,13 @@ class MtmAmqpWorker extends Worker
         $checkSoundFile = 0;
         $checkChannels = 0;
         $checkData = 0;
+
+        // "инициализируем" контроллер (создаём запись в таблце node)
+        if (!$this->downloadNode()) {
+            $this->run = false;
+            return;
+        }
+
         $this->log('run...');
         while ($this->run) {
 //            $this->log('tick...');
@@ -575,6 +576,7 @@ class MtmAmqpWorker extends Worker
                 $model->name = $f['name'];
                 $model->port = $f['port'];
                 $model->object = $f['objectUuid'];
+                $model->number = 0;
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
@@ -951,7 +953,7 @@ class MtmAmqpWorker extends Worker
         }
 
         $httpClient = new Client();
-        $q = $this->apiServer . '/node?oid' . $this->organizationId . '&nid=' . $this->nodeId;
+        $q = $this->apiServer . '/node?oid=' . $this->organizationId . '&nid=' . $this->nodeId;
 //        $this->log($q);
         $response = $httpClient->createRequest()
             ->setMethod('GET')
@@ -964,6 +966,7 @@ class MtmAmqpWorker extends Worker
             $model->_id = $f['_id'];
             $model->uuid = $f['uuid'];
             $model->oid = $f['oid'];
+            $model->address = $f['address'];
             $model->deviceStatusUuid = $f['deviceStatusUuid'];
             $model->createdAt = $f['createdAt'];
             $model->changedAt = $f['changedAt'];
@@ -974,7 +977,7 @@ class MtmAmqpWorker extends Worker
                 }
                 return false;
             } else {
-                $this->nodeUuid = $node->uuid;
+                $this->nodeUuid = $model->uuid;
                 return true;
             }
         } else {
