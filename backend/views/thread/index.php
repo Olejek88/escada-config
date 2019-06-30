@@ -75,6 +75,37 @@ $gridColumns = [
     ],
     [
         'class' => 'kartik\grid\EditableColumn',
+        'attribute' => 'work',
+        'mergeHeader' => true,
+        'header' => 'Работа',
+        'contentOptions' => [
+            'class' => 'table_class'
+        ],
+        'headerOptions' => ['class' => 'text-center'],
+        'hAlign' => 'center',
+        'vAlign' => 'middle',
+        'width' => '130px',
+        'editableOptions' => function ($model, $key, $index, $widget) {
+            $work = [
+                '0' => 'Остановлен',
+                '1' => 'Запущен'
+            ];
+            return [
+                'size' => 'lg',
+                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                'displayValueConfig' => $work,
+                'data' => $work
+            ];
+        },
+        'content' => function ($data) {
+            $work = [
+                '0' => 'Остановлен',
+                '1' => 'Запущен'
+            ];
+            return $work[$data["work"]];
+        }
+    ],
+    [
         'attribute' => 'status',
         'mergeHeader' => true,
         'header' => 'Статус',
@@ -86,11 +117,10 @@ $gridColumns = [
         'vAlign' => 'middle',
         'width' => '130px',
         'content' => function ($data) {
-            $interfaces = [
-                '0' => 'Остановка',
-                '1' => 'Работа'
-            ];
-            return $interfaces[$data["status"]];
+            if ($data['status']==0)
+                return "<span class='badge' style='background-color: gray; height: 12px; margin-top: -3px'> </span>&nbsp; Остановлен";
+            else
+                return "<span class='badge' style='background-color: green; height: 12px; margin-top: -3px'> </span>&nbsp;  Запущен";
         }
     ],
     [

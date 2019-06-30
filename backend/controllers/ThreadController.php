@@ -74,8 +74,8 @@ class ThreadController extends Controller
             if ($_POST['editableAttribute'] == 'port') {
                 $model['port'] = $_POST['Threads'][$_POST['editableIndex']]['port'];
             }
-            if ($_POST['editableAttribute'] == 'status') {
-                $model['status'] = $_POST['Threads'][$_POST['editableIndex']]['status'];
+            if ($_POST['editableAttribute'] == 'work') {
+                $model['work'] = $_POST['Threads'][$_POST['editableIndex']]['work'];
             }
             if ($_POST['editableAttribute'] == 'speed') {
                 $model['speed'] = $_POST['Threads'][$_POST['editableIndex']]['speed'];
