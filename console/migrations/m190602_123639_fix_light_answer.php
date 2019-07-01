@@ -20,11 +20,11 @@ class m190602_123639_fix_light_answer extends Migration
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
         }
 
+        $this->dropIndex('address', self::LIGHT_ANSWER);
+        $this->dropIndex('data', self::LIGHT_ANSWER);
         $this->alterColumn(self::LIGHT_ANSWER, 'data', $this->string(1024)->defaultValue(""));
         $this->alterColumn(self::LIGHT_ANSWER,'dateOut', $this->timestamp()->null()->defaultValue(null));
         $this->dropColumn(self::LIGHT_ANSWER, 'uuid');
-        $this->dropIndex('address', self::LIGHT_ANSWER);
-        $this->dropIndex('data', self::LIGHT_ANSWER);
 
         $this->createTable(self::LIGHT_MESSAGE, [
             '_id' => $this->primaryKey(),

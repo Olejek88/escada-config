@@ -2,9 +2,9 @@
 
 namespace common\models;
 
+use common\components\MtmActiveRecord;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 use yii\web\UploadedFile;
 
@@ -24,7 +24,7 @@ use yii\web\UploadedFile;
  * @property string $uploadPath
  * @property string $soundFileUrl
  */
-class SoundFile extends ActiveRecord
+class SoundFile extends MtmActiveRecord
 {
     public $sFile;
 
@@ -60,7 +60,7 @@ class SoundFile extends ActiveRecord
     {
         return [
             [['uuid', 'title', 'nodeUuid', 'sFile'], 'required', 'on' => 'default'],
-            [['uuid', 'title', 'nodeUuid'], 'required', 'on' => 'update'],
+            [['uuid', 'title', 'nodeUuid'], 'required', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [['deleted'], 'required', 'on' => 'delete'],
             [['deleted'], 'boolean'],
             [['createdAt', 'changedAt'], 'safe'],

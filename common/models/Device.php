@@ -1,10 +1,10 @@
 <?php
 namespace common\models;
 
+use common\components\MtmActiveRecord;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
@@ -21,13 +21,22 @@ use yii\db\Expression;
  * @property string $deviceStatusUuid
  * @property string $last_date
  * @property string $nodeUuid
+ * @property string $object
  * @property string $createdAt
  * @property string $changedAt
  *
+ * @property int $thread [int(11)]
+ * @property int $q_att [int(11)]
+ * @property int $q_errors [int(11)]
+ * @property int $dev_time [timestamp]
+ * @property int $protocol [int(11)]
+ * @property string $number [varchar(150)]
+ *
  * @property DeviceStatus $deviceStatus
+ * @property Node $node
  * @property DeviceType $deviceType
  */
-class Device extends ActiveRecord
+class Device extends MtmActiveRecord
 {
 
     /**
@@ -42,7 +51,9 @@ class Device extends ActiveRecord
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'createdAt',
                 'updatedAtAttribute' => 'changedAt',
-                'value' => new Expression('NOW()'),
+                'value' => function () {
+                    return $this->scenario == self::SCENARIO_CUSTOM_UPDATE ? $this->changedAt : new Expression('NOW()');
+                },
             ],
         ];
     }
@@ -103,6 +114,7 @@ class Device extends ActiveRecord
                 'required'
             ],
             [['last_date', 'createdAt', 'changedAt'], 'safe'],
+            [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [
                 [
                     'uuid',
