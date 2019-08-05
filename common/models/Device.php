@@ -25,7 +25,6 @@ use yii\db\Expression;
  * @property string $createdAt
  * @property string $changedAt
  *
- * @property int $thread [int(11)]
  * @property int $q_att [int(11)]
  * @property int $q_errors [int(11)]
  * @property int $dev_time [timestamp]
