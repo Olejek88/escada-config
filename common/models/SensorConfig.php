@@ -1,10 +1,10 @@
 <?php
 namespace common\models;
 
+use common\components\MtmActiveRecord;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
@@ -19,7 +19,7 @@ use yii\db\Expression;
  *
  * @property SensorChannel $sensorChannel
  */
-class SensorConfig extends ActiveRecord
+class SensorConfig extends MtmActiveRecord
 {
     /**
      * Behaviors
@@ -33,7 +33,9 @@ class SensorConfig extends ActiveRecord
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'createdAt',
                 'updatedAtAttribute' => 'changedAt',
-                'value' => new Expression('NOW()'),
+                'value' => function () {
+                    return $this->scenario == self::SCENARIO_CUSTOM_UPDATE ? $this->changedAt : new Expression('NOW()');
+                },
             ],
         ];
     }
@@ -69,6 +71,7 @@ class SensorConfig extends ActiveRecord
                 'required'
             ],
             [['createdAt', 'changedAt'], 'safe'],
+            [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [
                 [
                     'uuid',

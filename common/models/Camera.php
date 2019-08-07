@@ -1,10 +1,10 @@
 <?php
 namespace common\models;
 
+use common\components\MtmActiveRecord;
 use Yii;
 use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
 use yii\db\Expression;
 
 /**
@@ -22,7 +22,7 @@ use yii\db\Expression;
  * @property Node $node
  * @property DeviceStatus $deviceStatus
  */
-class Camera extends ActiveRecord
+class Camera extends MtmActiveRecord
 {
 
     /**
@@ -36,9 +36,10 @@ class Camera extends ActiveRecord
             [
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'createdAt',
-
                 'updatedAtAttribute' => 'changedAt',
-                'value' => new Expression('NOW()'),
+                'value' => function () {
+                    return $this->scenario == self::SCENARIO_CUSTOM_UPDATE ? $this->changedAt : new Expression('NOW()');
+                },
             ],
         ];
     }
@@ -88,6 +89,7 @@ class Camera extends ActiveRecord
                 'required'
             ],
             [['createdAt', 'changedAt'], 'safe'],
+            [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [
                 [
                     'uuid',

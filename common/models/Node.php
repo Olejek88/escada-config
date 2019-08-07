@@ -16,15 +16,12 @@ use yii\db\Expression;
  * @property string $deviceStatusUuid
  * @property string $createdAt
  * @property string $changedAt
+ * @property int $oid
  *
- * @property Node $node
+ * @property ActiveQuery $deviceStatus
  */
 class Node extends ActiveRecord
 {
-    // TODO читаем идентификатор из конфига
-    //const CURRENT_NODE = '29A52371-E9EC-4D1F-8BCB-80F489A96EE3';
-    const CURRENT_NODE = 'EC953361-E53A-4B37-A3C4-1B06E8486376';
-
     /**
      * Behaviors.
      *
@@ -60,13 +57,9 @@ class Node extends ActiveRecord
     public function fields()
     {
         return ['_id', 'uuid', 'oid',
-            'nodeUuid',
-            'node' => function ($model) {
-                return $model->node;
-            },
             'deviceStatusUuid',
             'deviceStatus' => function ($model) {
-                return $model->node;
+                return $model->deviceStatus;
             },
             'address', 'createdAt', 'changedAt'
         ];
