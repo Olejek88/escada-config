@@ -36,23 +36,6 @@ use yii\widgets\ActiveForm;
     ?>
 
     <?php
-    $thread = Threads::find()->all();
-    $items = ArrayHelper::map($thread, 'uuid', 'title');
-    echo $form->field($model, 'thread',
-        ['template' => MainFunctions::getAddButton("/thread/create")])->widget(Select2::class,
-        [
-            'data' => $items,
-            'language' => 'ru',
-            'options' => [
-                'placeholder' => 'Выберите поток'
-            ],
-            'pluginOptions' => [
-                'allowClear' => true
-            ],
-        ]);
-    ?>
-
-    <?php
     $deviceType = DeviceType::find()->all();
     $items = ArrayHelper::map($deviceType, 'uuid', 'title');
     echo $form->field($model, 'deviceTypeUuid',
