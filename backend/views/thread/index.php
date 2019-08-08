@@ -118,7 +118,7 @@ $gridColumns = [
         'width' => '130px',
         'content' => function ($data) {
             if ($data['status']==0)
-                return "<span class='badge' style='background-color: gray; height: 12px; margin-top: -3px'> </span>&nbsp; Остановлен";
+                return "<span class='badge' style='background-color:] gray; height: 12px; margin-top: -3px'> </span>&nbsp; Остановлен";
             else
                 return "<span class='badge' style='background-color: green; height: 12px; margin-top: -3px'> </span>&nbsp;  Запущен";
         }
@@ -133,6 +133,24 @@ $gridColumns = [
         'header' => 'Порт',
         'filterInputOptions' => ['placeholder' => 'Любой'],
         'format' => 'raw',
+        'editableOptions' => function ($model, $key, $index, $widget) {
+            $ports = [
+                '/dev/ttyS0' => '/dev/ttyS0',
+                '/dev/ttyS1' => '/dev/ttyS1',
+                '/dev/ttyS2' => '/dev/ttyS2',
+                '/dev/ttyS3' => '/dev/ttyS3',
+                '/dev/ttyUSB0' => '/dev/ttyUSB0',
+                '/dev/ttyUSB1' => '/dev/ttyUSB1',
+                '/dev/ttyUSB2' => '/dev/ttyUSB2',
+            ];
+            return [
+                'header' => 'Порт',
+                'size' => 'sm',
+                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                'displayValueConfig' => $ports,
+                'data' => $ports
+            ];
+        },
     ],
     [
         'class' => 'kartik\grid\EditableColumn',
