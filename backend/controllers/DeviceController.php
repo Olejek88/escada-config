@@ -18,6 +18,7 @@ use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UnauthorizedHttpException;
 
@@ -71,20 +72,35 @@ class DeviceController extends Controller
             $model = Device::find()
                 ->where(['_id' => $_POST['editableKey']])
                 ->one();
+            if ($model == null) {
+                return json_encode(new HttpException(404, 'Model not found.'));
+            }
+
             if ($_POST['editableAttribute'] == 'port') {
                 $model['port'] = $_POST['Device'][$_POST['editableIndex']]['port'];
             }
+
             if ($_POST['editableAttribute'] == 'deviceTypeUuid') {
                 $model['deviceTypeUuid'] = $_POST['Device'][$_POST['editableIndex']]['deviceTypeUuid'];
             }
+
             if ($_POST['editableAttribute'] == 'deviceStatusUuid') {
                 $model['deviceStatusUuid'] = $_POST['Device'][$_POST['editableIndex']]['deviceStatusUuid'];
             }
+
             if ($_POST['editableAttribute'] == 'dev_time') {
                 $model['dev_time'] = date("Y-m-d H:i:s", $_POST['Device'][$_POST['editableIndex']]['dev_time']);
             }
-            $model->save();
-            return json_encode('');
+
+            if ($_POST['editableAttribute'] == 'address') {
+                $model['address'] = $_POST['Device'][$_POST['editableIndex']]['address'];
+            }
+
+            if (!$model->save()) {
+                return json_encode(new HttpException(500, 'Model not saved.'));
+            } else {
+                return json_encode('');
+            }
         }
 
         $searchModel = new DeviceSearch();
