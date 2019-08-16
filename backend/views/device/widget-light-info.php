@@ -30,7 +30,6 @@ use common\models\DeviceStatus;
             }
             echo "<span class='badge' style='color: green; height: 12px; margin-top: -3px'> </span>";
             ?>
-            <small class="float-right">Адрес: <?php echo $device['object']->getAddress() ?></small>
         </div>
     </div>
 </div>

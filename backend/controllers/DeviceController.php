@@ -27,6 +27,7 @@ use yii\db\StaleObjectException;
 use yii\filters\VerbFilter;
 use yii\helpers\Html;
 use yii\web\Controller;
+use yii\web\HttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\UnauthorizedHttpException;
 
@@ -80,20 +81,35 @@ class DeviceController extends Controller
             $model = Device::find()
                 ->where(['_id' => $_POST['editableKey']])
                 ->one();
+            if ($model == null) {
+                return json_encode(new HttpException(404, 'Model not found.'));
+            }
+
             if ($_POST['editableAttribute'] == 'port') {
                 $model['port'] = $_POST['Device'][$_POST['editableIndex']]['port'];
             }
+
             if ($_POST['editableAttribute'] == 'deviceTypeUuid') {
                 $model['deviceTypeUuid'] = $_POST['Device'][$_POST['editableIndex']]['deviceTypeUuid'];
             }
+
             if ($_POST['editableAttribute'] == 'deviceStatusUuid') {
                 $model['deviceStatusUuid'] = $_POST['Device'][$_POST['editableIndex']]['deviceStatusUuid'];
             }
+
             if ($_POST['editableAttribute'] == 'dev_time') {
                 $model['dev_time'] = date("Y-m-d H:i:s", $_POST['Device'][$_POST['editableIndex']]['dev_time']);
             }
-            $model->save();
-            return json_encode('');
+
+            if ($_POST['editableAttribute'] == 'address') {
+                $model['address'] = $_POST['Device'][$_POST['editableIndex']]['address'];
+            }
+
+            if (!$model->save()) {
+                return json_encode(new HttpException(500, 'Model not saved.'));
+            } else {
+                return json_encode('');
+            }
         }
 
         $searchModel = new DeviceSearch();
@@ -1189,15 +1205,26 @@ class DeviceController extends Controller
     /**
      * @param $uuid
      * @return string
-     * @throws InvalidConfigException
      */
     public
     function actionTrends($uuid)
     {
         $deviceElectro = Device::find()->where(['uuid' => $uuid])->one();
         $parameters1 = [];
+        $parameters1['uuid'] = '';
+        $parameters1['trends']['title'] = '';
+        $parameters1['trends']['categories'] = '';
+        $parameters1['trends']['values'] = '';
         $parameters2 = [];
+        $parameters2['uuid'] = '';
+        $parameters2['trends']['title'] = '';
+        $parameters2['trends']['categories'] = '';
+        $parameters2['trends']['values'] = '';
         $parameters3 = [];
+        $parameters3['uuid'] = '';
+        $parameters3['trends']['title'] = '';
+        $parameters3['trends']['categories'] = '';
+        $parameters3['trends']['values'] = '';
 
         if ($deviceElectro) {
             $sensorChannel1 = SensorChannel::find()->where(['deviceUuid' => $deviceElectro['uuid']])
@@ -1213,8 +1240,6 @@ class DeviceController extends Controller
                 $cnt = 0;
                 $parameters1['uuid'] = $sensorChannel1['_id'];
                 $parameters1['trends']['title'] = $sensorChannel1['title'];
-                $parameters1['trends']['categories'] = '';
-                $parameters1['trends']['values'] = '';
                 foreach (array_reverse($measures) as $measure) {
                     if ($cnt > 0) {
                         $parameters1['trends']['categories'] .= ',';
@@ -1238,8 +1263,6 @@ class DeviceController extends Controller
                 $cnt = 0;
                 $parameters2['uuid'] = $sensorChannel2['_id'];
                 $parameters2['trends']['title'] = $sensorChannel2['title'];
-                $parameters2['trends']['categories'] = '';
-                $parameters2['trends']['values'] = '';
                 foreach (array_reverse($measures) as $measure) {
                     if ($cnt > 0) {
                         $parameters2['trends']['categories'] .= ',';
@@ -1263,8 +1286,6 @@ class DeviceController extends Controller
                 $cnt = 0;
                 $parameters3['uuid'] = $sensorChannel3['_id'];
                 $parameters3['trends']['title'] = $sensorChannel3['title'];
-                $parameters3['trends']['categories'] = '';
-                $parameters3['trends']['values'] = '';
                 foreach (array_reverse($measures) as $measure) {
                     if ($cnt > 0) {
                         $parameters3['trends']['categories'] .= ',';

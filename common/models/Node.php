@@ -17,6 +17,8 @@ use yii\db\Expression;
  * @property string $createdAt
  * @property string $changedAt
  * @property int $oid
+ * @property double $longitude
+ * @property double $latitude
  *
  * @property ActiveQuery $deviceStatus
  */
@@ -88,6 +90,10 @@ class Node extends ActiveRecord
                     'address'
                 ],
                 'string', 'max' => 50
+            ],
+            [
+                ['longitude', 'latitude'],
+                'double'
             ],
         ];
     }

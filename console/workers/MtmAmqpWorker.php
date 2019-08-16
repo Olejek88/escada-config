@@ -125,10 +125,19 @@ class MtmAmqpWorker extends Worker
         $checkChannels = 0;
         $checkData = 0;
 
-        // "инициализируем" контроллер (создаём запись в таблце node)
-        if (!$this->downloadNode()) {
-            $this->run = false;
-            return;
+        // проверяем наличие информации о шкафе
+        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
+        if ($node != null) {
+            $this->nodeUuid = $node->uuid;
+        } else {
+            // пробуем получить информацию с сервера
+            $node = $this->downloadNode();
+            if ($node != null) {
+                $this->nodeUuid = $node->uuid;
+            } else {
+                $this->run = false;
+                return;
+            }
         }
 
         $this->log('run...');
@@ -231,6 +240,8 @@ class MtmAmqpWorker extends Worker
 //                $this->log('checkThreads');
                 $this->downloadThread();
 
+//                $this->log('checkNode');
+                $this->downloadNode();
             }
 
 
@@ -484,7 +495,6 @@ class MtmAmqpWorker extends Worker
     private function uploadMeasure()
     {
         $lastUpdateKey = 'measure';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -493,7 +503,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = Measure::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = Measure::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -501,6 +512,9 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
+        // фиксируем дату последнего измерения в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/measure/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -510,7 +524,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
@@ -949,13 +963,6 @@ class MtmAmqpWorker extends Worker
      */
     private function downloadNode()
     {
-        // проверяем наличие информации о шкафу - первый запуск
-        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
-        if ($node != null) {
-            $this->nodeUuid = $node->uuid;
-            return true;
-        }
-
         $httpClient = new Client();
         $q = $this->apiServer . '/node?oid=' . $this->organizationId . '&nid=' . $this->nodeId;
 //        $this->log($q);
@@ -965,27 +972,24 @@ class MtmAmqpWorker extends Worker
             ->send();
         if ($response->isOk) {
             $f = $response->data;
-            $model = new Node();
-//            $model->scenario = 'update';
+            $model = Node::findOne(['_id' => $f['_id']]);
+            if ($model == null) {
+                $model = new Node();
+            }
+
+            $model->load($f, '');
             $model->_id = $f['_id'];
-            $model->uuid = $f['uuid'];
-            $model->oid = $f['oid'];
-            $model->address = $f['address'];
-            $model->deviceStatusUuid = $f['deviceStatusUuid'];
-            $model->createdAt = $f['createdAt'];
-            $model->changedAt = $f['changedAt'];
             if (!$model->save()) {
                 $this->log('node model not saved: uuid' . $model->uuid);
                 foreach ($model->errors as $error) {
                     $this->log($error);
                 }
-                return false;
+                return null;
             } else {
-                $this->nodeUuid = $model->uuid;
-                return true;
+                return $model;
             }
         } else {
-            return false;
+            return null;
         }
     }
 
