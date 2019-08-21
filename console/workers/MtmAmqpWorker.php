@@ -449,7 +449,6 @@ class MtmAmqpWorker extends Worker
     private function uploadSensorChannel()
     {
         $lastUpdateKey = 'channel_upload';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -458,7 +457,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = SensorChannel::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = SensorChannel::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -466,6 +466,9 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/sensor-channel/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -475,7 +478,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
@@ -999,7 +1002,6 @@ class MtmAmqpWorker extends Worker
     private function uploadDeviceRegister()
     {
         $lastUpdateKey = 'device_register';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -1008,7 +1010,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = DeviceRegister::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = DeviceRegister::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -1016,6 +1019,9 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/device-register/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1025,7 +1031,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
@@ -1045,7 +1051,6 @@ class MtmAmqpWorker extends Worker
     private function uploadSensorConfig()
     {
         $lastUpdateKey = 'sensor_config_upload';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -1054,7 +1059,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = SensorConfig::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = SensorConfig::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -1062,6 +1068,9 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/sensor-config/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1071,7 +1080,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
@@ -1091,7 +1100,6 @@ class MtmAmqpWorker extends Worker
     private function uploadThread()
     {
         $lastUpdateKey = 'thread_upload';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -1100,7 +1108,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = Threads::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = Threads::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -1114,6 +1123,9 @@ class MtmAmqpWorker extends Worker
             $items[$key]['nodeUuid'] = $node->uuid;
         }
 
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/thread/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1123,7 +1135,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
@@ -1143,7 +1155,6 @@ class MtmAmqpWorker extends Worker
     private function uploadCamera()
     {
         $lastUpdateKey = 'camera_upload';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -1152,7 +1163,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = Camera::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = Camera::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -1160,6 +1172,9 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/camera/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1169,7 +1184,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
@@ -1189,7 +1204,6 @@ class MtmAmqpWorker extends Worker
     private function uploadDevice()
     {
         $lastUpdateKey = 'device_upload';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -1198,7 +1212,8 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $items = Device::find()->where(['>=', 'changedAt', $lastDate])->asArray()->all();
+        $items = Device::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
 //                $this->log('date: ' . $lastDate);
 //                $this->log('items: ' . count($items));
 //                $this->log('items: ' . print_r($items, true));
@@ -1206,6 +1221,9 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/device/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1215,7 +1233,7 @@ class MtmAmqpWorker extends Worker
             ->setData([
                 'oid' => $this->organizationId,
                 'nid' => $this->nodeId,
-                'items' => $items,
+                'items' => json_encode($items),
             ])
             ->send();
         if ($response->isOk) {
