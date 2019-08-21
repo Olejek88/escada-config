@@ -397,7 +397,7 @@ class MtmAmqpWorker extends Worker
 
             foreach ($response->data as $f) {
 //                        $this->log($f['soundFile']);
-                $model = SoundFile::findOne($f['_id']);
+                $model = SoundFile::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new SoundFile();
                 }
@@ -575,7 +575,7 @@ class MtmAmqpWorker extends Worker
 
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = Device::findOne($f['_id']);
+                $model = Device::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new Device();
                     $model->_id = $f['_id'];
@@ -640,7 +640,7 @@ class MtmAmqpWorker extends Worker
 
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = Camera::findOne($f['_id']);
+                $model = Camera::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new Camera();
                     $model->_id = $f['_id'];
@@ -759,7 +759,7 @@ class MtmAmqpWorker extends Worker
 
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = SensorConfig::findOne($f['_id']);
+                $model = SensorConfig::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new SensorConfig();
                     $model->uuid = $f['uuid'];
@@ -817,7 +817,7 @@ class MtmAmqpWorker extends Worker
 
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = Threads::findOne($f['_id']);
+                $model = Threads::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new Threads();
                     $model->uuid = $f['uuid'];
@@ -975,7 +975,7 @@ class MtmAmqpWorker extends Worker
             ->send();
         if ($response->isOk) {
             $f = $response->data;
-            $model = Node::findOne(['_id' => $f['_id']]);
+            $model = Node::find()->where(['uuid' => $f['uuid']])->one();
             if ($model == null) {
                 $model = new Node();
             }
