@@ -214,6 +214,9 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkDevice');
                 $this->uploadDevice();
+
+//                $this->log('checkDeviceConfig');
+                $this->uploadDeviceConfig();
             }
 
             // проверяем наличие новых данных по оборудованию, камерам на сервере
@@ -1287,6 +1290,55 @@ class MtmAmqpWorker extends Worker
         $currentDate = $lastItem['changedAt'];
         $httpClient = new Client();
         $q = $this->apiServer . '/device/send?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('POST')
+            ->setUrl($q)
+            ->setData([
+                'oid' => $this->organizationId,
+                'nid' => $this->nodeId,
+                'items' => json_encode($items),
+            ])
+            ->send();
+        if ($response->isOk) {
+            $lastUpdateModel->date = $currentDate;
+            if (!$lastUpdateModel->save()) {
+                $this->log('Last update date not saved');
+                foreach ($lastUpdateModel->errors as $error) {
+                    $this->log($error);
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     */
+    private function uploadDeviceConfig()
+    {
+        $lastUpdateKey = 'device_config_upload';
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $items = DeviceConfig::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
+            ->limit(500)->asArray()->all();
+//                $this->log('date: ' . $lastDate);
+//                $this->log('items: ' . count($items));
+//                $this->log('items: ' . print_r($items, true));
+        if (count($items) == 0) {
+            return;
+        }
+
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        $currentDate = $lastItem['changedAt'];
+        $httpClient = new Client();
+        $q = $this->apiServer . '/device-config/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
         $response = $httpClient->createRequest()
             ->setMethod('POST')
