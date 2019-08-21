@@ -4,6 +4,7 @@ namespace console\workers;
 
 use common\components\MtmActiveRecord;
 use common\models\Camera;
+use common\models\Device;
 use common\models\DeviceConfig;
 use common\models\DeviceRegister;
 use common\models\DeviceStatus;

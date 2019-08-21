@@ -26,6 +26,14 @@ class MeasureType extends ActiveRecord
     const COORD_IN2 = '066C4553-EA7A-4DB9-8E25-98192EF659A3';
     const COORD_DIGI1 = '3D597483-F547-438C-A284-85E0F2C5C480';
 
+    const MEASURE_TYPE_CURRENT = 0;
+    const MEASURE_TYPE_HOUSE = 1;
+    const MEASURE_TYPE_DAYS = 2;
+    const MEASURE_TYPE_MONTH = 4;
+    const MEASURE_TYPE_INTERVAL = 9;
+    const MEASURE_TYPE_TOTAL = 7;
+    const MEASURE_TYPE_TOTAL_CURRENT = 10;
+
     /**
      * @inheritdoc
      */

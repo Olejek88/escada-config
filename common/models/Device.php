@@ -206,4 +206,13 @@ class Device extends MtmActiveRecord
         return $this->hasOne(Node::class, ['uuid' => 'nodeUuid']);
     }
 
+    /**
+     * Объект связанного поля.
+     *
+     * @return string
+     */
+    public function getFullTitle()
+    {
+        return $this->name;
+    }
 }

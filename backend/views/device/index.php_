@@ -25,36 +25,7 @@ $gridColumns = [
         }
     ],
     [
-        'class' => 'kartik\grid\ExpandRowColumn',
-        'width' => '50px',
-        'hAlign' => 'center',
-        'vAlign' => 'middle',
-        'value' => function ($model, $key, $index, $column) {
-            return GridView::ROW_COLLAPSED;
-        },
-        'detail' => function ($model, $key, $index, $column) {
-            return Yii::$app->controller->renderPartial('../device/device-details', ['model' => $model]);
-        },
-        'expandIcon' => '<span class="glyphicon glyphicon-expand"></span>',
-        'headerOptions' => ['class' => 'kartik-sheet-style'],
-        'expandOneOnly' => true
-    ],
-    [
-        'class' => 'kartik\grid\DataColumn',
-        'attribute' => 'nodeUuid',
-        'vAlign' => 'middle',
-        'width' => '180px',
-        'value' => function ($data) {
-            return Html::a('['.$data['node']['address'].']',
-                ['/device/dashboard','uuid' => $data['uuid']]);
-        },
-        'filterType' => GridView::FILTER_SELECT2,
-        'header' => 'Адрес',
-        'filterInputOptions' => ['placeholder' => 'Любой'],
-        'format' => 'raw',
-    ],
-    [
-        'class' => 'kartik\grid\DataColumn',
+        'class' => 'kartik\grid\EditableColumn',
         'attribute' => 'deviceTypeUuid',
         'hAlign' => 'center',
         'vAlign' => 'middle',
@@ -74,6 +45,16 @@ $gridColumns = [
         'contentOptions' => [
             'class' => 'table_class'
         ],
+        'editableOptions' => function ($model, $key, $index, $widget) {
+            $models = ArrayHelper::map(DeviceType::find()->orderBy('title')->all(), 'uuid', 'title');
+            return [
+                'header' => 'Тип оборудования',
+                'size' => 'lg',
+                'inputType' => Editable::INPUT_DROPDOWN_LIST,
+                'displayValueConfig' => $models,
+                'data' => $models
+            ];
+        },
     ],
     [
         'class' => 'kartik\grid\EditableColumn',
@@ -119,7 +100,6 @@ $gridColumns = [
         'attribute' => 'interface',
         'hAlign' => 'center',
         'vAlign' => 'middle',
-        'mergeHeader' => true,
         'contentOptions' => [
             'class' => 'table_class'
         ],
@@ -132,22 +112,7 @@ $gridColumns = [
                 '3' => 'Ethernet'
             ];
             return $interfaces[$data["interface"]];
-        },
-        'editableOptions' => function () {
-            $interfaces = [
-                '0' => 'не указан',
-                '1' => 'Последовательный порт',
-                '2' => 'Zigbee',
-                '3' => 'Ethernet'
-            ];
-            return [
-                'header' => 'Статус',
-                'size' => 'md',
-                'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                'displayValueConfig' => $interfaces,
-                'data' => $interfaces
-            ];
-        },
+        }
     ],
     [
         'class' => 'kartik\grid\EditableColumn',
@@ -176,21 +141,12 @@ $gridColumns = [
         'width' => '180px',
         'filterType' => GridView::FILTER_SELECT2,
         'header' => 'Адрес',
-        'mergeHeader' => true,
         'filterInputOptions' => ['placeholder' => 'Любой'],
         'format' => 'raw',
     ],
     [
         'class' => 'kartik\grid\ActionColumn',
         'header' => 'Действия',
-        'buttons' => [
-            'days' => function ($url, $model) {
-                return Html::a('<span class="fa fa-tasks"></span>&nbsp',
-                    ['/device/archive-days', 'uuid' => $model['uuid']]
-                );
-            }
-        ],
-        'template'=> '{update} {days}',
         'headerOptions' => ['class' => 'kartik-sheet-style'],
     ]
 ];

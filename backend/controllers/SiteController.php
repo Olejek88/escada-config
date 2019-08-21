@@ -92,11 +92,13 @@ class SiteController extends Controller
         if ($channel_power) {
             $last_measures = Measure::find()
                 ->where(['sensorChannelUuid' => $channel_power['uuid']])
-                ->orderBy('date')
+                ->orderBy('date desc')
+                ->limit(50)
                 ->all();
         } else {
             $last_measures = Measure::find()
-                ->orderBy('date')
+                ->orderBy('date desc')
+                ->limit(50)
                 ->all();
         }
         $cnt=0;
@@ -112,6 +114,7 @@ class SiteController extends Controller
 
         $stats = Stat::find()
             ->orderBy('changedAt')
+            ->limit(100)
             ->all();
         $cnt=0;
         foreach ($stats as $stat) {
@@ -130,12 +133,14 @@ class SiteController extends Controller
             $measures = Measure::find()
                 ->where(['sensorChannelUuid' => $channel_power['uuid']])
                 ->andWhere(['type' => 1])
-                ->orderBy('date')
+                ->orderBy('date desc')
+                ->limit(50)
                 ->all();
         } else {
             $measures = Measure::find()
                 ->andWhere(['type' => 1])
-                ->orderBy('date')
+                ->orderBy('date desc')
+                ->limit(50)
                 ->all();
         }
 
@@ -180,7 +185,10 @@ class SiteController extends Controller
                 $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->all();
                 foreach ($channels as $channel) {
                     $childIdx2 = count($tree['children'][$childIdx]['children']) - 1;
-                    $measure = Measure::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
+                    $measure = Measure::find()
+                        ->where(['sensorChannelUuid' => $channel['uuid']])
+                        ->orderBy('date desc')
+                        ->one();
                     $date = '-';
                     if (!$measure) {
                         $config = null;

@@ -102,7 +102,8 @@ class MeasureController extends Controller
         if ($_GET["equipment"]) {
             $measure = Measure::find()
                 ->where(['sensorChannelUuid' => $_GET["sensorChannel"]])
-                ->orderBy('date')
+                ->orderBy('date desc')
+                ->limit(100)
                 ->all();
             if ($measure[0] != null)
                 $name = $measure[0]['equipment']['equipmentType']->title;
