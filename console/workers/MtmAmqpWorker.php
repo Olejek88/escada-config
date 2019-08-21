@@ -475,7 +475,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/sensor-channel/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -524,7 +529,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего измерения в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/measure/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1085,7 +1095,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/device-register/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1134,7 +1149,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/sensor-config/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1189,7 +1209,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/thread/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1238,7 +1263,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/camera/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1287,7 +1317,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/device/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
@@ -1336,7 +1371,12 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        $currentDate = $lastItem['changedAt'];
+        if (count($items) == 1) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
         $httpClient = new Client();
         $q = $this->apiServer . '/device-config/send?XDEBUG_SESSION_START=xdebug';
 //                $this->log($q);
