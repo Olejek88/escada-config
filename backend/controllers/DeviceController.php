@@ -190,7 +190,7 @@ class DeviceController extends Controller
                 $device = new Device();
                 $device->uuid = MainFunctions::GUID();
                 $device->nodeUuid = $object['uuid'];
-                $device->deviceTypeUuid = DeviceType::EQUIPMENT_HVS;
+                $device->deviceTypeUuid = DeviceType::DEVICE_LIGHT;
                 $device->deviceStatusUuid = DeviceStatus::UNKNOWN;
                 $device->serial = '222222';
                 $device->interface = 1;
@@ -201,8 +201,8 @@ class DeviceController extends Controller
                 $devices[$device_count] = $device;
                 $device_count++;
             } else {
-                if ($device['deviceTypeUuid'] != DeviceType::EQUIPMENT_HVS) {
-                    $device['deviceTypeUuid'] = DeviceType::EQUIPMENT_HVS;
+                if ($device['deviceTypeUuid'] != DeviceType::DEVICE_LIGHT) {
+                    $device['deviceTypeUuid'] = DeviceType::DEVICE_LIGHT;
                     $device['changedAt'] = date('Y-m-d H:i:s');
                     $device->save();
                     echo $device['uuid'] . '<br/>';
@@ -296,7 +296,10 @@ class DeviceController extends Controller
                 $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->all();
                 foreach ($channels as $channel) {
                     $childIdx2 = count($fullTree['children'][$childIdx]['children']) - 1;
-                    $measure = Measure::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
+                    $measure = Measure::find()
+                        ->where(['sensorChannelUuid' => $channel['uuid']])
+                        ->orderBy('date desc')
+                        ->one();
                     $date = '-';
                     if (!$measure) {
                         $config = null;
@@ -562,6 +565,7 @@ class DeviceController extends Controller
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
             ->orderBy('date DESC'))
+            ->limit(200)
             ->all();
         $cnt = -1;
         $data['days'] = [];
@@ -590,6 +594,7 @@ class DeviceController extends Controller
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_MONTH])
             ->orderBy('date DESC'))
+            ->limit(100)
             ->all();
         $cnt = -1;
         $last_date = '';
@@ -620,6 +625,7 @@ class DeviceController extends Controller
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_TOTAL_CURRENT])
             ->orderBy('date DESC'))
+            ->limit(500)
             ->all();
         foreach ($integrates as $measure) {
             if ($measure['parameter'] == 1)
@@ -763,7 +769,9 @@ class DeviceController extends Controller
                 ->where(['sensorChannelUuid' => $sChannel['uuid']])
                 ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
                 ->andWhere(['parameter' => 0])
-                ->orderBy('date DESC'))->limit(200)->all();
+                ->orderBy('date DESC'))
+                ->limit(200)
+                ->all();
         }
 
         $cnt = 0;
@@ -932,6 +940,7 @@ class DeviceController extends Controller
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
             ->orderBy('date DESC'))
+            ->limit(100)
             ->all();
         $cnt = -1;
         $data['days'] = [];
@@ -982,6 +991,7 @@ class DeviceController extends Controller
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_MONTH])
             ->orderBy('date DESC'))
+            ->limit(100)
             ->all();
         $cnt = -1;
         $last_date = '';
@@ -1051,6 +1061,7 @@ class DeviceController extends Controller
             ->andWhere('date >= "'.$start_time.'"')
             ->andWhere('date < "'.$end_time.'"')
             ->orderBy('date DESC'))
+            ->limit(100)
             ->all();
         $cnt = -1;
         $data['days'] = [];

@@ -234,6 +234,7 @@ class NodeController extends Controller
                     ->select('*')
                     ->where(['equipmentUuid' => $equipment['uuid']])
                     ->orderBy('date DESC')
+                    ->limit(100)
                     ->one();
                 if ($measure) {
                     $fullTree[$oCnt0][$c][$oCnt1]['measure_date'] = $measure['date'];
@@ -342,6 +343,7 @@ class NodeController extends Controller
                             ->select('*')
                             ->where(['equipmentUuid' => $equipment['uuid']])
                             ->orderBy('date DESC')
+                            ->limit(100)
                             ->one();
                         if ($measure) {
                             $fullTree[$oCnt0][$c][$oCnt1]['measure_date'] = $measure['date'];
@@ -461,7 +463,8 @@ class NodeController extends Controller
                         $measures = Measure::find()
                             ->select('*')
                             ->where(['equipmentUuid' => $equipment['uuid']])
-                            ->orderBy('date')
+                            ->orderBy('date desc')
+                            ->limit(100)
                             ->all();
 
                         $measure_count_column=0;
