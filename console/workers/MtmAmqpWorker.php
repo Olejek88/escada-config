@@ -4,7 +4,7 @@ namespace console\workers;
 
 use common\components\MtmActiveRecord;
 use common\models\Camera;
-use common\models\Device;
+use common\models\DeviceConfig;
 use common\models\DeviceRegister;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
@@ -227,6 +227,9 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkDevices');
                 $this->downloadDevice();
+
+//                $this->log('checkDevicesConfig');
+                $this->downloadDeviceConfig();
 
 //                $this->log('checkCameras');
                 $this->downloadCamera();
@@ -594,6 +597,63 @@ class MtmAmqpWorker extends Worker
                 $model->port = $f['port'];
                 $model->object = $f['objectUuid'];
                 $model->number = 0;
+                $model->changedAt = $f['changedAt'];
+
+                if (!$model->save()) {
+                    $this->log('device model not saved: uuid' . $model->uuid);
+                    foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadDeviceConfig()
+    {
+        $lastUpdateKey = 'device_config_download';
+        $currentDate = date('Y-m-d H:i:s');
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $httpClient = new Client();
+        $q = $this->apiServer . '/device-config?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('GET')
+            ->setUrl($q)
+            ->send();
+        if ($response->isOk) {
+            $lastUpdateModel->date = $currentDate;
+            if (!$lastUpdateModel->save()) {
+                $this->log('Last update date not saved');
+                foreach ($lastUpdateModel->errors as $error) {
+                    $this->log($error);
+                }
+            }
+
+            foreach ($response->data as $f) {
+//                $this->log($f['device']);
+                $model = DeviceConfig::find()->where(['uuid' => $f['uuid']])->one();
+                if ($model == null) {
+                    $model = new DeviceConfig();
+                    $model->uuid = $f['uuid'];
+                    $model->createdAt = $f['createdAt'];
+                }
+
+                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->deviceUuid = $f['deviceUuid'];
+                $model->parameter = $f['parameter'];
+                $model->value = $f['value'];
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
