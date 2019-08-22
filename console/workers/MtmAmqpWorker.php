@@ -475,7 +475,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -529,7 +529,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего измерения в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -915,10 +915,6 @@ class MtmAmqpWorker extends Worker
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
-                } else {
-                    $model->createdAt = $f['createdAt'];
-                    $model->changedAt = $f['changedAt'];
-                    $model->save();
                 }
             }
         }
@@ -1095,7 +1091,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -1149,7 +1145,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -1209,7 +1205,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -1263,7 +1259,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -1317,7 +1313,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
@@ -1371,7 +1367,7 @@ class MtmAmqpWorker extends Worker
 
         // фиксируем дату последнего элемента в текущей выборке
         $lastItem = $items[count($items) - 1];
-        if (count($items) == 1) {
+        if (count($items) < 500) {
             $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
         } else {
             $currentDate = $lastItem['changedAt'];
