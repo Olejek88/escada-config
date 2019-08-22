@@ -915,10 +915,6 @@ class MtmAmqpWorker extends Worker
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
-                } else {
-                    $model->createdAt = $f['createdAt'];
-                    $model->changedAt = $f['changedAt'];
-                    $model->save();
                 }
             }
         }
