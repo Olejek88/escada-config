@@ -11,7 +11,6 @@ use yii\db\Expression;
  * This is the model class for table "sensor_config".
  *
  * @property integer $_id
- * @property string $oid идентификатор организации
  * @property string $uuid
  * @property string $deviceUuid
  * @property string $parameter
@@ -50,7 +49,9 @@ class DeviceConfig extends MtmActiveRecord
                 'class' => TimestampBehavior::class,
                 'createdAtAttribute' => 'createdAt',
                 'updatedAtAttribute' => 'changedAt',
-                'value' => new Expression('NOW()'),
+                'value' => function () {
+                    return $this->scenario == self::SCENARIO_CUSTOM_UPDATE ? $this->changedAt : new Expression('NOW()');
+                },
             ],
         ];
     }
@@ -86,7 +87,8 @@ class DeviceConfig extends MtmActiveRecord
                 ],
                 'required'
             ],
-            [['oid','createdAt', 'changedAt'], 'safe'],
+            [['createdAt', 'changedAt'], 'safe'],
+            [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [
                 [
                     'uuid',
@@ -94,7 +96,6 @@ class DeviceConfig extends MtmActiveRecord
                 ],
                 'string', 'max' => 45
             ],
-            [['oid'], 'checkOrganizationOwn'],
         ];
     }
 

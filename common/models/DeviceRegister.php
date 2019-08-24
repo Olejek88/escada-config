@@ -9,8 +9,8 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "device_register".
  *
+ * @property int $_id
  * @property string $uuid
- * @property string $oid идентификатор организации
  * @property string $deviceUuid
  * @property string $date
  * @property string $description
@@ -38,7 +38,7 @@ class DeviceRegister extends ActiveRecord
         return [
             [['uuid', 'deviceUuid', 'date'], 'required'],
             [['data'], 'safe'],
-            [['uuid', 'deviceUuid', 'oid'], 'string', 'max' => 50],
+            [['uuid', 'deviceUuid'], 'string', 'max' => 50],
             [['description'], 'string', 'max' => 250],
         ];
     }
