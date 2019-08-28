@@ -739,9 +739,6 @@ class MtmAmqpWorker extends Worker
                 $model->period_title4 = $f['period_title4'];
                 $model->time4 = $f['time4'];
                 $model->value4 = $f['value4'];
-                $model->period_title5 = $f['period_title5'];
-                $model->time5 = $f['time5'];
-                $model->value5 = $f['value5'];
                 $model->changedAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
 

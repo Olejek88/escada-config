@@ -29,9 +29,6 @@ return [
             'class' => 'yii\console\controllers\FixtureController',
             'namespace' => 'common\fixtures',
         ],
-        'export' => [
-            'class' => 'console\controllers\ExportController',
-        ],
         'daemon' => [
             'class' => 'inpassor\daemon\Controller',
             'uid' => 'daemon',
