@@ -21,9 +21,11 @@ use yii\db\Expression;
  * @property string $period_title3 Ночь. Период например с полуночи до трёх часов ночи.
  * @property int $time3
  * @property int $value3
- * @property string $period_title4 Начало утренних сумерек. Период с утренних сумерек до восхода.
+ * @property string $period_title4 Ночь. Период например с трёх часов ночи до утренних сумерек.
  * @property int $time4
  * @property int $value4
+ * @property string $period_title5 Начало утренних сумерек. Период с утренних сумерек до восхода.
+ * @property int $value5
  * @property string $createdAt
  * @property string $changedAt
  */
@@ -59,7 +61,7 @@ class DeviceProgram extends MtmActiveRecord
         return [
             [['uuid'], 'required'],
             [['time1', 'time2', 'time3', 'time4'], 'integer', 'min' => 0, 'max' => 100],
-            [['value1', 'value2', 'value3', 'value4'], 'integer', 'min' => 0, 'max' => 100],
+            [['value1', 'value2', 'value3', 'value4', 'value5'], 'integer', 'min' => 0, 'max' => 100],
             [['createdAt', 'changedAt'], 'safe'],
             [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [
@@ -70,6 +72,7 @@ class DeviceProgram extends MtmActiveRecord
                     'period_title2',
                     'period_title3',
                     'period_title4',
+                    'period_title5',
                 ],
                 'string', 'max' => 45
             ],
@@ -101,9 +104,11 @@ class DeviceProgram extends MtmActiveRecord
             'period_title3' => 'Ночь. Период например с полуночи до трёх часов ночи.',
             'time3' => 'Длительность периода в процентах от длительности ночи.',
             'value3' => 'Яркость освещения в процентах',
-            'period_title4' => 'Начало утренних сумерек. Период с утренних сумерек до восхода.',
+            'period_title4' => 'Ночь. Период например с трёх часов ночи до утренних сумерек.',
             'time4' => 'Длительность периода в процентах от длительности ночи.',
             'value4' => 'Яркость освещения в процентах',
+            'period_title5' => 'Начало утренних сумерек. Период с утренних сумерек до восхода.',
+            'value5' => 'Яркость освещения в процентах',
             'createdAt' => 'Created At',
             'changedAt' => 'Changed At',
         ];

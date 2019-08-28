@@ -35,10 +35,13 @@ class m190824_175846_add_light_program extends Migration
                 ->comment('Ночь. Период например с полуночи до трёх часов ночи.'),
             'time3' => $this->integer()->defaultValue(0),
             'value3' => $this->integer()->defaultValue(0),
-            'period_title4' => $this->string(45)->notNull()->defaultValue('Утренние сумерки')
-                ->comment('Начало утренних сумерек. Период с утренних сумерек до восхода.'),
+            'period_title4' => $this->string(45)->notNull()->defaultValue('Поздняя ночь')
+                ->comment('Ночь. Период например с трёх часов ночи до утренних сумерек.'),
             'time4' => $this->integer()->defaultValue(0),
             'value4' => $this->integer()->defaultValue(0),
+            'period_title5' => $this->string(45)->notNull()->defaultValue('Утренние сумерки')
+                ->comment('Начало утренних сумерек. Период с утренних сумерек до восхода.'),
+            'value5' => $this->integer()->defaultValue(0),
             'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             'changedAt' => $this->dateTime()->notNull()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
