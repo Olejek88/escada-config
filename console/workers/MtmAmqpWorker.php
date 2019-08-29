@@ -728,7 +728,6 @@ class MtmAmqpWorker extends Worker
                 $model->uuid = $f['uuid'];
                 $model->title = $f['title'];
                 $model->period_title1 = $f['period_title1'];
-                $model->time1 = $f['time1'];
                 $model->value1 = $f['value1'];
                 $model->period_title2 = $f['period_title2'];
                 $model->time2 = $f['time2'];

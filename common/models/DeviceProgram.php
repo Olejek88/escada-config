@@ -13,7 +13,6 @@ use yii\db\Expression;
  * @property string $uuid
  * @property string $title
  * @property string $period_title1 Закат. Период от заката до конца вечерних сумерек.
- * @property int $time1
  * @property int $value1
  * @property string $period_title2 Конец вечерних сумерек. Период с конца вечерних сумерек до например полуночи.
  * @property int $time2
@@ -60,7 +59,7 @@ class DeviceProgram extends MtmActiveRecord
     {
         return [
             [['uuid'], 'required'],
-            [['time1', 'time2', 'time3', 'time4'], 'integer', 'min' => 0, 'max' => 100],
+            [['time2', 'time3', 'time4'], 'integer', 'min' => 0, 'max' => 100],
             [['value1', 'value2', 'value3', 'value4', 'value5'], 'integer', 'min' => 0, 'max' => 100],
             [['createdAt', 'changedAt'], 'safe'],
             [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
@@ -96,7 +95,6 @@ class DeviceProgram extends MtmActiveRecord
             'uuid' => 'Uuid',
             'title' => 'Название программы',
             'period_title1' => 'Закат. Период от заката до конца вечерних сумерек.',
-            'time1' => 'Длительность периода в процентах от длительности ночи.',
             'value1' => 'Яркость освещения в процентах',
             'period_title2' => 'Конец вечерних сумерек. Период с конца вечерних сумерек до например полуночи.',
             'time2' => 'Длительность периода в процентах от длительности ночи.',

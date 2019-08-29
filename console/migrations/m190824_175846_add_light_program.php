@@ -25,7 +25,6 @@ class m190824_175846_add_light_program extends Migration
             'title' => $this->string(45)->notNull()->defaultValue('Программа'),
             'period_title1' => $this->string(45)->notNull()->defaultValue('Вечерние сумерки')
                 ->comment('Закат. Период от заката до конца вечерних сумерек.'),
-            'time1' => $this->integer()->defaultValue(0),
             'value1' => $this->integer()->defaultValue(0),
             'period_title2' => $this->string(45)->notNull()->defaultValue('Вечер')
                 ->comment('Конец вечерних сумерек. Период с конца вечерних сумерек до например полуночи.'),
