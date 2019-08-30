@@ -538,12 +538,12 @@ class DeviceController extends Controller
         }
 
         // power by days
-        $sChannel = (SensorChannel::find()->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER]))->one();
-        $last_measures = (Measure::find()
+        $sChannel = SensorChannel::find()->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])->one();
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
             ->andWhere(['parameter' => 0])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = 0;
@@ -561,10 +561,10 @@ class DeviceController extends Controller
         }
 
         // archive days
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(200)
             ->all();
         $cnt = -1;
@@ -590,10 +590,10 @@ class DeviceController extends Controller
         }
 
         // archive month
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_MONTH])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = -1;
@@ -621,10 +621,10 @@ class DeviceController extends Controller
         $parameters['increment']['w4']['current'] = "-";
         $parameters['increment']['ws']['current'] = "-";
 
-        $integrates = (Measure::find()
+        $integrates = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_TOTAL_CURRENT])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(500)
             ->all();
         foreach ($integrates as $measure) {
@@ -676,10 +676,10 @@ class DeviceController extends Controller
         $parameters['month']['date']['prev'] = date("Y-m-01", strtotime($prev_month));
         $parameters['month']['date']['current'] = date("Y-m-01", strtotime($month));
 
-        $integrates = (Measure::find()
+        $integrates = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_TOTAL])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->all();
         foreach ($integrates as $measure) {
             if ($measure['parameter'] == 1) {
@@ -713,10 +713,10 @@ class DeviceController extends Controller
                     $parameters['increment']['ws']['prev'] = $measure['value'];
             }
         }
-        $integrates = (Measure::find()
+        $integrates = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_MONTH])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->all();
         foreach ($integrates as $measure) {
             if ($measure['parameter'] == 1) {
@@ -765,11 +765,11 @@ class DeviceController extends Controller
         $measures = [];
         if ($sChannel) {
             $parameters['trends']['title'] = $sChannel['title'];
-            $measures = (Measure::find()
+            $measures = Measure::find()
                 ->where(['sensorChannelUuid' => $sChannel['uuid']])
                 ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
                 ->andWhere(['parameter' => 0])
-                ->orderBy('date DESC'))
+                ->orderBy('date DESC')
                 ->limit(200)
                 ->all();
         }
@@ -792,11 +792,11 @@ class DeviceController extends Controller
         $measures = [];
         if ($sChannel) {
             $parameters['trends']['title'] = $sChannel['title'];
-            $measures = (Measure::find()
+            $measures = Measure::find()
                 ->where(['sensorChannelUuid' => $sChannel['uuid']])
                 ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
                 ->andWhere(['parameter' => 0])
-                ->orderBy('date DESC'))->limit(200)->all();
+                ->orderBy('date DESC')->limit(200)->all();
         }
 
         $cnt = 0;
@@ -838,9 +838,9 @@ class DeviceController extends Controller
         $parameters['current']['w3'] = "-";
         $parameters['current']['ws'] = "-";
 
-        $measures = (Measure::find()
+        $measures = Measure::find()
             ->where(['type' => MeasureType::MEASURE_TYPE_CURRENT])
-            ->orderBy('date DESC'))->limit(200)
+            ->orderBy('date DESC')->limit(200)
             ->all();
         foreach ($measures as $measure) {
             if ($measure['sensorChannel']['measureTypeUuid'] == MeasureType::CURRENT &&
@@ -913,11 +913,11 @@ class DeviceController extends Controller
         $sChannel = SensorChannel::find()
             ->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])
             ->one();
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
             ->andWhere(['parameter' => 0])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = 0;
@@ -936,10 +936,10 @@ class DeviceController extends Controller
         }
 
         // archive days
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = -1;
@@ -966,11 +966,11 @@ class DeviceController extends Controller
         }
 
         // power by month
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_MONTH])
             ->andWhere(['parameter' => 0])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = 0;
@@ -987,10 +987,10 @@ class DeviceController extends Controller
         }
 
         // archive month
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_MONTH])
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = -1;
@@ -1055,12 +1055,12 @@ class DeviceController extends Controller
             $start_time = date('Y-m-d H:i:s', strtotime($_GET['start_time']));
         }
 
-        $last_measures = (Measure::find()
+        $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
             ->andWhere('date >= "'.$start_time.'"')
             ->andWhere('date < "'.$end_time.'"')
-            ->orderBy('date DESC'))
+            ->orderBy('date DESC')
             ->limit(100)
             ->all();
         $cnt = -1;
@@ -1242,10 +1242,10 @@ class DeviceController extends Controller
                 ->andWhere(['measureTypeUuid' => MeasureType::POWER])->one();
 
             if ($sensorChannel1) {
-                $measures = (Measure::find()
+                $measures = Measure::find()
                     ->where(['sensorChannelUuid' => $sensorChannel1['uuid']])
                     ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
-                    ->orderBy('date DESC'))
+                    ->orderBy('date DESC')
                     ->limit(200)->all();
 
                 $cnt = 0;
@@ -1265,10 +1265,10 @@ class DeviceController extends Controller
             $sensorChannel2 = SensorChannel::find()->where(['deviceUuid' => $deviceElectro['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::VOLTAGE])->one();
             if ($sensorChannel2) {
-                $measures = (Measure::find()
+                $measures = Measure::find()
                     ->where(['sensorChannelUuid' => $sensorChannel2['uuid']])
                     ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
-                    ->orderBy('date DESC'))
+                    ->orderBy('date DESC')
                     ->limit(200)->all();
 
                 $cnt = 0;
@@ -1288,10 +1288,10 @@ class DeviceController extends Controller
             $sensorChannel3 = SensorChannel::find()->where(['deviceUuid' => $deviceElectro['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::CURRENT])->one();
             if ($sensorChannel3) {
-                $measures = (Measure::find()
+                $measures = Measure::find()
                     ->where(['sensorChannelUuid' => $sensorChannel3['uuid']])
                     ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
-                    ->orderBy('date DESC'))
+                    ->orderBy('date DESC')
                     ->limit(200)->all();
 
                 $cnt = 0;

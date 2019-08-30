@@ -25,7 +25,7 @@ class m190816_122507_add_device_config extends Migration
             'deviceUuid' => $this->string(45)->notNull(),
             'parameter' => $this->string(),
             'value' => $this->string(),
-            'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'createdAt' => $this->dateTime()->notNull()->defaultExpression('0000-00-00 00:00:00'),
             'changedAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
