@@ -6,6 +6,7 @@ use common\components\MtmActiveRecord;
 use common\models\Camera;
 use common\models\Device;
 use common\models\DeviceConfig;
+use common\models\DeviceProgram;
 use common\models\DeviceRegister;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
@@ -235,6 +236,9 @@ class MtmAmqpWorker extends Worker
 //                $this->log('checkDevicesConfig');
                 $this->downloadDeviceConfig();
 
+//                $this->log('checkDevicesProgram');
+                $this->downloadDeviceProgram();
+
 //                $this->log('checkCameras');
                 $this->downloadCamera();
 
@@ -393,15 +397,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                        $this->log($f['soundFile']);
                 $model = SoundFile::find()->where(['uuid' => $f['uuid']])->one();
@@ -441,8 +438,19 @@ class MtmAmqpWorker extends Worker
 //                            $this->log('response: ' . $response);
 //                            unset($response);
                 } else {
+                    $allSave = false;
                     $this->log('sound file model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }
@@ -581,15 +589,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = Device::find()->where(['uuid' => $f['uuid']])->one();
@@ -614,8 +615,19 @@ class MtmAmqpWorker extends Worker
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('device model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }
@@ -646,15 +658,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = DeviceConfig::find()->where(['uuid' => $f['uuid']])->one();
@@ -671,8 +676,92 @@ class MtmAmqpWorker extends Worker
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('device model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadDeviceProgram()
+    {
+        $lastUpdateKey = 'device_program_download';
+        $currentDate = date('Y-m-d H:i:s');
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $httpClient = new Client();
+        $q = $this->apiServer . '/device-program?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('GET')
+            ->setUrl($q)
+            ->send();
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
+            foreach ($response->data as $f) {
+//                $this->log($f['device']);
+                $model = DeviceProgram::find()->where(['uuid' => $f['uuid']])->one();
+                if ($model == null) {
+                    $model = new DeviceProgram();
+                }
+
+                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->_id = $f['_id'];
+                $model->uuid = $f['uuid'];
+                $model->title = $f['title'];
+                $model->period_title1 = $f['period_title1'];
+                $model->value1 = $f['value1'];
+                $model->period_title2 = $f['period_title2'];
+                $model->time2 = $f['time2'];
+                $model->value2 = $f['value2'];
+                $model->period_title3 = $f['period_title3'];
+                $model->time3 = $f['time3'];
+                $model->value3 = $f['value3'];
+                $model->period_title4 = $f['period_title4'];
+                $model->time4 = $f['time4'];
+                $model->value4 = $f['value4'];
+                $model->period_title5 = $f['period_title5'];
+                $model->value5 = $f['value5'];
+                $model->changedAt = $f['createdAt'];
+                $model->changedAt = $f['changedAt'];
+
+                if (!$model->save()) {
+                    $allSave = false;
+                    $this->log('device_program model not saved: uuid' . $model->uuid);
+                    foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }
@@ -703,15 +792,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = Camera::find()->where(['uuid' => $f['uuid']])->one();
@@ -730,8 +812,19 @@ class MtmAmqpWorker extends Worker
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('camera model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }
@@ -762,15 +855,9 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = SensorChannel::find()->where(['uuid' => $f['uuid']])->one();
@@ -786,6 +873,7 @@ class MtmAmqpWorker extends Worker
                 $model->measureTypeUuid = $f['measureTypeUuid'];
 
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('sensor channel model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
                         $this->log($error);
@@ -794,6 +882,15 @@ class MtmAmqpWorker extends Worker
                     $model->createdAt = $f['createdAt'];
                     $model->changedAt = $f['changedAt'];
                     $model->save();
+                }
+            }
+
+            if ($allSave) {
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
+                        $this->log($error);
+                    }
                 }
             }
         }
@@ -822,15 +919,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = SensorConfig::find()->where(['uuid' => $f['uuid']])->one();
@@ -844,6 +934,7 @@ class MtmAmqpWorker extends Worker
                 $model->sensorChannelUuid = $f['sensorChannelUuid'];
 
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('sensor config model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
                         $this->log($error);
@@ -852,6 +943,16 @@ class MtmAmqpWorker extends Worker
                     $model->createdAt = $f['createdAt'];
                     $model->changedAt = $f['changedAt'];
                     $model->save();
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
+                        $this->log($error);
+                    }
                 }
             }
         }
@@ -880,15 +981,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = Threads::find()->where(['uuid' => $f['uuid']])->one();
@@ -911,8 +1005,19 @@ class MtmAmqpWorker extends Worker
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('thread model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }
@@ -943,15 +1048,9 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = DeviceType::findOne($f['_id']);
@@ -966,8 +1065,18 @@ class MtmAmqpWorker extends Worker
                 $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('deviceType model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }
@@ -998,15 +1107,8 @@ class MtmAmqpWorker extends Worker
             ->setMethod('GET')
             ->setUrl($q)
             ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
                 $model = DeviceStatus::findOne($f['_id']);
@@ -1021,8 +1123,19 @@ class MtmAmqpWorker extends Worker
                 $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
                 if (!$model->save()) {
+                    $allSave = false;
                     $this->log('deviceStatus model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
                         $this->log($error);
                     }
                 }

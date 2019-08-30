@@ -20,7 +20,11 @@ use yii\db\Expression;
  * @property double $longitude
  * @property double $latitude
  *
- * @property ActiveQuery $deviceStatus
+ * @property DeviceStatus $deviceStatus
+ * @property int $lastDate
+ * @property bool $security
+ * @property string $phone
+ * @property string $software
  */
 class Node extends ActiveRecord
 {

@@ -14,7 +14,6 @@ use yii\web\IdentityInterface;
  *
  * @property integer $_id
  * @property string $uuid
- * @property string $oid идентификатор организации
  * @property string $username
  * @property string $password_hash
  * @property string $password_reset_token
@@ -31,7 +30,6 @@ use yii\web\IdentityInterface;
  * @property string $whoIs
  * @property string $contact
  * @property string $image
- * @property boolean $deleted
  *
  * @property string $photoUrl
  * @property null|string $imageDir
