@@ -596,12 +596,11 @@ class MtmAmqpWorker extends Worker
                 $model = Device::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new Device();
-                    $model->_id = $f['_id'];
-                    $model->uuid = $f['uuid'];
-                    $model->createdAt = $f['createdAt'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->_id = $f['_id'];
+                $model->uuid = $f['uuid'];
                 $model->nodeUuid = $f['nodeUuid'];
                 $model->address = $f['address'];
                 $model->deviceTypeUuid = $f['deviceTypeUuid']; // нужно засасывать? нужно. реализовать
@@ -612,6 +611,7 @@ class MtmAmqpWorker extends Worker
                 $model->port = $f['port'];
                 $model->object = $f['objectUuid'];
                 $model->number = 0;
+                $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
@@ -665,14 +665,14 @@ class MtmAmqpWorker extends Worker
                 $model = DeviceConfig::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new DeviceConfig();
-                    $model->uuid = $f['uuid'];
-                    $model->createdAt = $f['createdAt'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
                 $model->deviceUuid = $f['deviceUuid'];
                 $model->parameter = $f['parameter'];
                 $model->value = $f['value'];
+                $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
@@ -799,16 +799,16 @@ class MtmAmqpWorker extends Worker
                 $model = Camera::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new Camera();
-                    $model->_id = $f['_id'];
-                    $model->uuid = $f['uuid'];
-                    $model->createdAt = $f['createdAt'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->_id = $f['_id'];
+                $model->uuid = $f['uuid'];
                 $model->title = $f['title'];
                 $model->deviceStatusUuid = $f['deviceStatusUuid'];
                 $model->nodeUuid = $f['nodeUuid'];
                 $model->address = $f['address'];
+                $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
@@ -863,14 +863,16 @@ class MtmAmqpWorker extends Worker
                 $model = SensorChannel::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new SensorChannel();
-                    $model->uuid = $f['uuid'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
                 $model->title = $f['title'];
                 $model->register = $f['register'];
                 $model->deviceUuid = $f['deviceUuid'];
                 $model->measureTypeUuid = $f['measureTypeUuid'];
+                $model->createdAt = $f['createdAt'];
+                $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
                     $allSave = false;
@@ -878,10 +880,6 @@ class MtmAmqpWorker extends Worker
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
-                } else {
-                    $model->createdAt = $f['createdAt'];
-                    $model->changedAt = $f['changedAt'];
-                    $model->save();
                 }
             }
 
@@ -926,12 +924,14 @@ class MtmAmqpWorker extends Worker
                 $model = SensorConfig::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new SensorConfig();
-                    $model->uuid = $f['uuid'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
                 $model->config = $f['config'];
                 $model->sensorChannelUuid = $f['sensorChannelUuid'];
+                $model->createdAt = $f['createdAt'];
+                $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
                     $allSave = false;
@@ -939,10 +939,6 @@ class MtmAmqpWorker extends Worker
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
-                } else {
-                    $model->createdAt = $f['createdAt'];
-                    $model->changedAt = $f['changedAt'];
-                    $model->save();
                 }
             }
 
@@ -988,10 +984,10 @@ class MtmAmqpWorker extends Worker
                 $model = Threads::find()->where(['uuid' => $f['uuid']])->one();
                 if ($model == null) {
                     $model = new Threads();
-                    $model->uuid = $f['uuid'];
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
                 $model->title = $f['title'];
                 $model->deviceUuid = $f['deviceUuid'];
                 $model->port = $f['port'];
@@ -1002,6 +998,7 @@ class MtmAmqpWorker extends Worker
                 $model->deviceTypeUuid = $f['deviceTypeUuid'];
                 $model->c_time = $f['c_time'];
                 $model->message = $f['message'];
+                $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
