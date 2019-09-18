@@ -22,6 +22,7 @@ class DeviceStatus extends ActiveRecord
     const WORK = "E681926C-F4A3-44BD-9F96-F0493712798D";
     const NOT_WORK = "D5D31037-6640-4A8B-8385-355FC71DEBD7";
     const UNKNOWN = "ED20012C-629A-4275-9BFA-A81D08B45758";
+    const NOT_LINK = "67CE3FE0-B72D-453E-A5F7-1B5ACA653F00";
 
     public function behaviors()
     {

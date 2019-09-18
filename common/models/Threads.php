@@ -57,7 +57,7 @@ class Threads extends MtmActiveRecord
     public function rules()
     {
         return [
-            [['uuid', 'title', 'deviceTypeUuid'], 'required'],
+            [['uuid', 'title', 'deviceTypeUuid', 'deviceUuid'], 'required'],
             [['c_time', 'message', 'createdAt', 'changedAt'], 'safe'],
             [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [['speed', 'status', 'work'], 'integer'],

@@ -31,12 +31,11 @@ $gridColumns = [
         'width' => '180px',
         'mergeHeader' => true,
         'filterType' => GridView::FILTER_SELECT2,
-        'header' => 'Порт',
+        'header' => 'Название',
         'filterInputOptions' => ['placeholder' => 'Любой'],
         'format' => 'raw',
     ],
     [
-        'class' => 'kartik\grid\EditableColumn',
         'attribute' => 'deviceTypeUuid',
         'hAlign' => 'center',
         'vAlign' => 'middle',
@@ -46,19 +45,6 @@ $gridColumns = [
         'filterType' => GridView::FILTER_SELECT2,
         'header' => 'Тип',
         'format' => 'raw',
-        'contentOptions' => [
-            'class' => 'table_class'
-        ],
-        'editableOptions' => function ($model, $key, $index, $widget) {
-            $models = ArrayHelper::map(DeviceType::find()->orderBy('title')->all(), 'uuid', 'title');
-            return [
-                'header' => 'Тип оборудования',
-                'size' => 'lg',
-                'inputType' => Editable::INPUT_DROPDOWN_LIST,
-                'displayValueConfig' => $models,
-                'data' => $models
-            ];
-        },
     ],
     [
         'attribute' => 'deviceUuid',
