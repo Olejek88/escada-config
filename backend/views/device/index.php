@@ -101,6 +101,8 @@ $gridColumns = [
                     $color = 'background-color: lightred';
                 if ($stat['uuid'] == DeviceStatus::WORK)
                     $color = 'background-color: green';
+                if ($stat['uuid'] == DeviceStatus::NOT_LINK)
+                    $color = 'background-color: red';
                 $list[$stat['uuid']] = $stat['title'];
                 $status[$stat['uuid']] = "<span class='badge' style='" . $color . "; height: 12px; margin-top: -3px'> </span>&nbsp;" .
                     $stat['title'];
