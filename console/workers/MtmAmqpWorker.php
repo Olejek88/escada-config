@@ -126,6 +126,8 @@ class MtmAmqpWorker extends Worker
         $checkSoundFile = 0;
         $checkChannels = 0;
         $checkData = 0;
+        $checkLightLink = 0;
+        $checkLightLinkRate = 30;
 
         // проверяем наличие информации о шкафе
         $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
@@ -184,6 +186,48 @@ class MtmAmqpWorker extends Worker
 //                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
 //                }
 //            }
+
+            // таймаут задаётся в секундах
+            $linkTimeOut = 60;
+            // работа со статусами светильников
+            if ($checkLightLink + $checkLightLinkRate < time()) {
+                $checkLightLink = time();
+                // для всех светильников от которых не было пакетов со статусом более $linkTimeOut секунд,
+                // а статус был "В порядке", устанавливаем статус "Нет связи"
+                $db = Yii::$app->db;
+                $inParam = [];
+                $inParamSql = $db->getQueryBuilder()->buildCondition(['IN', 'device.deviceTypeUuid', [
+                    DeviceType::DEVICE_LIGHT,
+                    DeviceType::DEVICE_ZB_COORDINATOR
+                ]], $inParam);
+                $params = [
+                    ':timeOut' => $linkTimeOut,
+                    ':noLinkUuid' => DeviceStatus::NOT_LINK,
+                    ':workUuid' => DeviceStatus::WORK,
+                ];
+                $params = array_merge($params, $inParam);
+                $command = $db->createCommand("UPDATE device set deviceStatusUuid=:noLinkUuid, changedAt=current_timestamp() where
+                                                     device.uuid in (SELECT sct.deviceUuid FROM sensor_channel as sct
+                                                         LEFT JOIN data as mt on mt.sensorChannelUuid=sct.uuid
+                                                     WHERE (timestampdiff(second,  mt.changedAt, current_timestamp()) > :timeOut OR mt.changedAt IS NULL)
+                                                     group by sct.deviceUuid)
+                                                 AND $inParamSql
+                                                 AND device.deviceStatusUuid=:workUuid", $params);
+//                $this->log('upd query: ' . $command->rawSql);
+                $command->execute();
+
+                // для всех светильников от которых были получены пакеты со статусом менее 30 секунд назад,
+                // а статус был "Нет связи", устанавливаем статус "В порядке"
+                $command = $db->createCommand("UPDATE device set deviceStatusUuid=:workUuid, changedAt=current_timestamp() where
+                                                     device.uuid in (SELECT sct.deviceUuid FROM sensor_channel as sct
+                                                         LEFT JOIN data as mt on mt.sensorChannelUuid=sct.uuid
+                                                     WHERE (timestampdiff(second,  mt.changedAt, current_timestamp()) < :timeOut)
+                                                     group by sct.deviceUuid)
+                                                 AND $inParamSql
+                                                 AND device.deviceStatusUuid=:noLinkUuid", $params);
+//                $this->log('upd query: ' . $command->rawSql);
+                $command->execute();
+            }
 
             // проверяем наличие новых или обновлённых звуковых файлов на сервере
             if ($checkSoundFile + 10 < time()) {

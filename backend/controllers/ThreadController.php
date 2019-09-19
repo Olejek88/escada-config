@@ -126,6 +126,12 @@ class ThreadController extends Controller
         $model = new Threads();
 
         if ($model->load(Yii::$app->request->post())) {
+            if ($model->validate('deviceUuid')) {
+                $model->deviceTypeUuid = $model->device->deviceType->uuid;
+            } else {
+                return $this->render('create', ['model' => $model]);
+            }
+
             // проверяем все поля, если что-то не так показываем форму с ошибками
             if (!$model->validate()) {
                 echo json_encode($model->errors);
