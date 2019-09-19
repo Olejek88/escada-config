@@ -41,8 +41,8 @@ class m190824_175846_add_light_program extends Migration
             'period_title5' => $this->string(45)->notNull()->defaultValue('Утренние сумерки')
                 ->comment('Начало утренних сумерек. Период с утренних сумерек до восхода.'),
             'value5' => $this->integer()->defaultValue(0),
-            'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->dateTime()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
 
         $this->createIndex('title', self::DEVICE_PROGRAM, ['title'], true);
