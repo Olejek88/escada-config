@@ -239,6 +239,24 @@ class MtmAmqpWorker extends Worker
 //                $this->log('upd query: ' . $command->rawSql);
                 $command->execute();
 
+                // отправляем на сервер свой локальный адрес
+                $command = "/sbin/ifconfig eth0 | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
+                $localIP = exec($command);
+                $httpClient = new Client();
+                $q = $this->apiServer . '/node/address?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl($q)
+                    ->setData([
+                        'oid' => $this->organizationId,
+                        'nid' => $this->nodeId,
+                        'addr' => $localIP,
+                    ])
+                    ->send();
+                if (!$response->isOk) {
+                    // TODO: уведомление о том что не удалось отправить адрес
+                }
             }
 
             // проверяем наличие новых или обновлённых звуковых файлов на сервере
