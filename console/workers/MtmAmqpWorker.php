@@ -227,6 +227,18 @@ class MtmAmqpWorker extends Worker
                                                  AND device.deviceStatusUuid=:noLinkUuid", $params);
 //                $this->log('upd query: ' . $command->rawSql);
                 $command->execute();
+
+                // для всех устройств у которых нет каналов измерения (светильники zb, координатор) ставим нет связи
+                unset($params[':timeOut']);
+                $command = $db->createCommand("UPDATE device set deviceStatusUuid=:noLinkUuid, changedAt=current_timestamp()
+                                                     WHERE device.uuid NOT IN (
+                                                         SELECT sct.deviceUuid FROM sensor_channel AS sct GROUP BY sct.deviceUuid
+                                                         )
+                                                 AND $inParamSql
+                                                 AND device.deviceStatusUuid=:workUuid", $params);
+//                $this->log('upd query: ' . $command->rawSql);
+                $command->execute();
+
             }
 
             // проверяем наличие новых или обновлённых звуковых файлов на сервере
@@ -895,6 +907,7 @@ class MtmAmqpWorker extends Worker
         $httpClient = new Client();
         $q = $this->apiServer . '/sensor-channel?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
 //                $this->log($q);
+//        $q .= '&XDEBUG_SESSION_START=xdebug';
         $response = $httpClient->createRequest()
             ->setMethod('GET')
             ->setUrl($q)
