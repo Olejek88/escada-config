@@ -54,6 +54,8 @@ class MtmAmqpWorker extends Worker
     private $apiServer;
     private $fileServer;
 
+    private $needReconnect;
+
     public function handler($signo)
     {
         $this->log('call handler... ' . $signo);
@@ -98,12 +100,7 @@ class MtmAmqpWorker extends Worker
                 $params['amqpServer']['port'],
                 $params['amqpServer']['user'],
                 $params['amqpServer']['password']);
-
-            $this->channel = $this->connection->channel();
-            $this->channel->exchange_declare(self::EXCHANGE, 'direct', false, true, false);
-            $this->channel->queue_declare($this->nodeQueueName, false, true, false, false);
-            $this->channel->queue_bind($this->nodeQueueName, self::EXCHANGE, $this->nodeRoute);
-            $this->channel->basic_consume($this->nodeQueueName, '', false, false, false, false, [&$this, 'callback']);
+            $this->setupChannel();
         } catch (Exception $e) {
             $this->log($e->getMessage());
             $this->log('init not complete');
@@ -114,7 +111,18 @@ class MtmAmqpWorker extends Worker
         pcntl_signal(SIGTERM, [&$this, 'handler']);
         pcntl_signal(SIGINT, [&$this, 'handler']);
 
+        $this->needReconnect = false;
+
         $this->log('init complete');
+    }
+
+    private function setupChannel()
+    {
+        $this->channel = $this->connection->channel();
+        $this->channel->exchange_declare(self::EXCHANGE, 'direct', false, true, false);
+        $this->channel->queue_declare($this->nodeQueueName, false, true, false, false);
+        $this->channel->queue_bind($this->nodeQueueName, self::EXCHANGE, $this->nodeRoute);
+        $this->channel->basic_consume($this->nodeQueueName, '', false, false, false, false, [&$this, 'callback']);
     }
 
 
@@ -126,8 +134,8 @@ class MtmAmqpWorker extends Worker
         $checkSoundFile = 0;
         $checkChannels = 0;
         $checkData = 0;
-        $checkLightLink = 0;
-        $checkLightLinkRate = 30;
+//        $checkLightLink = 0;
+//        $checkLightLinkRate = 30;
 
         // проверяем наличие информации о шкафе
         $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
@@ -146,23 +154,41 @@ class MtmAmqpWorker extends Worker
 
         $this->log('run...');
         while ($this->run) {
+
+            if ($this->needReconnect) {
+                $this->log('Amqp connection lost... try reconnect...');
+                try {
+                    $this->connection->reconnect();
+                    $this->log('reconnect successful');
+                    $this->setupChannel();
+                    $this->needReconnect = false;
+                } catch (Exception $e) {
+                    $this->log('Exception (reconnect): ' . $e->getMessage());
+                }
+            }
+
 //            $this->log('tick...');
             // TODO: придумать механизм который позволит выбирать все сообщения в очереди, а не по одному с задержкой в секунду
             try {
-                if (count($this->channel->callbacks)) {
+                $count = count($this->channel->callbacks);
+//                $this->log('callbacks count = ' . $count);
+                if ($count > 0) {
 //                    $this->log('wait for message...');
                     $this->channel->wait(null, true);
 //                    $this->log('end wait...');
                 }
             } catch (ErrorException $e) {
-                $this->log($e->getMessage());
-                return;
+                $this->log('ErrorException: ' . $e->getMessage());
+                $this->needReconnect = true;
+//                return;
             } catch (AMQPTimeoutException $e) {
-                $this->log($e->getMessage());
-                return;
+                $this->log('AMQPTimeoutException: ' . $e->getMessage());
+                $this->needReconnect = true;
+//                return;
             } catch (Exception $e) {
-                $this->log($e->getMessage());
-                return;
+                $this->log('Exception: ' . $e->getMessage());
+                $this->needReconnect = true;
+//                return;
             }
 
 //            $answers = LightAnswer::find()->where(['is', 'dateOut', new Expression('null')])->all();
@@ -263,8 +289,12 @@ class MtmAmqpWorker extends Worker
         }
 
         if ($this->connection != null) {
-            $this->channel->close();
-            $this->connection->close();
+            try {
+                $this->channel->close();
+                $this->connection->close();
+            } catch (Exception $e) {
+                $this->log('Stop worker: ' . $e->getMessage());
+            }
         }
 
         $this->log('finish...');
