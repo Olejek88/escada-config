@@ -2,8 +2,10 @@
 
 namespace common\models;
 
+use common\components\MtmActiveRecord;
+use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveQuery;
-use yii\db\ActiveRecord;
+use yii\db\Expression;
 
 /**
  * This is the model class for table "node_control".
@@ -18,7 +20,7 @@ use yii\db\ActiveRecord;
  *
  * @property Node $node
  */
-class NodeControl extends ActiveRecord
+class NodeControl extends MtmActiveRecord
 {
     /**
      * {@inheritdoc}
@@ -29,6 +31,25 @@ class NodeControl extends ActiveRecord
     }
 
     /**
+     * Behaviors.
+     *
+     * @return array
+     */
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::class,
+                'createdAtAttribute' => 'createdAt',
+                'updatedAtAttribute' => 'changedAt',
+                'value' => function () {
+                    return $this->scenario == self::SCENARIO_CUSTOM_UPDATE ? $this->changedAt : new Expression('NOW()');
+                },
+            ],
+        ];
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
@@ -36,6 +57,7 @@ class NodeControl extends ActiveRecord
         return [
             [['uuid', 'nodeUuid', 'type'], 'required'],
             [['date', 'createdAt', 'changedAt'], 'safe'],
+            [['changedAt'], 'string', 'on' => self::SCENARIO_CUSTOM_UPDATE],
             [['type'], 'integer'],
             [['uuid', 'nodeUuid'], 'string', 'max' => 45],
             [['uuid'], 'unique'],

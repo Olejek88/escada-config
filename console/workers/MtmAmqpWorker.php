@@ -10,10 +10,13 @@ use common\models\DeviceProgram;
 use common\models\DeviceRegister;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
+use common\models\Group;
+use common\models\GroupControl;
 use common\models\LastUpdate;
 use common\models\LightMessage;
 use common\models\Measure;
 use common\models\Node;
+use common\models\NodeControl;
 use common\models\SensorChannel;
 use common\models\SensorConfig;
 use common\models\SoundFile;
@@ -281,6 +284,15 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkNode');
                 $this->downloadNode();
+
+//                $this->log('checkNodeControl');
+                $this->downloadNodeControl();
+
+//                $this->log('checkGroup');
+                $this->downloadGroup();
+
+//                $this->log('checkGroupControl');
+                $this->downloadGroupControl();
             }
 
 
@@ -1534,6 +1546,187 @@ class MtmAmqpWorker extends Worker
                 $this->log('Last update date not saved');
                 foreach ($lastUpdateModel->errors as $error) {
                     $this->log($error);
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadNodeControl()
+    {
+        $lastUpdateKey = 'node_control_download';
+        $currentDate = date('Y-m-d H:i:s');
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $httpClient = new Client();
+        $q = $this->apiServer . '/node-control?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('GET')
+            ->setUrl($q)
+            ->send();
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
+            foreach ($response->data as $f) {
+                $model = NodeControl::find()->where(['uuid' => $f['uuid']])->one();
+                if ($model == null) {
+                    $model = new NodeControl();
+                }
+
+                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
+                $model->nodeUuid = $f['nodeUuid'];
+                $model->date = $f['date'];
+                $model->type = $f['type'];
+                $model->createdAt = $f['createdAt'];
+                $model->changedAt = $f['changedAt'];
+
+                if (!$model->save()) {
+                    $allSave = false;
+                    $this->log('group control model not saved: uuid' . $model->uuid);
+                    foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadGroup()
+    {
+        $lastUpdateKey = 'group_download';
+        $currentDate = date('Y-m-d H:i:s');
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $httpClient = new Client();
+        $q = $this->apiServer . '/group?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('GET')
+            ->setUrl($q)
+            ->send();
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
+            foreach ($response->data as $f) {
+                $model = Group::find()->where(['uuid' => $f['uuid']])->one();
+                if ($model == null) {
+                    $model = new Group();
+                }
+
+                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
+                $model->title = $f['title'];
+                $model->groupId = $f['groupId'];
+                $model->deviceProgramUuid = $f['deviceProgramUuid'];
+                $model->createdAt = $f['createdAt'];
+                $model->changedAt = $f['changedAt'];
+
+                if (!$model->save()) {
+                    $allSave = false;
+                    $this->log('group model not saved: uuid' . $model->uuid);
+                    foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadGroupControl()
+    {
+        $lastUpdateKey = 'group_control_download';
+        $currentDate = date('Y-m-d H:i:s');
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        if ($lastUpdateModel == null) {
+            $lastUpdateModel = new LastUpdate();
+            $lastUpdateModel->entityName = $lastUpdateKey;
+            $lastUpdateModel->date = '0000-00-00 00:00:00';
+        }
+
+        $lastDate = $lastUpdateModel->date;
+        $httpClient = new Client();
+        $q = $this->apiServer . '/group-control?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
+//                $this->log($q);
+        $response = $httpClient->createRequest()
+            ->setMethod('GET')
+            ->setUrl($q)
+            ->send();
+        if ($response->isOk && count($response->data) > 0) {
+            $allSave = true;
+            foreach ($response->data as $f) {
+                $model = GroupControl::find()->where(['uuid' => $f['uuid']])->one();
+                if ($model == null) {
+                    $model = new groupControl();
+                }
+
+                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                $model->uuid = $f['uuid'];
+                $model->groupUuid = $f['groupUuid'];
+                $model->date = $f['date'];
+                $model->type = $f['type'];
+                $model->deviceProgramUuid = $f['deviceProgramUuid'];
+                $model->createdAt = $f['createdAt'];
+                $model->changedAt = $f['changedAt'];
+
+                if (!$model->save()) {
+                    $allSave = false;
+                    $this->log('sensor config model not saved: uuid' . $model->uuid);
+                    foreach ($model->errors as $error) {
+                        $this->log($error);
+                    }
+                }
+            }
+
+            if ($allSave) {
+                $lastUpdateModel->date = $currentDate;
+                if (!$lastUpdateModel->save()) {
+                    $this->log('Last update date not saved');
+                    foreach ($lastUpdateModel->errors as $error) {
+                        $this->log($error);
+                    }
                 }
             }
         }
