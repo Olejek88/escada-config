@@ -33,6 +33,7 @@ use yii\db\Expression;
  *
  * @property DeviceStatus $deviceStatus
  * @property Node $node
+ * @property string $fullTitle
  * @property DeviceType $deviceType
  */
 class Device extends MtmActiveRecord
