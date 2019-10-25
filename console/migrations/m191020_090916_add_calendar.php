@@ -27,8 +27,8 @@ class m191020_090916_add_calendar extends Migration
             'title' => $this->string(100)->notNull(),
             'groupId' => $this->integer()->notNull(),
             'deviceProgramUuid' => $this->string(45)->null(),
-            'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->dateTime()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
 
         // добавляем связь с программой управления
@@ -49,8 +49,8 @@ class m191020_090916_add_calendar extends Migration
             'date' => $this->dateTime()->defaultValue('0000-00-00 00:00:00')->notNull(),
             'type' => $this->integer()->notNull(),
             'deviceProgramUuid' => $this->string(45)->null(),
-            'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->dateTime()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
 
         // добавляем связь с программой управления
@@ -70,8 +70,8 @@ class m191020_090916_add_calendar extends Migration
             'nodeUuid' => $this->string(45)->notNull(),
             'date' => $this->dateTime()->notNull()->defaultValue('0000-00-00 00:00:00'),
             'type' => $this->integer()->notNull(),
-            'createdAt' => $this->dateTime()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->dateTime()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
+            'changedAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
         ], $tableOptions);
 
         // создаём уникальный ключ для связки nodeUuid, date, type для того чтобы
