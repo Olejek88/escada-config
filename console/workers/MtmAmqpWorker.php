@@ -655,6 +655,7 @@ class MtmAmqpWorker extends Worker
                 $model->port = $f['port'];
                 $model->object = $f['objectUuid'];
                 $model->number = 0;
+                $model->linkTimeout = $f['linkTimeout'];;
                 $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
 
