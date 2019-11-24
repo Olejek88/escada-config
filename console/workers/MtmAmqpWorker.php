@@ -139,6 +139,8 @@ class MtmAmqpWorker extends Worker
         $checkData = 0;
 //        $checkLightLink = 0;
 //        $checkLightLinkRate = 30;
+        $checkReconnectAmqp = 0;
+        $checkReconnectAmqpRate = 300;
 
         // проверяем наличие информации о шкафе
         $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
@@ -158,7 +160,8 @@ class MtmAmqpWorker extends Worker
         $this->log('run...');
         while ($this->run) {
 
-            if ($this->needReconnect) {
+            if ($this->needReconnect || $checkReconnectAmqp + $checkReconnectAmqpRate < time()) {
+                $checkReconnectAmqp = time();
                 $this->log('Amqp connection lost... try reconnect...');
                 try {
                     $this->connection->reconnect();
