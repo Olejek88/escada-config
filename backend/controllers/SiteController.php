@@ -7,7 +7,7 @@ use common\components\MainFunctions;
 use common\models\Device;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
-use common\models\Info;
+//use common\models\Info;
 use common\models\Journal;
 use common\models\LoginForm;
 use common\models\Measure;
@@ -88,7 +88,7 @@ class SiteController extends Controller
         $stat_categories = "";
         $stat_values = "";
         $stat_values2 = "";
-        $channel_power = SensorChannel::find()->where(['measureTypeUuid' => MeasureType::POWER])->one();
+        $channel_power = SensorChannel::find()->where(['measureTypeUuid' => MeasureType::POWER])->limit(1)->one();
         if ($channel_power) {
             $last_measures = Measure::find()
                 ->where(['sensorChannelUuid' => $channel_power['uuid']])
@@ -147,9 +147,8 @@ class SiteController extends Controller
         $measureSearchModel = new MeasureSearch();
         $measureDataProvider = $measureSearchModel->search(Yii::$app->request->queryParams);
 
-        $devices = Device::find()->all();
         $threads = Threads::find()->all();
-        $info = Info::find()->all();
+//        $info = Info::find()->all();
 
         $threadSearchModel = new ThreadsSearch();
         $threadDataProvider = $threadSearchModel->search(Yii::$app->request->queryParams);
@@ -188,11 +187,12 @@ class SiteController extends Controller
                     $measure = Measure::find()
                         ->where(['sensorChannelUuid' => $channel['uuid']])
                         ->orderBy('date desc')
+                        ->limit(1)
                         ->one();
                     $date = '-';
                     if (!$measure) {
                         $config = null;
-                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
+                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->limit(1)->one();
                         if ($config) {
                             $measure = Html::a('конфигурация', ['sensor-config/view', 'id' => $config['_id']]);
                             $date = $config['changedAt'];
@@ -220,12 +220,12 @@ class SiteController extends Controller
                 'stat_categories' => $stat_categories,
                 'stat_values' => $stat_values,
                 'stat_values2' => $stat_values2,
-                'last_measures' => $last_measures,
+//                'last_measures' => $last_measures,
                 'measures' => $measures,
-                'stats' => $stats,
+//                'stats' => $stats,
                 'devices' => $tree,
                 'threads' => $threads,
-                'info' => $info,
+//                'info' => $info,
                 'threadDataProvider' => $threadDataProvider,
                 'measureDataProvider' => $measureDataProvider
             ]
@@ -261,18 +261,17 @@ class SiteController extends Controller
      */
     public function actionError()
     {
-        if (\Yii::$app->getUser()->isGuest) {
+        if (Yii::$app->getUser()->isGuest) {
             Yii::$app->getResponse()->redirect("/")->send();
         } else {
             $exception = Yii::$app->errorHandler->exception;
             if ($exception !== null) {
-                $statusCode = $exception->statusCode;
-                $name = $exception->getName();
+                $statusCode = $exception->getCode();
+                $name = ''; //$exception->getName();
                 $message = $exception->getMessage();
                 return $this->render(
                     'error',
                     [
-                        'exception' => $exception,
                         'name' => $name . " " . $statusCode,
                         'message' => $message
                     ]
