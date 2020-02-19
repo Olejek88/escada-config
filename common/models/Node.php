@@ -117,6 +117,8 @@ class Node extends ActiveRecord
             'address' => Yii::t('app', 'Адрес'),
             'createdAt' => Yii::t('app', 'Создан'),
             'changedAt' => Yii::t('app', 'Изменен'),
+            'longitude' => Yii::t('app', 'Долгота'),
+            'latitude' => Yii::t('app', 'Широта'),
         ];
     }
 

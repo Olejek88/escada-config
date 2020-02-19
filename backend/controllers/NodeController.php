@@ -52,7 +52,7 @@ class NodeController extends Controller
     public function init()
     {
 
-        if (\Yii::$app->getUser()->isGuest) {
+        if (Yii::$app->getUser()->isGuest) {
             throw new UnauthorizedHttpException();
         }
 
@@ -72,12 +72,23 @@ class NodeController extends Controller
             if ($_POST['editableAttribute'] == 'address') {
                 $model['address'] = $_POST['Node'][$_POST['editableIndex']]['address'];
             }
+
             if ($_POST['editableAttribute'] == 'objectUuid') {
                 $model['objectUuid'] = $_POST['Node'][$_POST['editableIndex']]['objectUuid'];
             }
+
             if ($_POST['editableAttribute'] == 'nodeUuid') {
                 $model['nodeUuid'] = $_POST['Node'][$_POST['editableIndex']]['nodeUuid'];
             }
+
+            if ($_POST['editableAttribute'] == 'longitude') {
+                $model['longitude'] = $_POST['Node'][$_POST['editableIndex']]['longitude'];
+            }
+
+            if ($_POST['editableAttribute'] == 'latitude') {
+                $model['latitude'] = $_POST['Node'][$_POST['editableIndex']]['latitude'];
+            }
+
             $model->save();
             return json_encode('');
         }
