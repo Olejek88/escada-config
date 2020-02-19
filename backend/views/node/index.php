@@ -1,7 +1,6 @@
 <?php
 /* @var $searchModel backend\models\NodeSearch */
 
-use common\models\Operation;
 use kartik\grid\GridView;
 use yii\helpers\Html;
 
@@ -47,7 +46,35 @@ $gridColumns = [
         'content' => function ($data) {
             return $data->address;
         }
-    ]
+    ],
+    [
+        'class' => 'kartik\grid\EditableColumn',
+        'attribute' => 'longitude',
+        'hAlign' => 'center',
+        'vAlign' => 'middle',
+        'mergeHeader' => true,
+        'contentOptions' => [
+            'class' => 'table_class'
+        ],
+        'headerOptions' => ['class' => 'text-center'],
+        'content' => function ($data) {
+            return $data->longitude;
+        }
+    ],
+    [
+        'class' => 'kartik\grid\EditableColumn',
+        'attribute' => 'latitude',
+        'hAlign' => 'center',
+        'vAlign' => 'middle',
+        'mergeHeader' => true,
+        'contentOptions' => [
+            'class' => 'table_class'
+        ],
+        'headerOptions' => ['class' => 'text-center'],
+        'content' => function ($data) {
+            return $data->latitude;
+        }
+    ],
 ];
 
 echo GridView::widget([
