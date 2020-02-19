@@ -255,8 +255,12 @@ class DeviceController extends Controller
     {
         ini_set('memory_limit', '-1');
         $fullTree = array();
-        $nodes = Node::find()->all();
-        foreach ($nodes as $node) {
+        $params = Yii::$app->params;
+        $node = Node::find()->where(['_id' => $params['node']['nid']])
+            ->with(['deviceStatus'])
+            ->asArray()
+            ->one();
+        if ($node != null) {
             if ($node['deviceStatusUuid'] == DeviceStatus::NOT_MOUNTED) {
                 $class = 'critical1';
             } elseif ($node['deviceStatusUuid'] == DeviceStatus::NOT_WORK) {
@@ -264,17 +268,27 @@ class DeviceController extends Controller
             } else {
                 $class = 'critical3';
             }
+
             $fullTree['children'][] = [
-                'status' => '<div class="progress"><div class="' . $class . '">' . $node['deviceStatus']->title . '</div></div>',
+                'status' => '<div class="progress"><div class="' . $class . '">' . $node['deviceStatus']['title'] . '</div></div>',
                 'title' => 'Контроллер [' . $node['address'] . ']',
                 'register' => $node['address'],
                 'folder' => true
             ];
-            $devices = Device::find()->where(['nodeUuid' => $node['uuid']])->all();
-            if (isset($_GET['type']))
+
+            $devices = Device::find()->where(['nodeUuid' => $node['uuid']])
+                ->with(['deviceType', 'deviceStatus'])
+                ->asArray()
+                ->all();
+
+            if (isset($_GET['type'])) {
                 $devices = Device::find()->where(['nodeUuid' => $node['uuid']])
                     ->andWhere(['deviceTypeUuid' => $_GET['type']])
+                    ->with(['deviceType'])
+                    ->asArray()
                     ->all();
+            }
+
             foreach ($devices as $device) {
                 $childIdx = count($fullTree['children']) - 1;
                 if ($device['deviceStatusUuid'] == DeviceStatus::NOT_MOUNTED) {
@@ -284,26 +298,29 @@ class DeviceController extends Controller
                 } else {
                     $class = 'critical3';
                 }
+
                 $fullTree['children'][$childIdx]['children'][] = [
                     'title' => $device['deviceType']['title'],
                     'status' => '<div class="progress"><div class="'
-                        . $class . '">' . $device['deviceStatus']->title . '</div></div>',
+                        . $class . '">' . $device['deviceStatus']['title'] . '</div></div>',
                     'register' => $device['port'] . ' [' . $device['address'] . ']',
                     'measure' => '',
                     'date' => $device['last_date'],
                     'folder' => true
                 ];
-                $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->all();
+
+                $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->asArray()->all();
                 foreach ($channels as $channel) {
                     $childIdx2 = count($fullTree['children'][$childIdx]['children']) - 1;
                     $measure = Measure::find()
                         ->where(['sensorChannelUuid' => $channel['uuid']])
                         ->orderBy('date desc')
+                        ->limit(1)
                         ->one();
                     $date = '-';
-                    if (!$measure) {
+                    if ($measure == null) {
                         $config = null;
-                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->one();
+                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->limit(1)->one();
                         if ($config) {
                             $measure = Html::a('конфигурация', ['sensor-config/view', 'id' => $config['_id']]);
                             $date = $config['changedAt'];
@@ -312,6 +329,7 @@ class DeviceController extends Controller
                         $date = $measure['date'];
                         $measure = $measure['value'];
                     }
+
                     $fullTree['children'][$childIdx]['children'][$childIdx2]['children'][] = [
                         'title' => $channel['title'],
                         'register' => $channel['register'],

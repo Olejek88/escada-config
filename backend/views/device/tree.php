@@ -70,101 +70,101 @@ echo FancytreeWidget::widget([
 				data.otherNode.moveTo(node, data.hitMode);
 			}'),
         ],
-        'contextMenu' => [
-            'menu' => [
-                'new' => [
-                    'name' => 'Добавить новое',
-                    'icon' => 'add',
-                    'callback' => new JsExpression('function(key, opt) {
-                        var node = $.ui.fancytree.getNode(opt.$trigger);
-                        if (node.folder==true) {
-                            $.ajax({
-                                url: "new",
-                                type: "post",
-                                data: {
-                                    selected_node: node.key,
-                                    folder: node.folder,
-                                    uuid: node.data.uuid,
-                                    type: node.type,
-                                    model_uuid: node.data.model_uuid,
-                                    type_uuid: node.data.type_uuid                                                                        
-                                },
-                                success: function (data) { 
-                                    $(\'#modalAddEquipment\').modal(\'show\');
-                                    $(\'#modalContentEquipment\').html(data);
-                                }
-                           }); 
-                        }                        
-                    }')
-                ],
-                'edit' => [
-                    'name' => 'Редактировать',
-                    'icon' => 'edit',
-                    'callback' => new JsExpression('function(key, opt) {
-                        var node = $.ui.fancytree.getNode(opt.$trigger);
-                            $.ajax({
-                                url: "edit",
-                                type: "post",
-                                data: {
-                                    selected_node: node.key,
-                                    folder: node.folder,
-                                    uuid: node.data.uuid,
-                                    type: node.type,
-                                    model_uuid: node.data.model_uuid,
-                                    type_uuid: node.data.type_uuid,
-                                    reference: "equipment"                                                                        
-                                },
-                                success: function (data) { 
-                                    $(\'#modalAddEquipment\').modal(\'show\');
-                                    $(\'#modalContentEquipment\').html(data);
-                                }
-                           }); 
-                    }')
-                ],
-                'doc' => [
-                    'name' => 'Добавить документацию',
-                    'icon' => 'add',
-                    'callback' => new JsExpression('function(key, opt) {
-                            var node = $.ui.fancytree.getNode(opt.$trigger);
-                            $.ajax({
-                                url: "../documentation/add",
-                                type: "post",
-                                data: {
-                                    selected_node: node.key,
-                                    folder: node.folder,
-                                    uuid: node.data.uuid,
-                                    model_uuid: node.data.model_uuid                                    
-                                },
-                                success: function (data) { 
-                                    $(\'#modalAddDocumentation\').modal(\'show\');
-                                    $(\'#modalContent\').html(data);
-                                }
-                            });
-                    }')
-                ],
-                'defect' => [
-                    'name' => 'Добавить дефект',
-                    'icon' => 'add',
-                    'callback' => new JsExpression('function(key, opt) {
-                            var node = $.ui.fancytree.getNode(opt.$trigger);
-                            $.ajax({
-                                url: "../defect/add",
-                                type: "post",
-                                data: {
-                                    selected_node: node.key,
-                                    folder: node.folder,
-                                    uuid: node.data.uuid,
-                                    model_uuid: node.data.model_uuid                                    
-                                },
-                                success: function (data) { 
-                                    $(\'#modalAddDefect\').modal(\'show\');
-                                    $(\'#modalContentDefect\').html(data);
-                                }
-                            });
-                    }')
-                ]
-            ]
-        ],
+//        'contextMenu' => [
+//            'menu' => [
+//                'new' => [
+//                    'name' => 'Добавить новое',
+//                    'icon' => 'add',
+//                    'callback' => new JsExpression('function(key, opt) {
+//                        var node = $.ui.fancytree.getNode(opt.$trigger);
+//                        if (node.folder==true) {
+//                            $.ajax({
+//                                url: "new",
+//                                type: "post",
+//                                data: {
+//                                    selected_node: node.key,
+//                                    folder: node.folder,
+//                                    uuid: node.data.uuid,
+//                                    type: node.type,
+//                                    model_uuid: node.data.model_uuid,
+//                                    type_uuid: node.data.type_uuid
+//                                },
+//                                success: function (data) {
+//                                    $(\'#modalAddEquipment\').modal(\'show\');
+//                                    $(\'#modalContentEquipment\').html(data);
+//                                }
+//                           });
+//                        }
+//                    }')
+//                ],
+//                'edit' => [
+//                    'name' => 'Редактировать',
+//                    'icon' => 'edit',
+//                    'callback' => new JsExpression('function(key, opt) {
+//                        var node = $.ui.fancytree.getNode(opt.$trigger);
+//                            $.ajax({
+//                                url: "edit",
+//                                type: "post",
+//                                data: {
+//                                    selected_node: node.key,
+//                                    folder: node.folder,
+//                                    uuid: node.data.uuid,
+//                                    type: node.type,
+//                                    model_uuid: node.data.model_uuid,
+//                                    type_uuid: node.data.type_uuid,
+//                                    reference: "equipment"
+//                                },
+//                                success: function (data) {
+//                                    $(\'#modalAddEquipment\').modal(\'show\');
+//                                    $(\'#modalContentEquipment\').html(data);
+//                                }
+//                           });
+//                    }')
+//                ],
+//                'doc' => [
+//                    'name' => 'Добавить документацию',
+//                    'icon' => 'add',
+//                    'callback' => new JsExpression('function(key, opt) {
+//                            var node = $.ui.fancytree.getNode(opt.$trigger);
+//                            $.ajax({
+//                                url: "../documentation/add",
+//                                type: "post",
+//                                data: {
+//                                    selected_node: node.key,
+//                                    folder: node.folder,
+//                                    uuid: node.data.uuid,
+//                                    model_uuid: node.data.model_uuid
+//                                },
+//                                success: function (data) {
+//                                    $(\'#modalAddDocumentation\').modal(\'show\');
+//                                    $(\'#modalContent\').html(data);
+//                                }
+//                            });
+//                    }')
+//                ],
+//                'defect' => [
+//                    'name' => 'Добавить дефект',
+//                    'icon' => 'add',
+//                    'callback' => new JsExpression('function(key, opt) {
+//                            var node = $.ui.fancytree.getNode(opt.$trigger);
+//                            $.ajax({
+//                                url: "../defect/add",
+//                                type: "post",
+//                                data: {
+//                                    selected_node: node.key,
+//                                    folder: node.folder,
+//                                    uuid: node.data.uuid,
+//                                    model_uuid: node.data.model_uuid
+//                                },
+//                                success: function (data) {
+//                                    $(\'#modalAddDefect\').modal(\'show\');
+//                                    $(\'#modalContentDefect\').html(data);
+//                                }
+//                            });
+//                    }')
+//                ]
+//            ]
+//        ],
         'table' => [
             'indentation' => 20,
             "titleColumnIdx" => "1",
