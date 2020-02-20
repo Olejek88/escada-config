@@ -63,7 +63,7 @@ class m200220_153757_create_indexes extends Migration
         $this->createIndex('createdAt-idx', 'device_type', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device_type', ['changedAt']);
 
-        $this->db->createCommand("alter table group modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
+        $this->db->createCommand("ALTER TABLE `group` MODIFY createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, MODIFY changedAt TIMESTAMP DEFAULT '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'group', ['createdAt']);
         $this->createIndex('changedAt-idx', 'group', ['changedAt']);
         $this->createIndex('title-idx', 'group', ['title']);
