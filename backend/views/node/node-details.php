@@ -5,9 +5,7 @@ use common\models\Node;
 
 /* @var $model Node */
 
-$equipment = Device::find()
-    ->where(['uuid' => $model['uuid']])
-    ->one();
+$equipment = Device::find()->where(['uuid' => $model['uuid']])->limit(1)->one();
 $models = Device::findOne($model['_id']);
 
 ?>

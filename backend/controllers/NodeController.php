@@ -68,6 +68,7 @@ class NodeController extends Controller
         if (isset($_POST['editableAttribute'])) {
             $model = Node::find()
                 ->where(['_id' => $_POST['editableKey']])
+                ->limit(1)
                 ->one();
             if ($_POST['editableAttribute'] == 'address') {
                 $model['address'] = $_POST['Node'][$_POST['editableIndex']]['address'];
@@ -261,6 +262,7 @@ class NodeController extends Controller
                     ->select('*')
                     ->where(['objectUuid' => $equipment['uuid']])
                     ->orderBy('createdAt DESC')
+                    ->limit(1)
                     ->one();
                 if ($photo) {
                     $fullTree[$oCnt0][$c][$oCnt1]['photo_date'] = $photo['createdAt'];
@@ -314,10 +316,10 @@ class NodeController extends Controller
             $houses = Stat::find()->select('uuid,number')->where(['streetUuid' => $street['uuid']])->
             orderBy('number')->all();
             foreach ($houses as $house) {
-                $user_house = UserHouse::find()->select('_id')->where(['houseUuid' => $house['uuid']])->one();
+                $user_house = UserHouse::find()->select('_id')->where(['houseUuid' => $house['uuid']])->limit(1)->one();
                 $user = Users::find()->where(['uuid' =>
-                    UserHouse::find()->where(['houseUuid' => $house['uuid']])->one()
-                ])->one();
+                    UserHouse::find()->where(['houseUuid' => $house['uuid']])->limit(1)->one()
+                ])->limit(1)->one();
                 $flats = Protocols::find()->select('uuid,number')->where(['houseUuid' => $house['uuid']])->all();
                 foreach ($flats as $flat) {
                     $house_count++;
@@ -374,6 +376,7 @@ class NodeController extends Controller
                             ->select('*')
                             ->orderBy('date DESC')
                             ->where(['flatUuid' => $equipment['flat']['uuid']])
+                            ->limit(1)
                             ->one();
                         if ($message != null) {
                             $fullTree[$oCnt0][$c][$oCnt1]['message'] =
@@ -387,6 +390,7 @@ class NodeController extends Controller
                             ->select('*')
                             ->where(['objectuid' => $equipment['uuid']])
                             ->orderBy('createdAt DESC')
+                            ->limit(1)
                             ->one();
                         if ($photo) {
                             $fullTree[$oCnt0][$c][$oCnt1]['photo_date'] = $photo['createdAt'];
@@ -528,6 +532,7 @@ class NodeController extends Controller
                             ->select('*')
                             ->orderBy('date DESC')
                             ->where(['flatUuid' => $equipment['flat']['uuid']])
+                            ->limit(1)
                             ->one();
                         if ($message != null) {
                             $fullTree[$oCnt0]['message'] =

@@ -288,6 +288,7 @@ class User extends ActiveRecord implements IdentityInterface
                 ['or', ['username' => $login], ['email' => $login]],
                 'status' => self::STATUS_ACTIVE,
             ])
+            ->limit(1)
             ->one();
     }
 

@@ -53,6 +53,7 @@ class MainFunctions
         $currentUser = User::find()
             ->where(['_id' => $accountUser['id']])
             ->asArray()
+            ->limit(1)
             ->one();
         $journal = new Journal();
         $journal->userUuid = $currentUser['uuid'];

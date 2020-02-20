@@ -65,6 +65,7 @@ class OrganisationController extends ControllerAlias
         if (isset($_POST['editableAttribute'])) {
             $model = Config::find()
                 ->where(['_id' => $_POST['editableKey']])
+                ->limit(1)
                 ->one();
             if ($_POST['editableAttribute'] == 'title') {
                 $model['title'] = $_POST['Organisation'][$_POST['editableIndex']]['title'];

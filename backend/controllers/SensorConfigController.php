@@ -58,6 +58,7 @@ class SensorConfigController extends Controller
         if (isset($_POST['editableAttribute'])) {
             $model = SensorConfig::find()
                 ->where(['_id' => $_POST['editableKey']])
+                ->limit(1)
                 ->one();
             if ($model->save())
                 return json_encode('success');
