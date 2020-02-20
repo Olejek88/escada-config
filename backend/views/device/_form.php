@@ -97,7 +97,7 @@ use yii\widgets\ActiveForm;
     <?php echo $form->field($model, 'serial')->textInput(['maxlength' => true]) ?>
 
     <?php
-    $node = Node::find()->one();
+    $node = Node::find()->limit(1)->one();
     if ($node) {
         echo $form->field($model, 'nodeUuid')->hiddenInput(['value' => $node['uuid']])->label(false);
     }

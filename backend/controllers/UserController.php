@@ -70,7 +70,7 @@ class UserController extends Controller
     public function actionView($id)
     {
 
-        $model = User::find()->where(['_id' => $id])->one();
+        $model = User::find()->where(['_id' => $id])->limit(1)->one();
 
         return $this->render('view', [
             'model' => $model,
@@ -119,7 +119,7 @@ class UserController extends Controller
     // public function actionUpdate($id)
     // {
     //     $model = new User;
-    //     $model = $model::find()->where(['id' => $id])->one();
+    //     $model = $model::find()->where(['id' => $id])->limit(1)->one();
     //
     //     return $this->render('update', [
     //         'model' => $model,
@@ -129,7 +129,7 @@ class UserController extends Controller
     public function actionUpdate($id)
     {
         $model = new User;
-        $model = $model::find()->where(['_id' => $id])->one();
+        $model = $model::find()->where(['_id' => $id])->limit(1)->one();
 
         // сохраняем старое значение image
         $oldImage = $model->image;
@@ -180,7 +180,7 @@ class UserController extends Controller
     public function actionDelete($id)
     {
         $model = new User;
-        $model = $model::find()->where(['_id' => $id])->one();
+        $model = $model::find()->where(['_id' => $id])->limit(1)->one();
 
         $model->delete();
 
@@ -196,6 +196,7 @@ class UserController extends Controller
         if (isset($_POST['editableAttribute'])) {
             $model = User::find()
                 ->where(['_id' => $_POST['editableKey']])
+                ->limit(1)
                 ->one();
             if ($_POST['editableAttribute']=='type') {
                 $model['type']=intval($_POST['Users'][$_POST['editableIndex']]['type']);

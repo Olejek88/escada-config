@@ -23,7 +23,6 @@ use yii\db\Expression;
  * @property SensorChannel $sensorChannel
  * @property MeasureType $measureType
  */
-
 class Measure extends ActiveRecord
 {
 
@@ -165,9 +164,10 @@ class Measure extends ActiveRecord
     public static function getLastMeasureBetweenDates($sensorChannelUuid, $startDate, $endDate)
     {
         $model = Measure::find()->where(["sensorChannelUuid" => $sensorChannelUuid])
-            ->andWhere('date >= "'.$startDate.'"')
-            ->andWhere('date < "'.$endDate.'"')
+            ->andWhere('date >= "' . $startDate . '"')
+            ->andWhere('date < "' . $endDate . '"')
             ->orderBy('date DESC')
+            ->limit(1)
             ->one();
         return $model;
     }

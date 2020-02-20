@@ -29,7 +29,7 @@ if (isset($_GET['start_time'])) {
     $start_time = date('Y-m-d H:i:s', strtotime($start_date));
 }
 if (isset($_GET['uuid'])) {
-    $device = Device::find()->where(['uuid' => $_GET['uuid']])->one();
+    $device = Device::find()->where(['uuid' => $_GET['uuid']])->limit(1)->one();
     if ($device)
         $this->title = Yii::t('app', 'Дневной архив по устройству '.$device->getFullTitle());
 }

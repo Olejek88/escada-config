@@ -80,6 +80,7 @@ class DeviceController extends Controller
         if (isset($_POST['editableAttribute'])) {
             $model = Device::find()
                 ->where(['_id' => $_POST['editableKey']])
+                ->limit(1)
                 ->one();
             if ($model == null) {
                 return json_encode(new HttpException(404, 'Model not found.'));
@@ -185,6 +186,7 @@ class DeviceController extends Controller
             $device = Device::find()
                 ->select('*')
                 ->where(['objectUuid' => $object['uuid']])
+                ->limit(1)
                 ->one();
             if ($device == null) {
                 $device = new Device();
@@ -259,6 +261,7 @@ class DeviceController extends Controller
         $node = Node::find()->where(['_id' => $params['node']['nid']])
             ->with(['deviceStatus'])
             ->asArray()
+            ->limit(1)
             ->one();
         if ($node != null) {
             if ($node['deviceStatusUuid'] == DeviceStatus::NOT_MOUNTED) {
@@ -320,7 +323,8 @@ class DeviceController extends Controller
                     $date = '-';
                     if ($measure == null) {
                         $config = null;
-                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->limit(1)->one();
+                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])
+                            ->limit(1)->one();
                         if ($config) {
                             $measure = Html::a('конфигурация', ['sensor-config/view', 'id' => $config['_id']]);
                             $date = $config['changedAt'];
@@ -426,9 +430,7 @@ class DeviceController extends Controller
     public function actionDashboard()
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()
-                ->where(['uuid' => $_GET['uuid']])
-                ->one();
+            $device = Device::find()->where(['uuid' => $_GET['uuid']])->limit(1)->one();
             if ($device && $device['deviceTypeUuid']==DeviceType::DEVICE_ELECTRO)
                 return self::actionDashboardElectro($device['uuid']);
         } else
@@ -436,7 +438,7 @@ class DeviceController extends Controller
 
         if (isset($_POST['type']) && $_POST['type'] == 'set') {
             if (isset($_POST['device'])) {
-                $device = Device::find()->where(['uuid' => $_POST['device']])->one();
+                $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
                 if (isset($_POST['value'])) {
                     $this->set($device, $_POST['value']);
                     self::updateConfig($device['uuid'], DeviceConfig::PARAM_SET_VALUE, $_POST['value']);
@@ -446,7 +448,7 @@ class DeviceController extends Controller
 
         if (isset($_POST['type']) && $_POST['type'] == 'params') {
             if (isset($_POST['device'])) {
-                $device = Device::find()->where(['uuid' => $_POST['device']])->one();
+                $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
                 $lightConfig = new MtmDevLightConfig();
                 $lightConfig->mode = $_POST['mode'];
                 $lightConfig->power = $_POST['power'];
@@ -475,10 +477,10 @@ class DeviceController extends Controller
 
         if (isset($_POST['type']) && $_POST['type'] == 'config') {
             if (isset($_POST['device'])) {
-                $device = Device::find()->where(['uuid' => $_POST['device']])->one();
+                $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
                 $lightConfig = new MtmDevLightConfigLight();
                 if (isset($_POST['device'])) {
-                    $device = Device::find()->where(['uuid' => $_POST['device']])->one();
+                    $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
                     if ($device && isset($_POST['time0'])) {
                         $lightConfig->time[0] = $_POST['time0'];
                         $lightConfig->value[0] = $_POST['level0'];
@@ -548,15 +550,15 @@ class DeviceController extends Controller
     public function actionDashboardElectro($uuid)
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()
-                ->where(['uuid' => $uuid])
-                ->one();
+            $device = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
         } else {
             return $this->actionIndex();
         }
 
         // power by days
-        $sChannel = SensorChannel::find()->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])->one();
+        $sChannel = SensorChannel::find()->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])
+            ->limit(1)
+            ->one();
         $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
@@ -920,17 +922,14 @@ class DeviceController extends Controller
     public function actionArchive($uuid)
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()
-                ->where(['uuid' => $uuid])
-                ->one();
+            $device = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
         } else {
             return $this->actionIndex();
         }
 
         // power by days
         $sChannel = SensorChannel::find()
-            ->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])
-            ->one();
+            ->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])->limit(1)->one();
         $last_measures = Measure::find()
             ->where(['sensorChannelUuid' => $sChannel])
             ->andWhere(['type' => MeasureType::MEASURE_TYPE_DAYS])
@@ -1052,17 +1051,14 @@ class DeviceController extends Controller
     public function actionArchiveDays($uuid)
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()
-                ->where(['uuid' => $uuid])
-                ->one();
+            $device = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
         } else {
             return $this->actionIndex();
         }
 
         // power by days
         $sChannel = SensorChannel::find()
-            ->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])
-            ->one();
+            ->where(['deviceUuid' => $device, 'measureTypeUuid' => MeasureType::POWER])->limit(1)->one();
         // archive days
         $start_time = '2018-12-31 00:00:00';
         $end_time = '2021-12-31 00:00:00';
@@ -1131,7 +1127,7 @@ class DeviceController extends Controller
             else $uuid = 0;
 
             if ($uuid) {
-                $device = Device::find()->where(['uuid' => $_POST['uuid']])->one();
+                $device = Device::find()->where(['uuid' => $_POST['uuid']])->limit(1)->one();
 
                 $parameters['mode'] = self::getParameter($device['uuid'], DeviceConfig::PARAM_REGIME);
                 $parameters['group'] = self::getParameter($device['uuid'], DeviceConfig::PARAM_GROUP);
@@ -1176,7 +1172,8 @@ class DeviceController extends Controller
      */
     function updateConfig($deviceUuid, $parameter, $value)
     {
-        $deviceConfig = DeviceConfig::find()->where(['deviceUuid' => $deviceUuid])->andWhere(['parameter' => $parameter])->one();
+        $deviceConfig = DeviceConfig::find()->where(['deviceUuid' => $deviceUuid])
+            ->andWhere(['parameter' => $parameter])->limit(1)->one();
         if ($deviceConfig) {
             $deviceConfig['value'] = $value;
             $deviceConfig->save();
@@ -1201,7 +1198,8 @@ class DeviceController extends Controller
      */
     static function getParameter($deviceUuid, $parameter)
     {
-        $deviceConfig = DeviceConfig::find()->where(['deviceUuid' => $deviceUuid])->andWhere(['parameter' => $parameter])->one();
+        $deviceConfig = DeviceConfig::find()->where(['deviceUuid' => $deviceUuid])
+            ->andWhere(['parameter' => $parameter])->limit(1)->one();
         if ($deviceConfig) {
             return $deviceConfig['value'];
         } else {
@@ -1238,7 +1236,7 @@ class DeviceController extends Controller
     public
     function actionTrends($uuid)
     {
-        $deviceElectro = Device::find()->where(['uuid' => $uuid])->one();
+        $deviceElectro = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
         $parameters1 = [];
         $parameters1['uuid'] = '';
         $parameters1['trends']['title'] = '';
@@ -1257,7 +1255,7 @@ class DeviceController extends Controller
 
         if ($deviceElectro) {
             $sensorChannel1 = SensorChannel::find()->where(['deviceUuid' => $deviceElectro['uuid']])
-                ->andWhere(['measureTypeUuid' => MeasureType::POWER])->one();
+                ->andWhere(['measureTypeUuid' => MeasureType::POWER])->limit(1)->one();
 
             if ($sensorChannel1) {
                 $measures = Measure::find()
@@ -1281,7 +1279,7 @@ class DeviceController extends Controller
             }
 
             $sensorChannel2 = SensorChannel::find()->where(['deviceUuid' => $deviceElectro['uuid']])
-                ->andWhere(['measureTypeUuid' => MeasureType::VOLTAGE])->one();
+                ->andWhere(['measureTypeUuid' => MeasureType::VOLTAGE])->limit(1)->one();
             if ($sensorChannel2) {
                 $measures = Measure::find()
                     ->where(['sensorChannelUuid' => $sensorChannel2['uuid']])
@@ -1304,7 +1302,7 @@ class DeviceController extends Controller
             }
 
             $sensorChannel3 = SensorChannel::find()->where(['deviceUuid' => $deviceElectro['uuid']])
-                ->andWhere(['measureTypeUuid' => MeasureType::CURRENT])->one();
+                ->andWhere(['measureTypeUuid' => MeasureType::CURRENT])->limit(1)->one();
             if ($sensorChannel3) {
                 $measures = Measure::find()
                     ->where(['sensorChannelUuid' => $sensorChannel3['uuid']])

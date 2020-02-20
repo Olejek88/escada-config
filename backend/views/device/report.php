@@ -101,6 +101,7 @@ $gridColumns = [
             $sensorChannel = SensorChannel::find()
                 ->where(['deviceUuid' => $data['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::POWER])
+                ->limit(1)
                 ->one();
             if ($sensorChannel) {
                 $value = Measure::getSumMeasureBetweenDates($sensorChannel, $start_time, $end_time, 1);
@@ -129,6 +130,7 @@ $gridColumns = [
             $sensorChannel = SensorChannel::find()
                 ->where(['deviceUuid' => $data['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::POWER])
+                ->limit(1)
                 ->one();
             if ($sensorChannel) {
                 $value = Measure::getSumMeasureBetweenDates($sensorChannel, $start_time, $end_time,2);
@@ -157,6 +159,7 @@ $gridColumns = [
             $sensorChannel = SensorChannel::find()
                 ->where(['deviceUuid' => $data['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::POWER])
+                ->limit(1)
                 ->one();
             if ($sensorChannel) {
                 $value = Measure::getSumMeasureBetweenDates($sensorChannel, $start_time, $end_time, 3);
@@ -185,6 +188,7 @@ $gridColumns = [
             $sensorChannel = SensorChannel::find()
                 ->where(['deviceUuid' => $data['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::POWER])
+                ->limit(1)
                 ->one();
             if ($sensorChannel) {
                 $value = Measure::getSumMeasureBetweenDates($sensorChannel, $start_time, $end_time, 4);
@@ -213,6 +217,7 @@ $gridColumns = [
             $sensorChannel = SensorChannel::find()
                 ->where(['deviceUuid' => $data['uuid']])
                 ->andWhere(['measureTypeUuid' => MeasureType::POWER])
+                ->limit(1)
                 ->one();
             if ($sensorChannel) {
                 $value = Measure::getSumMeasureBetweenDates($sensorChannel, $start_time, $end_time, 0);

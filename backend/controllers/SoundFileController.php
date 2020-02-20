@@ -68,7 +68,7 @@ class SoundFileController extends Controller
      */
     protected function findModel($id)
     {
-        if (($model = SoundFile::find()->where(['_id' => $id, 'deleted' => 0])->one()) !== null) {
+        if (($model = SoundFile::find()->where(['_id' => $id, 'deleted' => 0])->limit(1)->one()) !== null) {
             return $model;
         }
 
