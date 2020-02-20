@@ -12,8 +12,7 @@ class m200220_153757_create_indexes extends Migration
      */
     public function safeUp()
     {
-        $this->alterColumn('camera', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('camera', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("ALTER TABLE camera MODIFY createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, MODIFY changedAt TIMESTAMP DEFAULT '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'camera', ['createdAt']);
         $this->createIndex('changedAt-idx', 'camera', ['changedAt']);
         $this->createIndex('title-idx', 'camera', ['title']);
@@ -25,8 +24,7 @@ class m200220_153757_create_indexes extends Migration
         $this->createIndex('type-idx', 'data', ['type']);
         $this->createIndex('parameter-idx', 'data', ['parameter']);
 
-        $this->alterColumn('device', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('device', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("ALTER TABLE device MODIFY createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, MODIFY changedAt TIMESTAMP DEFAULT '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'device', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device', ['changedAt']);
         $this->createIndex('address-idx', 'device', ['address']);
@@ -42,36 +40,30 @@ class m200220_153757_create_indexes extends Migration
         $this->createIndex('interface-idx', 'device', ['interface']);
         $this->createIndex('linkTimeout-idx', 'device', ['linkTimeout']);
 
-        $this->alterColumn('device_config', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('device_config', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table device_config modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'device_config', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device_config', ['changedAt']);
         $this->createIndex('parameter-idx', 'device_config', ['parameter']);
         $this->createIndex('value-idx', 'device_config', ['value']);
 
-        $this->alterColumn('device_program', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
-        $this->alterColumn('device_program', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
+        $this->db->createCommand("alter table device_program modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'device_program', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device_program', ['changedAt']);
 
-        $this->alterColumn('device_register', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('device_register', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table device_register modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'device_register', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device_register', ['changedAt']);
         $this->createIndex('date-idx', 'device_register', ['date']);
 
-        $this->alterColumn('device_status', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('device_status', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table device_status modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'device_status', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device_status', ['changedAt']);
 
-        $this->alterColumn('device_type', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('device_type', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table device_type modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'device_type', ['createdAt']);
         $this->createIndex('changedAt-idx', 'device_type', ['changedAt']);
 
-        $this->alterColumn('group', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
-        $this->alterColumn('group', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
+        $this->db->createCommand("ALTER TABLE `group` MODIFY createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP, MODIFY changedAt TIMESTAMP DEFAULT '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'group', ['createdAt']);
         $this->createIndex('changedAt-idx', 'group', ['changedAt']);
         $this->createIndex('title-idx', 'group', ['title']);
@@ -89,8 +81,7 @@ class m200220_153757_create_indexes extends Migration
         $this->createIndex('createdAt-idx', 'info', ['createdAt']);
         $this->createIndex('changedAt-idx', 'info', ['changedAt']);
 
-        $this->alterColumn('interfaces', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('interfaces', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table interfaces modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'interfaces', ['createdAt']);
         $this->createIndex('changedAt-idx', 'interfaces', ['changedAt']);
 
@@ -115,18 +106,15 @@ class m200220_153757_create_indexes extends Migration
         $this->createIndex('dateIn-idx', 'light_message', ['dateIn']);
         $this->createIndex('dateOut-idx', 'light_message', ['dateOut']);
 
-        $this->alterColumn('measure_type', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('measure_type', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table measure_type modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'measure_type', ['createdAt']);
         $this->createIndex('changedAt-idx', 'measure_type', ['changedAt']);
 
-        $this->alterColumn('message', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('message', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table message modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'message', ['createdAt']);
         $this->createIndex('changedAt-idx', 'message', ['changedAt']);
 
-        $this->alterColumn('node', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('node', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table node modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'node', ['createdAt']);
         $this->createIndex('changedAt-idx', 'node', ['changedAt']);
 
@@ -136,24 +124,20 @@ class m200220_153757_create_indexes extends Migration
         $this->createIndex('date-idx', 'node_control', ['date']);
         $this->createIndex('type-idx', 'node_control', ['type']);
 
-        $this->alterColumn('protocols', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('protocols', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table protocols modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'protocols', ['createdAt']);
         $this->createIndex('changedAt-idx', 'protocols', ['changedAt']);
 
-        $this->alterColumn('sensor_channel', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('sensor_channel', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table sensor_channel modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'sensor_channel', ['createdAt']);
         $this->createIndex('changedAt-idx', 'sensor_channel', ['changedAt']);
         $this->createIndex('measureTypeUuid-idx', 'sensor_channel', ['measureTypeUuid']);
 
-        $this->alterColumn('sensor_config', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('sensor_config', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table sensor_config modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'sensor_config', ['createdAt']);
         $this->createIndex('changedAt-idx', 'sensor_config', ['changedAt']);
 
-        $this->alterColumn('sound_file', 'createdAt', $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'));
-        $this->alterColumn('sound_file', 'changedAt', $this->timestamp()->defaultValue('1970-01-02 00:00:00'));
+        $this->db->createCommand("alter table sound_file modify createdAt timestamp default CURRENT_TIMESTAMP, modify changedAt timestamp default '1970-01-02 00:00:00'")->execute();
         $this->createIndex('createdAt-idx', 'sound_file', ['createdAt']);
         $this->createIndex('changedAt-idx', 'sound_file', ['changedAt']);
         $this->createIndex('deleted-idx', 'sound_file', ['deleted']);
