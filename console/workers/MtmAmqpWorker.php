@@ -143,7 +143,7 @@ class MtmAmqpWorker extends Worker
         $checkReconnectAmqpRate = 300;
 
         // проверяем наличие информации о шкафе
-        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
+        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->limit(1)->one();
         if ($node != null) {
             $this->nodeUuid = $node->uuid;
         } else {
@@ -359,7 +359,7 @@ class MtmAmqpWorker extends Worker
                         $vApp = $params['videoServer']['app'];
                         $publishTime = $params['videoServer']['publishTime'];
 
-                        $camera = Camera::find()->where(['uuid' => $content->uuid])->one();
+                        $camera = Camera::find()->where(['uuid' => $content->uuid])->limit(1)->one();
                         if ($camera == null) {
                             $this->log('Камеру не нашли. uuid: ' . $content->uuid);
                             return;
@@ -390,7 +390,7 @@ class MtmAmqpWorker extends Worker
             case 'sound' :
                 switch ($content->action) {
                     case 'play' :
-                        $sound = SoundFile::find()->where(['uuid' => $content->uuid])->one();
+                        $sound = SoundFile::find()->where(['uuid' => $content->uuid])->limit(1)->one();
                         if ($sound == null) {
                             $this->log('Звуковой файл не нашли. uuid: ' . $sound->uuid);
                             return;
@@ -429,7 +429,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'sound_file';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -448,7 +448,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                        $this->log($f['soundFile']);
-                $model = SoundFile::find()->where(['uuid' => $f['uuid']])->one();
+                $model = SoundFile::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new SoundFile();
                 }
@@ -511,7 +511,7 @@ class MtmAmqpWorker extends Worker
     private function uploadSensorChannel()
     {
         $lastUpdateKey = 'channel_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -565,7 +565,7 @@ class MtmAmqpWorker extends Worker
     private function uploadMeasure()
     {
         $lastUpdateKey = 'measure';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -621,7 +621,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'device_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -640,7 +640,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = Device::find()->where(['uuid' => $f['uuid']])->one();
+                $model = Device::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new Device();
                 }
@@ -691,7 +691,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'device_config_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -710,7 +710,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = DeviceConfig::find()->where(['uuid' => $f['uuid']])->one();
+                $model = DeviceConfig::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new DeviceConfig();
                 }
@@ -752,7 +752,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'device_program_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -771,7 +771,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = DeviceProgram::find()->where(['uuid' => $f['uuid']])->one();
+                $model = DeviceProgram::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new DeviceProgram();
                 }
@@ -825,7 +825,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'camera_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -844,7 +844,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = Camera::find()->where(['uuid' => $f['uuid']])->one();
+                $model = Camera::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new Camera();
                 }
@@ -888,7 +888,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'sensor_channel_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -909,7 +909,7 @@ class MtmAmqpWorker extends Worker
             $lastUpdateModel->date = $currentDate;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = SensorChannel::find()->where(['uuid' => $f['uuid']])->one();
+                $model = SensorChannel::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new SensorChannel();
                 }
@@ -951,7 +951,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'sensor_config_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -970,7 +970,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = SensorConfig::find()->where(['uuid' => $f['uuid']])->one();
+                $model = SensorConfig::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new SensorConfig();
                 }
@@ -1011,7 +1011,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'thread_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1030,7 +1030,7 @@ class MtmAmqpWorker extends Worker
             $allSave = true;
             foreach ($response->data as $f) {
 //                $this->log($f['device']);
-                $model = Threads::find()->where(['uuid' => $f['uuid']])->one();
+                $model = Threads::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new Threads();
                 }
@@ -1079,7 +1079,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'deviceType';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1138,7 +1138,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'deviceStatus';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1204,7 +1204,7 @@ class MtmAmqpWorker extends Worker
             ->send();
         if ($response->isOk) {
             $f = $response->data;
-            $model = Node::find()->where(['uuid' => $f['uuid']])->one();
+            $model = Node::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
             if ($model == null) {
                 $model = new Node();
             }
@@ -1231,7 +1231,7 @@ class MtmAmqpWorker extends Worker
     private function uploadDeviceRegister()
     {
         $lastUpdateKey = 'device_register';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1285,7 +1285,7 @@ class MtmAmqpWorker extends Worker
     private function uploadSensorConfig()
     {
         $lastUpdateKey = 'sensor_config_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1339,7 +1339,7 @@ class MtmAmqpWorker extends Worker
     private function uploadThread()
     {
         $lastUpdateKey = 'thread_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1356,7 +1356,7 @@ class MtmAmqpWorker extends Worker
             return;
         }
 
-        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->one();
+        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->limit(1)->one();
 
         foreach ($items as $key => $item) {
             $items[$key]['nodeUuid'] = $node->uuid;
@@ -1399,7 +1399,7 @@ class MtmAmqpWorker extends Worker
     private function uploadCamera()
     {
         $lastUpdateKey = 'camera_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1453,7 +1453,7 @@ class MtmAmqpWorker extends Worker
     private function uploadDevice()
     {
         $lastUpdateKey = 'device_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1507,7 +1507,7 @@ class MtmAmqpWorker extends Worker
     private function uploadDeviceConfig()
     {
         $lastUpdateKey = 'device_config_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1563,7 +1563,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'node_control_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1581,7 +1581,7 @@ class MtmAmqpWorker extends Worker
         if ($response->isOk && count($response->data) > 0) {
             $allSave = true;
             foreach ($response->data as $f) {
-                $model = NodeControl::find()->where(['uuid' => $f['uuid']])->one();
+                $model = NodeControl::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new NodeControl();
                 }
@@ -1623,7 +1623,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'group_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1641,7 +1641,7 @@ class MtmAmqpWorker extends Worker
         if ($response->isOk && count($response->data) > 0) {
             $allSave = true;
             foreach ($response->data as $f) {
-                $model = Group::find()->where(['uuid' => $f['uuid']])->one();
+                $model = Group::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new Group();
                 }
@@ -1683,7 +1683,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'group_control_download';
         $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->one();
+        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
             $lastUpdateModel->entityName = $lastUpdateKey;
@@ -1701,7 +1701,7 @@ class MtmAmqpWorker extends Worker
         if ($response->isOk && count($response->data) > 0) {
             $allSave = true;
             foreach ($response->data as $f) {
-                $model = GroupControl::find()->where(['uuid' => $f['uuid']])->one();
+                $model = GroupControl::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
                     $model = new groupControl();
                 }
