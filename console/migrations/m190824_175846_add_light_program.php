@@ -42,7 +42,7 @@ class m190824_175846_add_light_program extends Migration
                 ->comment('Начало утренних сумерек. Период с утренних сумерек до восхода.'),
             'value5' => $this->integer()->defaultValue(0),
             'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'changedAt' => $this->timestamp()->notNull()->defaultValue('1970-01-02 00:00:00'),
         ], $tableOptions);
 
         $this->createIndex('title', self::DEVICE_PROGRAM, ['title'], true);
