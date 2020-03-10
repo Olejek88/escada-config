@@ -137,8 +137,8 @@ class MtmAmqpWorker extends Worker
         $checkSoundFile = 0;
         $checkChannels = 0;
         $checkData = 0;
-//        $checkLightLink = 0;
-//        $checkLightLinkRate = 30;
+        $checkLocalIp = 0;
+        $checkLocalIpRate = 60;
         $checkReconnectAmqp = 0;
         $checkReconnectAmqpRate = 300;
 
@@ -218,6 +218,32 @@ class MtmAmqpWorker extends Worker
 //                    $this->log('Не удалось удалить запись _id=' . $answer->_id);
 //                }
 //            }
+
+            if ($checkLocalIp + $checkLocalIpRate < time()) {
+                $checkLocalIp = time();
+                // получаем интерфейс через который идёт маршрут по умолчанию
+                $command = "/sbin/route -n | grep 0.0.0.0 | head -n 1 | awk '{ print $8}'";
+                $netDevice = exec($command);
+                // получаем ip адрес найденного интерфейса
+                $command = "/sbin/ifconfig $netDevice | grep 'inet addr:' | cut -d: -f2 | awk '{ print $1}'";
+                $localIP = exec($command);
+                // отправляем на сервер свой локальный адрес
+                $httpClient = new Client();
+                $q = $this->apiServer . '/node/address?XDEBUG_SESSION_START=xdebug';
+//                $this->log($q);
+                $response = $httpClient->createRequest()
+                    ->setMethod('POST')
+                    ->setUrl($q)
+                    ->setData([
+                        'oid' => $this->organizationId,
+                        'nid' => $this->nodeId,
+                        'addr' => $localIP,
+                    ])
+                    ->send();
+                if (!$response->isOk) {
+                    // TODO: уведомление о том что не удалось отправить адрес
+                }
+            }
 
             // проверяем наличие новых или обновлённых звуковых файлов на сервере
             if ($checkSoundFile + 10 < time()) {
