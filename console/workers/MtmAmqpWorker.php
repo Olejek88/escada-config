@@ -2,6 +2,7 @@
 
 namespace console\workers;
 
+use backend\controllers\SshController;
 use common\components\MtmActiveRecord;
 use common\models\Camera;
 use common\models\Device;
@@ -431,6 +432,22 @@ class MtmAmqpWorker extends Worker
                             exec($cmd);
                             $this->log('cmd: ' . $cmd);
                         }
+
+                        /** @var AMQPChannel $channel */
+                        $channel = $msg->delivery_info['channel'];
+                        $channel->basic_ack($msg->delivery_info['delivery_tag']);
+                        break;
+                    default:
+                        break;
+                }
+                break;
+            case 'ssh' :
+                switch ($content->action) {
+                    case 'start' :
+                        $cmd = SshController::getSshpassCmd($content->password, $content->localPort, $content->bindIp,
+                            $content->remotePort, $content->user, $content->remoteHost);
+                        $this->log('cmd: ' . $cmd);
+                        exec($cmd);
 
                         /** @var AMQPChannel $channel */
                         $channel = $msg->delivery_info['channel'];

@@ -38,12 +38,11 @@ class SshController extends Controller
         $model = new SshForm();
         if ($request->isPost) {
             if ($model->load($request->post()) && $model->validate()) {
-                $cmd = "/usr/bin/sshpass -p '{$model->password}' ";
-                $cmd .= "/usr/bin/ssh -C -N -R {$model->localPort}:{$model->bindIp}:{$model->remotePort} ";
-                $cmd .= "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ";
-                $cmd .= "{$model->user}@{$model->remoteHost} -p {$model->remotePort} > /dev/null 2>&1 &";
+                $cmd = self::getSshpassCmd($model->password, $model->localPort, $model->bindIp, $model->remotePort,
+                    $model->user, $model->remoteHost);
                 exec($cmd);
                 sleep(5);
+                return $this->redirect('ssh/index');
             }
         } else {
             $model = new SshForm();
@@ -63,6 +62,24 @@ class SshController extends Controller
             'model' => $model,
             'dataProvider' => $dataProvider,
         ]);
+    }
+
+    /**
+     * @param $password
+     * @param $localPort
+     * @param $bindIp
+     * @param $remotePort
+     * @param $user
+     * @param $remoteHost
+     * @return string
+     */
+    public static function getSshpassCmd($password, $localPort, $bindIp, $remotePort, $user, $remoteHost)
+    {
+        $cmd = "/usr/bin/sshpass -p '{$password}' ";
+        $cmd .= "/usr/bin/ssh -C -N -R {$localPort}:{$bindIp}:{$remotePort} ";
+        $cmd .= "-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ";
+        $cmd .= "{$user}@{$remoteHost} -p {$remotePort} > /dev/null 2>&1 &";
+        return $cmd;
     }
 
     private function getSshpassProcesses()
@@ -89,6 +106,6 @@ class SshController extends Controller
             exec($cmd);
         }
 
-        return Yii::$app->response->redirect('index');
+        return $this->redirect('ssh/index');
     }
 }
