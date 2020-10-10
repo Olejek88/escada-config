@@ -92,32 +92,36 @@ class SiteController extends Controller
         if ($channel_power) {
             $last_measures = Measure::find()
                 ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
+                ->andWhere(['parameter' => 0])
                 ->orderBy('date desc')
                 ->limit(50)
                 ->all();
         } else {
             $last_measures = Measure::find()
                 ->orderBy('date desc')
+                ->where(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
+                ->andWhere(['parameter' => 0])
                 ->limit(50)
                 ->all();
         }
         $cnt=0;
-        foreach ($last_measures as $measure) {
+        foreach (array_reverse($last_measures) as $measure) {
             if ($cnt>0) {
                 $categories .= ',';
                 $values.=',';
             }
-            $categories.= "'".$measure['date']."'";
+            $categories.= "'".date_format(date_create($measure['date']), 'd H:i')."'";
             $values.=$measure['value'];
             $cnt++;
         }
 
         $stats = Stat::find()
-            ->orderBy('changedAt')
+            ->orderBy('changedAt desc')
             ->limit(100)
             ->all();
         $cnt=0;
-        foreach ($stats as $stat) {
+        foreach (array_reverse($stats) as $stat) {
             if ($cnt>0) {
                 $stat_categories .= ',';
                 $stat_values.=',';
