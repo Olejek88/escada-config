@@ -12,10 +12,13 @@ use common\models\DeviceType;
 use common\models\Info;
 use common\models\Measure;
 use common\models\MeasureType;
+use common\models\mtm\MtmContactor;
 use common\models\mtm\MtmDevLightConfig;
 use common\models\mtm\MtmDevLightConfigLight;
 use common\models\mtm\MtmPktHeader;
+use common\models\mtm\MtmResetCoordinator;
 use common\models\Node;
+use common\models\Organisation;
 use common\models\Protocols;
 use common\models\SensorChannel;
 use common\models\SensorConfig;
@@ -575,7 +578,7 @@ class DeviceController extends Controller
                 $categories .= ',';
                 $values .= ',';
             }
-            $categories .= "'" . $measure->date . "'";
+            $categories .= "'" . date_format(date_create($measure['date']), 'd H:i') . "'";
             $values .= $measure->value;
             $cnt++;
         }
@@ -591,7 +594,7 @@ class DeviceController extends Controller
         $data['days'] = [];
         $data['month'] = [];
         $last_date = '';
-        foreach ($last_measures as $measure) {
+        foreach (array_reverse($last_measures) as $measure) {
             if ($measure['date'] != $last_date) {
                 $last_date = $measure['date'];
                 $cnt++;
@@ -1162,6 +1165,7 @@ class DeviceController extends Controller
      */
     static function sendConfig($packet, $org_id, $node_id)
     {
+
     }
 
     /**

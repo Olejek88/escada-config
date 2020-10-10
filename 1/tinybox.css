@@ -1,4 +1,0 @@
-#tinybox {position:absolute; display:none; background:#fff url(images/preload.gif) no-repeat 50% 50%; z-index:2000}
-#tinymask {position:absolute; display:none; top:0; left:0; height:100%; width:100%; background:#000; z-index:1500}
-#tinycontent {background:#fff;}
-#tinycontent .bar {margin: 0;}
