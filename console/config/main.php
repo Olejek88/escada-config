@@ -10,10 +10,6 @@ return [
     'basePath' => dirname(__DIR__),
     'bootstrap' => ['log'],
     'controllerNamespace' => 'console\controllers',
-    'aliases' => [
-        '@bower' => '@vendor/bower-asset',
-        '@npm' => '@vendor/npm-asset',
-    ],
     'components' => [
         'log' => [
             'targets' => [

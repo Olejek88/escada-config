@@ -83,6 +83,7 @@ class Node extends ActiveRecord
                 [
                     'uuid',
                     'deviceStatusUuid',
+                    'oid',
                 ],
                 'required'
             ],
@@ -98,6 +99,9 @@ class Node extends ActiveRecord
             [
                 ['longitude', 'latitude'],
                 'double'
+            ],
+            [
+                ['oid'], 'integer'
             ],
         ];
     }

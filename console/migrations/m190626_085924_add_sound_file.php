@@ -12,9 +12,17 @@ class m190626_085924_add_sound_file extends Migration
      */
     public function safeUp()
     {
+        $isNew = false;
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            $isNew = version_compare($this->db->getServerVersion(), '5.6.1', '>');
+        }
+
+        if ($isNew) {
+            $defVal = $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP');
+        } else {
+            $defVal = $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00');
         }
 
         $soundFile = '{{%sound_file}}';
@@ -25,7 +33,7 @@ class m190626_085924_add_sound_file extends Migration
             'soundFile' => $this->string(512)->notNull(),
             'nodeUuid' => $this->string(45)->notNull(),
             'deleted' => $this->smallInteger()->defaultValue(0),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 

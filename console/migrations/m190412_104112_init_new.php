@@ -39,9 +39,17 @@ class m190412_104112_init_new extends Migration
 
     public function safeUp()
     {
+        $isNew = false;
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            $isNew = version_compare($this->db->getServerVersion(), '5.6.1', '>');
+        }
+
+        if ($isNew) {
+            $defVal = $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP');
+        } else {
+            $defVal = $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00');
         }
 
         $this->createTable(self::USER, [
@@ -59,7 +67,7 @@ class m190412_104112_init_new extends Migration
             'image' => $this->string(),
             'contact' => $this->string()->notNull(),
             'status' => $this->smallInteger()->notNull()->defaultValue(10),
-            'created_at' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'created_at' => $defVal,
             'updated_at' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -67,7 +75,7 @@ class m190412_104112_init_new extends Migration
             '_id' => $this->primaryKey(),
             'uuid' => $this->string(45)->notNull()->unique(),
             'title' => $this->string()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -75,7 +83,7 @@ class m190412_104112_init_new extends Migration
             '_id' => $this->primaryKey(),
             'uuid' => $this->string(45)->notNull()->unique(),
             'title' => $this->string()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -86,7 +94,7 @@ class m190412_104112_init_new extends Migration
                 'uuid' => $this->string(45)->unique()->notNull(),
                 'address' => $this->string(45),
                 'deviceStatusUuid' => $this->string(45)->notNull(),
-                'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+                'createdAt' => $defVal,
                 'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             ], $tableOptions
         );
@@ -118,7 +126,7 @@ class m190412_104112_init_new extends Migration
                 'nodeUuid' => $this->string(45)->notNull(),
                 'address' => $this->string(45)->notNull(),
                 'port' => $this->integer()->notNull(),
-                'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+                'createdAt' => $defVal,
                 'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
             ], $tableOptions
         );
@@ -175,7 +183,7 @@ class m190412_104112_init_new extends Migration
             'deviceStatusUuid' => $this->string(45)->notNull(),
             'serial' => $this->string(),
             'interface' => $this->smallInteger()->defaultValue(1),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -233,7 +241,7 @@ class m190412_104112_init_new extends Migration
             'deviceUuid' => $this->string(45)->notNull(),
             'date' => $this->timestamp()->defaultValue('2019-01-01'),
             'description' => $this->string(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -282,7 +290,7 @@ class m190412_104112_init_new extends Migration
             '_id' => $this->primaryKey(),
             'uuid' => $this->string(45)->notNull()->unique(),
             'title' => $this->string()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP')
         ], $tableOptions);
 
@@ -292,8 +300,8 @@ class m190412_104112_init_new extends Migration
             'sensorChannelUuid' => $this->string(45)->notNull(),
             'value' => $this->double(),
             'type' => $this->integer()->defaultValue(0),
-            'date' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'date' => $defVal,
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -310,7 +318,7 @@ class m190412_104112_init_new extends Migration
             'register' => $this->string()->notNull(),
             'deviceUuid' => $this->string(45),
             'measureTypeUuid' => $this->string(45)->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -361,7 +369,7 @@ class m190412_104112_init_new extends Migration
             '_id' => $this->primaryKey(),
             'uuid' => $this->string(45)->notNull()->unique(),
             'link' => $this->string()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -371,7 +379,7 @@ class m190412_104112_init_new extends Migration
             'uuid' => $this->string(45)->notNull()->unique(),
             'config' => $this->string(),
             'sensorChannelUuid' => $this->string(45)->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -396,22 +404,22 @@ class m190412_104112_init_new extends Migration
             'uuid' => $this->string(45)->notNull()->unique(),
             'address' => $this->string()->notNull(),
             'log' => $this->integer()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
         $this->createTable(self::INFO, [
             '_id' => $this->primaryKey(),
             'uuid' => $this->string(45)->notNull()->unique(),
-            'date' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'date' => $defVal,
             'log' => $this->string(45)->notNull()->unique(),
-            'time' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'time' => $defVal,
             'linux' => $this->string(45)->notNull()->unique(),
             'hardware' => $this->string(45)->notNull()->unique(),
             'base_name' => $this->string(45)->notNull()->unique(),
             'software' => $this->string(45)->notNull()->unique(),
             'ip' => $this->string(45)->notNull()->unique(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -419,7 +427,7 @@ class m190412_104112_init_new extends Migration
             '_id' => $this->primaryKey(),
             'uuid' => $this->string(45)->notNull()->unique(),
             'title' => $this->string()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -428,10 +436,10 @@ class m190412_104112_init_new extends Migration
             'uuid' => $this->string(45)->notNull()->unique(),
             'address' => $this->string(45)->notNull()->unique(),
             'data' => $this->string(45)->notNull()->unique(),
-            'dateIn' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
-            'dateOut' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'dateIn' => $defVal,
+            'dateOut' => $defVal,
             'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->timestamp()->defaultValue('0000-00-00 00:00:00'),
+            'changedAt' => $defVal,
         ], $tableOptions);
 
         $this->createTable(self::PROTOCOLS, [
@@ -440,7 +448,7 @@ class m190412_104112_init_new extends Migration
             'name' => $this->string()->notNull(),
             'type' => $this->integer()->notNull(),
             'protocol' => $this->integer()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -450,7 +458,7 @@ class m190412_104112_init_new extends Migration
             'type' => $this->integer()->notNull(),
             'cpu' => $this->double()->notNull(),
             'mem' => $this->double()->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 
@@ -464,9 +472,9 @@ class m190412_104112_init_new extends Migration
             'status' => $this->integer()->notNull()->defaultValue(0),
             'work' => $this->integer()->notNull()->defaultValue(0),
             'deviceTypeUuid' => $this->string(45),
-            'c_time' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'c_time' => $defVal,
             'message' => $this->string(250)->notNull(),
-            'createdAt' => $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00'),
+            'createdAt' => $defVal,
             'changedAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
         ], $tableOptions);
 

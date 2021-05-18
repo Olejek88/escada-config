@@ -15,9 +15,17 @@ class m190602_123639_fix_light_answer extends Migration
      */
     public function safeUp()
     {
+        $isNew = false;
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
             $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+            $isNew = version_compare($this->db->getServerVersion(), '5.6.1', '>');
+        }
+
+        if ($isNew) {
+            $defVal = $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP');
+        } else {
+            $defVal = $this->timestamp()->notNull()->defaultValue('0000-00-00 00:00:00');
         }
 
         $this->dropIndex('address', self::LIGHT_ANSWER);
@@ -30,10 +38,10 @@ class m190602_123639_fix_light_answer extends Migration
             '_id' => $this->primaryKey(),
             'address' => $this->string(45)->notNull(),
             'data' => $this->string(1024)->notNull(),
-            'dateIn' => $this->timestamp()->defaultValue('0000-00-00 00:00:00')->notNull(),
+            'dateIn' => $defVal,
             'dateOut' => $this->timestamp()->null()->defaultValue(null),
             'createdAt' => $this->timestamp()->notNull()->defaultExpression('CURRENT_TIMESTAMP'),
-            'changedAt' => $this->timestamp()->defaultValue('0000-00-00 00:00:00'),
+            'changedAt' => $defVal,
         ], $tableOptions);
     }
 
