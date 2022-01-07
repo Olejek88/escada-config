@@ -1,0 +1,5 @@
+[mysqldump]
+host     = localhost
+user     = root
+password = 
+socket   = /var/run/mysqld/mysqld.sock
