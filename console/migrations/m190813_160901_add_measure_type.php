@@ -14,9 +14,9 @@ class m190813_160901_add_measure_type extends Migration
     public function safeUp()
     {
         $currentTime = date('Y-m-d\TH:i:s');
-        $this->insertIntoType('measure_type', MeasureType::COORD_IN1, 'Дверь шкафа', $currentTime, $currentTime);
-        $this->insertIntoType('measure_type', MeasureType::COORD_IN2, 'Статус контактора', $currentTime, $currentTime);
-        $this->insertIntoType('measure_type', MeasureType::COORD_DIGI1, 'Статус реле контактора', $currentTime, $currentTime);
+        $this->insertIntoType('measure_type', MeasureType::DOOR_STATE, 'Дверь шкафа', $currentTime, $currentTime);
+        $this->insertIntoType('measure_type', MeasureType::CONTACTOR_STATE, 'Статус контактора', $currentTime, $currentTime);
+        $this->insertIntoType('measure_type', MeasureType::RELAY_STATE, 'Статус реле контактора', $currentTime, $currentTime);
     }
 
     private function insertIntoType($table, $uuid, $title, $createdAt, $changedAt)
