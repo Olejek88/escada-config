@@ -40,7 +40,11 @@ use yii\widgets\ActiveForm;
     <?php echo $form->field($model, 'work')->hiddenInput(['value' => 0])->label(false); ?>
 
     <?php
-    $devices = Device::find()->where(['deviceTypeUuid' => [DeviceType::DEVICE_COUNTER, DeviceType::DEVICE_ZB_COORDINATOR]])->all();
+    $devices = Device::find()->where(['deviceTypeUuid' => [
+        DeviceType::DEVICE_COUNTER,
+        DeviceType::DEVICE_ZB_COORDINATOR,
+        DeviceType::DEVICE_ZB_COORDINATOR_E18,
+    ]])->all();
     $items = ArrayHelper::map($devices, 'uuid', 'name');
     echo $form->field($model, 'deviceUuid',
         ['template' => MainFunctions::getAddButton("/device-type/create")])->widget(Select2::class,
