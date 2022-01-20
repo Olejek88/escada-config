@@ -897,7 +897,6 @@ class MtmAmqpWorker extends Worker
      */
     private function downloadEntity($lastUpdateKey, $modelClass, $fromUrl)
     {
-//        $lastUpdateKey = 'entity_parameter_download';
         $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
@@ -927,15 +926,11 @@ class MtmAmqpWorker extends Worker
                     $model = new $modelClass();
                 }
 
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->load($f, '');
-//                $model->uuid = $f['uuid'];
-//                $model->entityUuid = $f['entityUuid'];
-//                $model->parameter = $f['parameter'];
-//                $model->value = $f['value'];
-//                $model->createdAt = $f['createdAt'];
-//                $model->changedAt = $f['changedAt'];
+                if ($model instanceof MtmActiveRecord) {
+                    $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
+                }
 
+                $model->load($f, '');
                 if (!$model->save()) {
                     $allSave = false;
                     $this->log($class::tableName() . ' model not saved: uuid' . $model->uuid);
