@@ -626,7 +626,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'device_program_download';
         $this->downloadEntity($lastUpdateKey, new DeviceProgram(), [
-            $this->apiServer . '/camera',
+            $this->apiServer . '/device-program',
             'oid' => $this->organizationId,
             'nid' => $this->nodeId,
         ]);
@@ -696,7 +696,7 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'deviceType';
         $this->downloadEntity($lastUpdateKey, new DeviceType(), [
-            $this->apiServer . '/device-status',
+            $this->apiServer . '/device-type',
             'oid' => $this->organizationId,
             'nid' => $this->nodeId,
         ]);
