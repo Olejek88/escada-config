@@ -11,10 +11,12 @@ use common\models\DeviceProgram;
 use common\models\DeviceRegister;
 use common\models\DeviceStatus;
 use common\models\DeviceType;
+use common\models\EntityParameter;
 use common\models\Group;
 use common\models\GroupControl;
 use common\models\LastUpdate;
 use common\models\LightMessage;
+use common\models\LostLight;
 use common\models\Measure;
 use common\models\Node;
 use common\models\NodeControl;
@@ -22,6 +24,7 @@ use common\models\SensorChannel;
 use common\models\SensorConfig;
 use common\models\SoundFile;
 use common\models\Threads;
+use yii\db\ActiveQuery;
 use yii\httpclient\Client;
 use inpassor\daemon\Worker;
 use PhpAmqpLib\Channel\AMQPChannel;
@@ -144,6 +147,7 @@ class MtmAmqpWorker extends Worker
         $checkReconnectAmqpRate = 300;
 
         // проверяем наличие информации о шкафе
+        /** @var Node $node */
         $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->limit(1)->one();
         if ($node != null) {
             $this->nodeUuid = $node->uuid;
@@ -279,6 +283,12 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkDeviceConfig');
                 $this->uploadDeviceConfig();
+
+//                $this->log('checkEntityParameter');
+                $this->uploadEntityParameter();
+
+//                $this->log('checkLostLight');
+                $this->uploadLostLight();
             }
 
             // проверяем наличие новых данных по оборудованию, камерам на сервере
@@ -323,6 +333,9 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkGroupControl');
                 $this->downloadGroupControl();
+
+//                $this->log('checkEntityParameter');
+                $this->downloadEntityParameter();
             }
 
 
@@ -386,6 +399,7 @@ class MtmAmqpWorker extends Worker
                         $vApp = $params['videoServer']['app'];
                         $publishTime = $params['videoServer']['publishTime'];
 
+                        /** @var Camera $camera */
                         $camera = Camera::find()->where(['uuid' => $content->uuid])->limit(1)->one();
                         if ($camera == null) {
                             $this->log('Камеру не нашли. uuid: ' . $content->uuid);
@@ -417,6 +431,7 @@ class MtmAmqpWorker extends Worker
             case 'sound' :
                 switch ($content->action) {
                     case 'play' :
+                        /** @var SoundFile $sound */
                         $sound = SoundFile::find()->where(['uuid' => $content->uuid])->limit(1)->one();
                         if ($sound == null) {
                             $this->log('Звуковой файл не нашли. uuid: ' . $sound->uuid);
@@ -471,6 +486,12 @@ class MtmAmqpWorker extends Worker
     private function downloadSoundFiles()
     {
         $lastUpdateKey = 'sound_file';
+//        $this->downloadEntity($lastUpdateKey, new SoundFile(), [
+//            $this->apiServer . '/sound-file',
+//            'oid' => $this->organizationId,
+//            'nid' => $this->nodeId,
+//        ]);
+
         $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
@@ -506,6 +527,7 @@ class MtmAmqpWorker extends Worker
                 $model->createdAt = $f['createdAt'];
                 $model->changedAt = $f['changedAt'];
                 if ($model->save()) {
+                    // TODO: !!! Решить вопрос с сохранинием файлов. Например загрузить сами бинари, отдельно
                     $this->log('sound file model saved: uuid' . $model->uuid);
                     $file = Yii::getAlias('@backend/web/' . $model->getSoundFile());
                     $this->log($file);
@@ -550,110 +572,22 @@ class MtmAmqpWorker extends Worker
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadSensorChannel()
     {
         $lastUpdateKey = 'channel_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = SensorChannel::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/sensor-channel/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, SensorChannel::find(), '/sensor-channel/send');
     }
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadMeasure()
     {
         $lastUpdateKey = 'measure';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = Measure::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        // фиксируем дату последнего измерения в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/measure/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, Measure::find(), '/measure/send');
     }
 
     /**
@@ -663,67 +597,11 @@ class MtmAmqpWorker extends Worker
     private function downloadDevice()
     {
         $lastUpdateKey = 'device_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = Device::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new Device();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->_id = $f['_id'];
-                $model->uuid = $f['uuid'];
-                $model->nodeUuid = $f['nodeUuid'];
-                $model->address = $f['address'];
-                $model->deviceTypeUuid = $f['deviceTypeUuid']; // нужно засасывать? нужно. реализовать
-                $model->deviceStatusUuid = $f['deviceStatusUuid'];
-                $model->serial = $f['serial'];
-                $model->interface = $f['interface'];
-                $model->name = $f['name'];
-                $model->port = $f['port'];
-                $model->object = $f['objectUuid'];
-                $model->number = 0;
-                $model->linkTimeout = $f['linkTimeout'];;
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('device model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new Device(), [
+            $this->apiServer . '/device',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -733,58 +611,11 @@ class MtmAmqpWorker extends Worker
     private function downloadDeviceConfig()
     {
         $lastUpdateKey = 'device_config_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device-config?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = DeviceConfig::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new DeviceConfig();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->deviceUuid = $f['deviceUuid'];
-                $model->parameter = $f['parameter'];
-                $model->value = $f['value'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('device model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new DeviceConfig(), [
+            $this->apiServer . '/device-config',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -794,70 +625,11 @@ class MtmAmqpWorker extends Worker
     private function downloadDeviceProgram()
     {
         $lastUpdateKey = 'device_program_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device-program?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = DeviceProgram::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new DeviceProgram();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->_id = $f['_id'];
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->period_title1 = $f['period_title1'];
-                $model->value1 = $f['value1'];
-                $model->period_title2 = $f['period_title2'];
-                $model->time2 = $f['time2'];
-                $model->value2 = $f['value2'];
-                $model->period_title3 = $f['period_title3'];
-                $model->time3 = $f['time3'];
-                $model->value3 = $f['value3'];
-                $model->period_title4 = $f['period_title4'];
-                $model->time4 = $f['time4'];
-                $model->value4 = $f['value4'];
-                $model->period_title5 = $f['period_title5'];
-                $model->value5 = $f['value5'];
-                $model->changedAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('device_program model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new DeviceProgram(), [
+            $this->apiServer . '/camera',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -867,60 +639,11 @@ class MtmAmqpWorker extends Worker
     private function downloadCamera()
     {
         $lastUpdateKey = 'camera_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/camera?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = Camera::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new Camera();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->_id = $f['_id'];
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->deviceStatusUuid = $f['deviceStatusUuid'];
-                $model->nodeUuid = $f['nodeUuid'];
-                $model->address = $f['address'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('camera model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new Camera(), [
+            $this->apiServer . '/camera',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -930,60 +653,11 @@ class MtmAmqpWorker extends Worker
     private function downloadSensorChannel()
     {
         $lastUpdateKey = 'sensor_channel_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/sensor-channel?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-//        $q .= '&XDEBUG_SESSION_START=xdebug';
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            $lastUpdateModel->date = $currentDate;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = SensorChannel::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new SensorChannel();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->register = $f['register'];
-                $model->deviceUuid = $f['deviceUuid'];
-                $model->measureTypeUuid = $f['measureTypeUuid'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('sensor channel model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new SensorChannel(), [
+            $this->apiServer . '/sensor-channel',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -993,57 +667,11 @@ class MtmAmqpWorker extends Worker
     private function downloadSensorConfig()
     {
         $lastUpdateKey = 'sensor_config_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/sensor-config?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = SensorConfig::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new SensorConfig();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->config = $f['config'];
-                $model->sensorChannelUuid = $f['sensorChannelUuid'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('sensor config model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new SensorConfig(), [
+            $this->apiServer . '/sensor-config',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -1053,65 +681,11 @@ class MtmAmqpWorker extends Worker
     private function downloadThread()
     {
         $lastUpdateKey = 'thread_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/thread?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = Threads::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new Threads();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->deviceUuid = $f['deviceUuid'];
-                $model->port = $f['port'];
-                $model->speed = $f['speed'];
-                $model->title = $f['title'];
-                $model->status = $f['status'];
-                $model->work = $f['work'];
-                $model->deviceTypeUuid = $f['deviceTypeUuid'];
-                $model->c_time = $f['c_time'];
-                $model->message = $f['message'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('thread model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new Threads(), [
+            $this->apiServer . '/thread',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -1121,56 +695,11 @@ class MtmAmqpWorker extends Worker
     private function downloadDeviceType()
     {
         $lastUpdateKey = 'deviceType';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device-type?changedAfter=' . $lastDate;
-//        $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            $lastUpdateModel->date = $currentDate;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = DeviceType::findOne($f['_id']);
-                if ($model == null) {
-                    $model = new DeviceType();
-                }
-
-//                $model->scenario = 'update';
-                $model->_id = $f['_id'];
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('deviceType model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new DeviceType(), [
+            $this->apiServer . '/device-status',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -1180,56 +709,11 @@ class MtmAmqpWorker extends Worker
     private function downloadDeviceStatus()
     {
         $lastUpdateKey = 'deviceStatus';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device-status?changedAfter=' . $lastDate;
-//        $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-//                $this->log($f['device']);
-                $model = DeviceStatus::findOne($f['_id']);
-                if ($model == null) {
-                    $model = new DeviceStatus();
-                }
-
-//                $model->scenario = 'update';
-                $model->_id = $f['_id'];
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('deviceStatus model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new DeviceStatus(), [
+            $this->apiServer . '/device-status',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -1270,332 +754,82 @@ class MtmAmqpWorker extends Worker
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadDeviceRegister()
     {
         $lastUpdateKey = 'device_register';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = DeviceRegister::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device-register/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, DeviceRegister::find(), '/device-register/send');
     }
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadSensorConfig()
     {
         $lastUpdateKey = 'sensor_config_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = SensorConfig::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/sensor-config/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, SensorConfig::find(), '/sensor-config/send');
     }
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadThread()
     {
         $lastUpdateKey = 'thread_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = Threads::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->limit(1)->one();
-
-        foreach ($items as $key => $item) {
-            $items[$key]['nodeUuid'] = $node->uuid;
-        }
-
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/thread/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, Threads::find(), '/thread/send');
     }
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadCamera()
     {
         $lastUpdateKey = 'camera_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = Camera::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/camera/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, Camera::find(), '/camera/send');
     }
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadDevice()
     {
         $lastUpdateKey = 'device_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $items = Device::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
-
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+        $this->uploadEntity($lastUpdateKey, Device::find(), '/device/send');
     }
 
     /**
      * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
      */
     private function uploadDeviceConfig()
     {
         $lastUpdateKey = 'device_config_upload';
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
+        $this->uploadEntity($lastUpdateKey, DeviceConfig::find(), '/device-config/send');
+    }
 
-        $lastDate = $lastUpdateModel->date;
-        $items = DeviceConfig::find()->where(['>=', 'changedAt', $lastDate])->orderBy('_id')
-            ->limit(500)->asArray()->all();
-//                $this->log('date: ' . $lastDate);
-//                $this->log('items: ' . count($items));
-//                $this->log('items: ' . print_r($items, true));
-        if (count($items) == 0) {
-            return;
-        }
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function uploadEntityParameter()
+    {
+        $lastUpdateKey = 'entity_parameter_upload';
+        $this->uploadEntity($lastUpdateKey, EntityParameter::find(), '/entity-parameter/send');
+    }
 
-        // фиксируем дату последнего элемента в текущей выборке
-        $lastItem = $items[count($items) - 1];
-        if (count($items) < 500) {
-            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
-        } else {
-            $currentDate = $lastItem['changedAt'];
-        }
-
-        $httpClient = new Client();
-        $q = $this->apiServer . '/device-config/send?XDEBUG_SESSION_START=xdebug';
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('POST')
-            ->setUrl($q)
-            ->setData([
-                'oid' => $this->organizationId,
-                'nid' => $this->nodeId,
-                'items' => json_encode($items),
-            ])
-            ->send();
-        if ($response->isOk) {
-            $lastUpdateModel->date = $currentDate;
-            if (!$lastUpdateModel->save()) {
-                $this->log('Last update date not saved');
-                foreach ($lastUpdateModel->errors as $error) {
-                    $this->log($error);
-                }
-            }
-        }
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function uploadLostLight()
+    {
+        $lastUpdateKey = 'lost_light_upload';
+        $this->uploadEntity($lastUpdateKey, LostLight::find(), '/lost-light/send');
     }
 
     /**
@@ -1605,57 +839,11 @@ class MtmAmqpWorker extends Worker
     private function downloadNodeControl()
     {
         $lastUpdateKey = 'node_control_download';
-        $currentDate = date('Y-m-d H:i:s');
-        $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
-        if ($lastUpdateModel == null) {
-            $lastUpdateModel = new LastUpdate();
-            $lastUpdateModel->entityName = $lastUpdateKey;
-            $lastUpdateModel->date = '0000-00-00 00:00:00';
-        }
-
-        $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/node-control?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-                $model = NodeControl::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new NodeControl();
-                }
-
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->nodeUuid = $f['nodeUuid'];
-                $model->date = $f['date'];
-                $model->type = $f['type'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('group control model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
-                }
-            }
-        }
+        $this->downloadEntity($lastUpdateKey, new NodeControl(), [
+            $this->apiServer . '/node-control',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
     }
 
     /**
@@ -1665,6 +853,51 @@ class MtmAmqpWorker extends Worker
     private function downloadGroup()
     {
         $lastUpdateKey = 'group_download';
+        $this->downloadEntity($lastUpdateKey, new Group(), [
+            $this->apiServer . '/group',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadGroupControl()
+    {
+        $lastUpdateKey = 'group_control_download';
+        $this->downloadEntity($lastUpdateKey, new GroupControl(), [
+            $this->apiServer . '/group-control',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadEntityParameter()
+    {
+        $lastUpdateKey = 'entity_parameter_download';
+        $this->downloadEntity($lastUpdateKey, new EntityParameter(), [
+            $this->apiServer . '/entity-parameter',
+            'oid' => $this->organizationId,
+            'nid' => $this->nodeId,
+        ]);
+    }
+
+    /**
+     * @param $lastUpdateKey string
+     * @param $modelClass string
+     * @param $fromUrl array
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function downloadEntity($lastUpdateKey, $modelClass, $fromUrl)
+    {
+//        $lastUpdateKey = 'entity_parameter_download';
         $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
@@ -1675,31 +908,37 @@ class MtmAmqpWorker extends Worker
 
         $lastDate = $lastUpdateModel->date;
         $httpClient = new Client();
-        $q = $this->apiServer . '/group?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
+        $fromUrl['changedAfter'] = $lastDate;
+        if (YII_DEBUG) {
+            $fromUrl['XDEBUG_SESSION_START'] = 'xdebug';
+        }
+
+        $request = $httpClient->createRequest();
+        $request->setMethod('GET')
+            ->setUrl($fromUrl);
+        $response = $request->send();
         if ($response->isOk && count($response->data) > 0) {
             $allSave = true;
             foreach ($response->data as $f) {
-                $model = Group::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
+                /** @var MtmActiveRecord $class */
+                $class = new $modelClass();
+                $model = $class::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
                 if ($model == null) {
-                    $model = new Group();
+                    $model = new $modelClass();
                 }
 
                 $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->title = $f['title'];
-                $model->groupId = $f['groupId'];
-                $model->deviceProgramUuid = $f['deviceProgramUuid'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
+                $model->load($f, '');
+//                $model->uuid = $f['uuid'];
+//                $model->entityUuid = $f['entityUuid'];
+//                $model->parameter = $f['parameter'];
+//                $model->value = $f['value'];
+//                $model->createdAt = $f['createdAt'];
+//                $model->changedAt = $f['changedAt'];
 
                 if (!$model->save()) {
                     $allSave = false;
-                    $this->log('group model not saved: uuid' . $model->uuid);
+                    $this->log($class::tableName() . ' model not saved: uuid' . $model->uuid);
                     foreach ($model->errors as $error) {
                         $this->log($error);
                     }
@@ -1719,13 +958,15 @@ class MtmAmqpWorker extends Worker
     }
 
     /**
+     * @param $lastUpdateKey string
+     * @param $query ActiveQuery
+     * @param $toUrl string
+     * @param int $count
      * @throws InvalidConfigException
      * @throws \yii\httpclient\Exception
      */
-    private function downloadGroupControl()
+    private function uploadEntity($lastUpdateKey, $query, $toUrl, $count = 500)
     {
-        $lastUpdateKey = 'group_control_download';
-        $currentDate = date('Y-m-d H:i:s');
         $lastUpdateModel = LastUpdate::find()->where(['entityName' => $lastUpdateKey])->limit(1)->one();
         if ($lastUpdateModel == null) {
             $lastUpdateModel = new LastUpdate();
@@ -1734,46 +975,53 @@ class MtmAmqpWorker extends Worker
         }
 
         $lastDate = $lastUpdateModel->date;
-        $httpClient = new Client();
-        $q = $this->apiServer . '/group-control?oid=' . $this->organizationId . '&nid=' . $this->nodeId . '&changedAfter=' . $lastDate;
-//                $this->log($q);
-        $response = $httpClient->createRequest()
-            ->setMethod('GET')
-            ->setUrl($q)
-            ->send();
-        if ($response->isOk && count($response->data) > 0) {
-            $allSave = true;
-            foreach ($response->data as $f) {
-                $model = GroupControl::find()->where(['uuid' => $f['uuid']])->limit(1)->one();
-                if ($model == null) {
-                    $model = new groupControl();
-                }
+        $items = $query->where(['>=', 'changedAt', $lastDate])->orderBy('_id')->limit($count)->asArray()->all();
+//        $this->log('date: ' . $lastDate);
+//        $this->log('items: ' . count($items));
+//        $this->log('items: ' . print_r($items, true));
+        if (count($items) == 0) {
+            return;
+        }
 
-                $model->scenario = MtmActiveRecord::SCENARIO_CUSTOM_UPDATE;
-                $model->uuid = $f['uuid'];
-                $model->groupUuid = $f['groupUuid'];
-                $model->date = $f['date'];
-                $model->type = $f['type'];
-                $model->deviceProgramUuid = $f['deviceProgramUuid'];
-                $model->createdAt = $f['createdAt'];
-                $model->changedAt = $f['changedAt'];
-
-                if (!$model->save()) {
-                    $allSave = false;
-                    $this->log('sensor config model not saved: uuid' . $model->uuid);
-                    foreach ($model->errors as $error) {
-                        $this->log($error);
-                    }
-                }
+        if ($query->modelClass == Threads::class) {
+            /** @var Node $node */
+            $node = Node::find()->where(['oid' => $this->organizationId, '_id' => $this->nodeId])->limit(1)->one();
+            foreach ($items as $key => $item) {
+                $items[$key]['nodeUuid'] = $node->uuid;
             }
+        }
 
-            if ($allSave) {
-                $lastUpdateModel->date = $currentDate;
-                if (!$lastUpdateModel->save()) {
-                    $this->log('Last update date not saved');
-                    foreach ($lastUpdateModel->errors as $error) {
-                        $this->log($error);
-                    }
+
+        // фиксируем дату последнего элемента в текущей выборке
+        $lastItem = $items[count($items) - 1];
+        if (count($items) < $count) {
+            $currentDate = date('Y-m-d H:i:s', strtotime($lastItem['changedAt']) + 1);
+        } else {
+            $currentDate = $lastItem['changedAt'];
+        }
+
+        $urlArray = [$this->apiServer . $toUrl];
+        if (YII_DEBUG) {
+            $urlArray['XDEBUG_SESSION_START'] = 'xdebug';
+        }
+
+        $httpClient = new Client();
+        $request = $httpClient->createRequest();
+        $request->setMethod('POST')
+            ->setUrl($urlArray)
+            ->setData([
+                'oid' => $this->organizationId,
+                'nid' => $this->nodeId,
+                'items' => json_encode($items),
+            ]);
+//        $this->log('url: ' . $request->getFullUrl());
+        $response = $request->send();
+        if ($response->isOk) {
+            $lastUpdateModel->date = $currentDate;
+            if (!$lastUpdateModel->save()) {
+                $this->log('Last update date not saved');
+                foreach ($lastUpdateModel->errors as $error) {
+                    $this->log($error);
                 }
             }
         }
