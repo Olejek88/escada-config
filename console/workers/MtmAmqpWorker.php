@@ -4,6 +4,7 @@ namespace console\workers;
 
 use backend\controllers\SshController;
 use common\components\MtmActiveRecord;
+use common\models\AvailableDevice;
 use common\models\Camera;
 use common\models\Device;
 use common\models\DeviceConfig;
@@ -289,6 +290,9 @@ class MtmAmqpWorker extends Worker
 
 //                $this->log('checkLostLight');
                 $this->uploadLostLight();
+
+//                $this->log('checkAvailableDevice');
+                $this->uploadAvailableDevice();
             }
 
             // проверяем наличие новых данных по оборудованию, камерам на сервере
@@ -830,6 +834,16 @@ class MtmAmqpWorker extends Worker
     {
         $lastUpdateKey = 'lost_light_upload';
         $this->uploadEntity($lastUpdateKey, LostLight::find(), '/lost-light/send');
+    }
+
+    /**
+     * @throws InvalidConfigException
+     * @throws \yii\httpclient\Exception
+     */
+    private function uploadAvailableDevice()
+    {
+        $lastUpdateKey = 'available_device_upload';
+        $this->uploadEntity($lastUpdateKey, AvailableDevice::find(), '/device/available');
     }
 
     /**
