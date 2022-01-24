@@ -62,6 +62,7 @@ class DeviceSearch extends Device
             '_id' => $this->_id,
             'createdAt' => $this->createdAt,
             'changedAt' => $this->changedAt,
+            'deleted' => 0,
         ]);
 
         $query->andFilterWhere(['like', 'uuid', $this->uuid])

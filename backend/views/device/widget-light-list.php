@@ -100,7 +100,7 @@ use yii\helpers\Html;
         ];
 
         $devices = Device::find()
-            ->where(['nodeUuid' => $device['nodeUuid']])
+            ->where(['nodeUuid' => $device['nodeUuid'], 'deleted' => 0])
             ->andWhere(['deviceTypeUuid' => DeviceType::DEVICE_LIGHT]);
         $provider = new ActiveDataProvider(
             [

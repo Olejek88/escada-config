@@ -25,6 +25,7 @@ use yii\db\Expression;
  * @property string $createdAt
  * @property string $changedAt
  * @property integer $linkTimeout
+ * @property integer $deleted
  *
  * @property int $q_att [int(11)]
  * @property int $q_errors [int(11)]
@@ -131,6 +132,7 @@ class Device extends MtmActiveRecord
             ],
             [['interface'], 'integer'],
             [['linkTimeout'], 'integer'],
+            [['deleted'], 'boolean'],
         ];
     }
 

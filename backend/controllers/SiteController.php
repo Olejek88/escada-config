@@ -167,7 +167,7 @@ class SiteController extends Controller
                 'folder' => true,
                 'expanded' => $expanded,
             ];
-            $devices = Device::find()->where(['deviceTypeUuid' => $type['uuid']])->all();
+            $devices = Device::find()->where(['deviceTypeUuid' => $type['uuid'], 'deleted' => 0])->all();
             foreach ($devices as $device) {
                 $childIdx = count($tree['children']) - 1;
                 if ($device['deviceStatusUuid'] == DeviceStatus::NOT_MOUNTED) {

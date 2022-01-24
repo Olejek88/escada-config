@@ -44,7 +44,9 @@ use yii\widgets\ActiveForm;
         DeviceType::DEVICE_COUNTER,
         DeviceType::DEVICE_ZB_COORDINATOR,
         DeviceType::DEVICE_ZB_COORDINATOR_E18,
-    ]])->all();
+    ],
+        'deleted' => 0,
+    ])->all();
     $items = ArrayHelper::map($devices, 'uuid', 'name');
     echo $form->field($model, 'deviceUuid',
         ['template' => MainFunctions::getAddButton("/device-type/create")])->widget(Select2::class,

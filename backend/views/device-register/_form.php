@@ -33,7 +33,7 @@ use yii\widgets\ActiveForm;
     }
     ?>
     <?php
-    $equipment = Device::find()->orderBy("_id")->all();
+    $equipment = Device::find()->where(['deleted' => 0])->orderBy("_id")->all();
     $items = ArrayHelper::map($equipment, 'uuid', 'address');
     echo $form->field($model, 'deviceUuid')->dropDownList($items);
     ?>

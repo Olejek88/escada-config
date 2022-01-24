@@ -82,7 +82,7 @@ class DeviceController extends Controller
     {
         if (isset($_POST['editableAttribute'])) {
             $model = Device::find()
-                ->where(['_id' => $_POST['editableKey']])
+                ->where(['_id' => $_POST['editableKey'], 'deleted' => 0])
                 ->limit(1)
                 ->one();
             if ($model == null) {
@@ -188,7 +188,7 @@ class DeviceController extends Controller
         foreach ($objects as $object) {
             $device = Device::find()
                 ->select('*')
-                ->where(['objectUuid' => $object['uuid']])
+                ->where(['objectUuid' => $object['uuid'], 'deleted' => 0])
                 ->limit(1)
                 ->one();
             if ($device == null) {
@@ -282,13 +282,13 @@ class DeviceController extends Controller
                 'folder' => true
             ];
 
-            $devices = Device::find()->where(['nodeUuid' => $node['uuid']])
+            $devices = Device::find()->where(['nodeUuid' => $node['uuid'], 'deleted' => 0])
                 ->with(['deviceType', 'deviceStatus'])
                 ->asArray()
                 ->all();
 
             if (isset($_GET['type'])) {
-                $devices = Device::find()->where(['nodeUuid' => $node['uuid']])
+                $devices = Device::find()->where(['nodeUuid' => $node['uuid'], 'deleted' => 0])
                     ->andWhere(['deviceTypeUuid' => $_GET['type']])
                     ->with(['deviceType'])
                     ->asArray()
@@ -433,7 +433,7 @@ class DeviceController extends Controller
     public function actionDashboard()
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()->where(['uuid' => $_GET['uuid']])->limit(1)->one();
+            $device = Device::find()->where(['uuid' => $_GET['uuid'], 'deleted' => 0])->limit(1)->one();
             if ($device && $device['deviceTypeUuid']==DeviceType::DEVICE_ELECTRO)
                 return self::actionDashboardElectro($device['uuid']);
         } else
@@ -441,7 +441,7 @@ class DeviceController extends Controller
 
         if (isset($_POST['type']) && $_POST['type'] == 'set') {
             if (isset($_POST['device'])) {
-                $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
+                $device = Device::find()->where(['uuid' => $_POST['device'], 'deleted' => 0])->limit(1)->one();
                 if (isset($_POST['value'])) {
                     $this->set($device, $_POST['value']);
                     self::updateConfig($device['uuid'], DeviceConfig::PARAM_SET_VALUE, $_POST['value']);
@@ -451,7 +451,7 @@ class DeviceController extends Controller
 
         if (isset($_POST['type']) && $_POST['type'] == 'params') {
             if (isset($_POST['device'])) {
-                $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
+                $device = Device::find()->where(['uuid' => $_POST['device'], 'deleted' => 0])->limit(1)->one();
                 $lightConfig = new MtmDevLightConfig();
                 $lightConfig->mode = $_POST['mode'];
                 $lightConfig->power = $_POST['power'];
@@ -480,10 +480,10 @@ class DeviceController extends Controller
 
         if (isset($_POST['type']) && $_POST['type'] == 'config') {
             if (isset($_POST['device'])) {
-                $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
+                $device = Device::find()->where(['uuid' => $_POST['device'], 'deleted' => 0])->limit(1)->one();
                 $lightConfig = new MtmDevLightConfigLight();
                 if (isset($_POST['device'])) {
-                    $device = Device::find()->where(['uuid' => $_POST['device']])->limit(1)->one();
+                    $device = Device::find()->where(['uuid' => $_POST['device'], 'deleted' => 0])->limit(1)->one();
                     if ($device && isset($_POST['time0'])) {
                         $lightConfig->time[0] = $_POST['time0'];
                         $lightConfig->value[0] = $_POST['level0'];
@@ -553,7 +553,7 @@ class DeviceController extends Controller
     public function actionDashboardElectro($uuid)
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
+            $device = Device::find()->where(['uuid' => $uuid, 'deleted' => 0])->limit(1)->one();
         } else {
             return $this->actionIndex();
         }
@@ -925,7 +925,7 @@ class DeviceController extends Controller
     public function actionArchive($uuid)
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
+            $device = Device::find()->where(['uuid' => $uuid, 'deleted' => 0])->limit(1)->one();
         } else {
             return $this->actionIndex();
         }
@@ -1054,7 +1054,7 @@ class DeviceController extends Controller
     public function actionArchiveDays($uuid)
     {
         if (isset($_GET['uuid'])) {
-            $device = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
+            $device = Device::find()->where(['uuid' => $uuid, 'deleted' => 0])->limit(1)->one();
         } else {
             return $this->actionIndex();
         }
@@ -1130,7 +1130,7 @@ class DeviceController extends Controller
             else $uuid = 0;
 
             if ($uuid) {
-                $device = Device::find()->where(['uuid' => $_POST['uuid']])->limit(1)->one();
+                $device = Device::find()->where(['uuid' => $_POST['uuid'], 'deleted' => 0])->limit(1)->one();
 
                 $parameters['mode'] = self::getParameter($device['uuid'], DeviceConfig::PARAM_REGIME);
                 $parameters['group'] = self::getParameter($device['uuid'], DeviceConfig::PARAM_GROUP);
@@ -1240,7 +1240,7 @@ class DeviceController extends Controller
     public
     function actionTrends($uuid)
     {
-        $deviceElectro = Device::find()->where(['uuid' => $uuid])->limit(1)->one();
+        $deviceElectro = Device::find()->where(['uuid' => $uuid, 'deleted' => 0])->limit(1)->one();
         $parameters1 = [];
         $parameters1['uuid'] = '';
         $parameters1['trends']['title'] = '';
