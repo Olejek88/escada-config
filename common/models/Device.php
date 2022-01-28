@@ -31,7 +31,7 @@ use yii\db\Expression;
  * @property int $q_errors [int(11)]
  * @property int $dev_time [timestamp]
  * @property int $protocol [int(11)]
- * @property string $number [varchar(150)]
+ * @property string $num [varchar(150)]
  *
  * @property DeviceStatus $deviceStatus
  * @property Node $node
