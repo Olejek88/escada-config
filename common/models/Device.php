@@ -130,12 +130,6 @@ class Device extends MtmActiveRecord
                 ],
                 'string', 'max' => 50
             ],
-            [
-                [
-                    'num',
-                ],
-                'string', 'max' => 150
-            ],
             [['interface'], 'integer'],
             [[
                 'linkTimeout',
