@@ -31,7 +31,7 @@ use yii\db\Expression;
  * @property int $q_errors [int(11)]
  * @property int $dev_time [timestamp]
  * @property int $protocol [int(11)]
- * @property string $num [varchar(150)]
+ * @property int $num [int(11)]
  *
  * @property DeviceStatus $deviceStatus
  * @property Node $node
@@ -130,8 +130,17 @@ class Device extends MtmActiveRecord
                 ],
                 'string', 'max' => 50
             ],
+            [
+                [
+                    'num',
+                ],
+                'string', 'max' => 150
+            ],
             [['interface'], 'integer'],
-            [['linkTimeout'], 'integer'],
+            [[
+                'linkTimeout',
+                'num',
+            ], 'integer'],
             [['deleted'], 'boolean'],
         ];
     }
