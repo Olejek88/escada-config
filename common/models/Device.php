@@ -37,6 +37,7 @@ use yii\db\Expression;
  * @property Node $node
  * @property string $fullTitle
  * @property DeviceType $deviceType
+ * @property SensorChannel[] $sensorChannels
  */
 class Device extends MtmActiveRecord
 {
@@ -223,5 +224,10 @@ class Device extends MtmActiveRecord
     public function getFullTitle()
     {
         return $this->name;
+    }
+
+    public function getSensorChannels()
+    {
+        return $this->hasMany(SensorChannel::class, ['deviceUuid' => 'uuid']);
     }
 }
