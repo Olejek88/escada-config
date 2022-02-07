@@ -12,7 +12,6 @@ use yii\db\Expression;
  * This is the model class for table "data".
  *
  * @property integer $_id
- * @property string $uuid
  * @property string $sensorChannelUuid
  * @property double $value
  * @property int $type
@@ -68,7 +67,6 @@ class Measure extends ActiveRecord
         return [
             [
                 [
-                    'uuid',
                     'sensorChannelUuid',
                     'value',
                     'date'
@@ -76,7 +74,7 @@ class Measure extends ActiveRecord
                 'required'
             ],
             [['value'], 'number'],
-            [['uuid', 'sensorChannelUuid', 'date'], 'string', 'max' => 50],
+            [['sensorChannelUuid', 'date'], 'string', 'max' => 50],
             [['createdAt', 'changedAt'], 'safe'],
         ];
     }
@@ -92,7 +90,6 @@ class Measure extends ActiveRecord
     {
         return [
             '_id' => Yii::t('app', '№'),
-            'uuid' => Yii::t('app', 'Uuid'),
             'sensorChannel' => Yii::t('app', 'Канал измерения'),
             'sensorChannelUuid' => Yii::t('app', 'Канал измерения'),
             'measureType' => Yii::t('app', 'Тип измерения'),
@@ -110,7 +107,7 @@ class Measure extends ActiveRecord
      */
     public function fields()
     {
-        return ['_id', 'uuid',
+        return ['_id',
             'sensorChannelUuid',
             'sensorChannel' => function ($model) {
                 return $model->sensorChannel;

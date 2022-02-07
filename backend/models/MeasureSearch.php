@@ -18,7 +18,7 @@ class MeasureSearch extends Measure
     {
         return [
             [['_id'], 'integer'],
-            [['uuid', 'sensorChannelUuid', 'date', 'value', 'createdAt', 'changedAt'], 'safe'],
+            [['sensorChannelUuid', 'date', 'value', 'createdAt', 'changedAt'], 'safe'],
         ];
     }
 
@@ -64,8 +64,7 @@ class MeasureSearch extends Measure
             'changedAt' => $this->changedAt,
         ]);
 
-        $query->andFilterWhere(['like', 'uuid', $this->uuid])
-            ->andFilterWhere(['like', 'sensorChannelUuid', $this->sensorChannelUuid])
+        $query->andFilterWhere(['like', 'sensorChannelUuid', $this->sensorChannelUuid])
             ->andFilterWhere(['like', 'value', $this->value]);
 
         return $dataProvider;
