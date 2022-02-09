@@ -101,7 +101,7 @@ class MeasureController extends Controller
         $name = '';
         if ($_GET["equipment"]) {
             $measure = Measure::find()
-                ->where(['sensorChannelUuid' => $_GET["sensorChannel"]])
+                ->where(['sensorChannelId' => $_GET["sensorChannel"]])
                 ->orderBy('date desc')
                 ->limit(100)
                 ->all();

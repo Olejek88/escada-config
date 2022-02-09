@@ -945,6 +945,7 @@ class MtmAmqpWorker extends Worker
                 }
 
                 $model->load($f, '');
+                $model->_id = $f['_id'];
                 if (!$model->save()) {
                     $allSave = false;
                     $this->log($class::tableName() . ' model not saved: uuid' . $model->uuid);

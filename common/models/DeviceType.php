@@ -16,6 +16,8 @@ use yii\db\Expression;
  * @property string $createdAt
  * @property string $changedAt
  *
+ * @property Device[] $devices
+ *
  */
 class DeviceType extends ActiveRecord
 {
@@ -80,5 +82,10 @@ class DeviceType extends ActiveRecord
             'createdAt' => Yii::t('app', 'Создан'),
             'changedAt' => Yii::t('app', 'Изменен'),
         ];
+    }
+
+    public function getDevices()
+    {
+        return $this->hasMany(Device::class, ['deviceTypeUuid' => 'uuid']);
     }
 }

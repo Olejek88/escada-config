@@ -12,7 +12,7 @@ use yii\db\Expression;
  * This is the model class for table "data".
  *
  * @property integer $_id
- * @property string $sensorChannelUuid
+ * @property string $sensorChannelId
  * @property double $value
  * @property int $type
  * @property string $date
@@ -67,14 +67,14 @@ class Measure extends ActiveRecord
         return [
             [
                 [
-                    'sensorChannelUuid',
+                    'sensorChannelId',
                     'value',
                     'date'
                 ],
                 'required'
             ],
-            [['value'], 'number'],
-            [['sensorChannelUuid', 'date'], 'string', 'max' => 50],
+            [['sensorChannelId', 'value'], 'number'],
+            [['date'], 'string', 'max' => 50],
             [['createdAt', 'changedAt'], 'safe'],
         ];
     }
@@ -91,7 +91,7 @@ class Measure extends ActiveRecord
         return [
             '_id' => Yii::t('app', '№'),
             'sensorChannel' => Yii::t('app', 'Канал измерения'),
-            'sensorChannelUuid' => Yii::t('app', 'Канал измерения'),
+            'sensorChannelId' => Yii::t('app', 'Канал измерения'),
             'measureType' => Yii::t('app', 'Тип измерения'),
             'value' => Yii::t('app', 'Значение'),
             'date' => Yii::t('app', 'Дата'),
@@ -108,7 +108,7 @@ class Measure extends ActiveRecord
     public function fields()
     {
         return ['_id',
-            'sensorChannelUuid',
+            'sensorChannelId',
             'sensorChannel' => function ($model) {
                 return $model->sensorChannel;
             },
@@ -143,7 +143,7 @@ class Measure extends ActiveRecord
      */
     public function getSensorChannel()
     {
-        return $this->hasOne(SensorChannel::class, ['uuid' => 'sensorChannelUuid']);
+        return $this->hasOne(SensorChannel::class, ['_id' => 'sensorChannelId']);
     }
 
     /**
@@ -156,9 +156,9 @@ class Measure extends ActiveRecord
         return $this->sensorChannel->hasOne(MeasureType::class, ['uuid' => 'measureTypeUuid']);
     }
 
-    public static function getLastMeasureBetweenDates($sensorChannelUuid, $startDate, $endDate)
+    public static function getLastMeasureBetweenDates($sensorChannelId, $startDate, $endDate)
     {
-        $model = Measure::find()->where(["sensorChannelUuid" => $sensorChannelUuid])
+        $model = Measure::find()->where(["sensorChannelId" => $sensorChannelId])
             ->andWhere('date >= "' . $startDate . '"')
             ->andWhere('date < "' . $endDate . '"')
             ->orderBy('date DESC')

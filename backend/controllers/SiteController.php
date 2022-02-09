@@ -19,6 +19,7 @@ use common\models\Threads;
 use Yii;
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\web\Controller;
 
@@ -91,7 +92,7 @@ class SiteController extends Controller
         $channel_power = SensorChannel::find()->where(['measureTypeUuid' => MeasureType::POWER])->limit(1)->one();
         if ($channel_power) {
             $last_measures = Measure::find()
-                ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->where(['sensorChannelId' => $channel_power['_id']])
                 ->andWhere(['type' => MeasureType::MEASURE_TYPE_INTERVAL])
                 ->andWhere(['parameter' => 0])
                 ->orderBy('date desc')
@@ -135,7 +136,7 @@ class SiteController extends Controller
 
         if ($channel_power) {
             $measures = Measure::find()
-                ->where(['sensorChannelUuid' => $channel_power['uuid']])
+                ->where(['sensorChannelId' => $channel_power['_id']])
                 ->andWhere(['type' => 1])
                 ->orderBy('date desc')
                 ->limit(50)
@@ -157,17 +158,26 @@ class SiteController extends Controller
         $threadSearchModel = new ThreadsSearch();
         $threadDataProvider = $threadSearchModel->search(Yii::$app->request->queryParams);
 
-        $types = DeviceType::find()->indexBy('_id')->all();
+        $maxIds = Measure::find()->select('MAX(_id) as _id')->groupBy('sensorChannelId')->asArray()->all();
+        $lastMeasures = Measure::find()->where(['_id' => $maxIds])->asArray()->all();
+        $lastMeasures = ArrayHelper::map($lastMeasures, 'sensorChannelId', function ($item) {
+            return $item;
+        });
+
+        $types = DeviceType::find()->indexBy('_id')
+            ->with(['devices', 'devices.deviceStatus', 'devices.sensorChannels'])
+            ->asArray()
+            ->all();
         $tree = array();
         foreach ($types as $type) {
             $expanded = true;
             $tree['children'][] = [
-                'title' => $type->title,
-                'key' => $type->_id,
+                'title' => $type['title'],
+                'key' => $type['_id'],
                 'folder' => true,
                 'expanded' => $expanded,
             ];
-            $devices = Device::find()->where(['deviceTypeUuid' => $type['uuid'], 'deleted' => 0])->all();
+            $devices = $type['devices'];
             foreach ($devices as $device) {
                 $childIdx = count($tree['children']) - 1;
                 if ($device['deviceStatusUuid'] == DeviceStatus::NOT_MOUNTED) {
@@ -178,25 +188,24 @@ class SiteController extends Controller
                     $class = 'critical3';
                 }
                 $tree['children'][$childIdx]['children'][] = [
-                    'title' => $device['deviceType']['title'],
+                    'title' => $type['title'],
                     'status' => '<div class="progress"><div class="'
-                        . $class . '">' . $device['deviceStatus']->title . '</div></div>',
-                    'register' => $device['port'].' ['.$device['address'].']',
+                        . $class . '">' . $device['deviceStatus']['title'] . '</div></div>',
+                    'register' => $device['port'] . ' [' . $device['address'] . ']',
                     'date' => $device['last_date'],
                     'folder' => true
                 ];
-                $channels = SensorChannel::find()->where(['deviceUuid' => $device['uuid']])->all();
+                $channels = $device['sensorChannels'];
                 foreach ($channels as $channel) {
                     $childIdx2 = count($tree['children'][$childIdx]['children']) - 1;
-                    $measure = Measure::find()
-                        ->where(['sensorChannelUuid' => $channel['uuid']])
-                        ->orderBy('date desc')
-                        ->limit(1)
-                        ->one();
+                    $measure = isset($lastMeasures[$channel['_id']]) ? $lastMeasures[$channel['_id']] : null;
                     $date = '-';
                     if (!$measure) {
                         $config = null;
-                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])->limit(1)->one();
+                        $config = SensorConfig::find()->where(['sensorChannelUuid' => $channel['uuid']])
+                            ->limit(1)
+                            ->asArray()
+                            ->one();
                         if ($config) {
                             $measure = Html::a('конфигурация', ['sensor-config/view', 'id' => $config['_id']]);
                             $date = $config['changedAt'];

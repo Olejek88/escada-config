@@ -27,7 +27,6 @@ $this->title = 'Измеренное значение';
             'model' => $model,
             'attributes' => [
                 '_id',
-                'uuid',
                 [
                     'label' => 'Канал',
                     'value' => $model['sensorChannel']->title
