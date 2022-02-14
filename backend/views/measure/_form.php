@@ -41,7 +41,7 @@ use yii\widgets\ActiveForm;
     $items = ArrayHelper::map($sensorChannels, 'uuid', function ($data) {
         return $data['device']['name'].' ['.$data['title'].']';
     });
-    echo $form->field($model, 'sensorChannelUuid')->widget(Select2::class,
+    echo $form->field($model, 'sensorChannelId')->widget(Select2::class,
         [
             'data' => $items,
             'language' => 'ru',

@@ -43,7 +43,7 @@ $this->title = Yii::t('app', 'Измеренные значения');
                                 }
                             ],
                             [
-                                'attribute' => 'sensorChannelUuid',
+                                'attribute' => 'sensorChannelId',
                                 'contentOptions' => [
                                     'class' => 'table_class',
                                     'hAlign' => 'center',
