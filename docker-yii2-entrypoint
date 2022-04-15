@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+#set -Eeuo pipefail
+
+#    uid="$(id -u)"
+#    gid="$(id -g)"
+#    if [ "$uid" = '0' ]; then
+#        case "$1" in
+#            apache2*)
+#                user="${APACHE_RUN_USER:-www-data}"
+#                group="${APACHE_RUN_GROUP:-www-data}"
+#
+#                # strip off any '#' symbol ('#1000' is valid syntax for Apache)
+#                pound='#'
+#                user="${user#$pound}"
+#                group="${group#$pound}"
+#                ;;
+#            *) # php-fpm
+#                ;;
+#        esac
+#    else
+#        user="$uid"
+#        group="$gid"
+#    fi
+
+chown -R root: ../html
+
+if [ ! -e backend/web/index.php ]; then
+
+    echo >&2 "Yii2 not found in $PWD - copying now..."
+
+#    if [ -n "$(find -mindepth 1 -maxdepth 1 -not -name wp-content)" ]; then
+#        echo >&2 "WARNING: $PWD is not empty! (copying anyhow)"
+#    fi
+
+    git init
+    git remote add docker /git
+fi
+
+git pull docker
+git checkout dev
+
+# extract early prepared vendor dir
+tar -xf /vendor.tar.gz
+./composer install
+
+#./init --env=Development --overwrite=n
+./init --env=Production --overwrite=y
+
+./yii migrate/up --interactive=0
+
+user='www-data'
+group='www-data'
+chown -R "$user:$group" .
+
+set -- php-fpm "$@"
+exec "$@"
