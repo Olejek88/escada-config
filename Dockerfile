@@ -36,13 +36,14 @@ RUN set -ex; \
     ; \
     apk del --no-network .php-deps \
     ; \
-    apk add curl icu && \
+    apk add curl icu ffmpeg && \
+    ln -s /usr/bin/ffmpeg /usr/bin/avconv && \
     ./composer install && \
     tar -czvf /vendor.tar.gz vendor && \
     rm -rf /tmpdev \
     ;
 
-COPY docker-yii2-entrypoint /usr/local/bin
+COPY docker-yii2-entrypoint docker-worker-entrypoint /usr/local/bin/
 
 #RUN set -ex; \
 #    ./composer install \

@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+#set -Eeuo pipefail
+
+ln -sf /dev/stdou /var/www/html/console/runtime/daemon/logs/mtm_amqp_worker.log
+
+i=0
+until [ $i -gt 3 ]
+do
+  echo Check migrate finished...
+  if [ ! -e migrate-ok ]; then
+    if [ $i -ge 3 ]; then
+      exit 1
+    fi
+
+    sleep 5
+    i=$((i=i+1))
+  else
+    break
+  fi
+done
+
+exec /var/www/html/yii mtm-worker

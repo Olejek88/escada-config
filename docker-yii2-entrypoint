@@ -1,26 +1,7 @@
 #!/usr/bin/env sh
 #set -Eeuo pipefail
 
-#    uid="$(id -u)"
-#    gid="$(id -g)"
-#    if [ "$uid" = '0' ]; then
-#        case "$1" in
-#            apache2*)
-#                user="${APACHE_RUN_USER:-www-data}"
-#                group="${APACHE_RUN_GROUP:-www-data}"
-#
-#                # strip off any '#' symbol ('#1000' is valid syntax for Apache)
-#                pound='#'
-#                user="${user#$pound}"
-#                group="${group#$pound}"
-#                ;;
-#            *) # php-fpm
-#                ;;
-#        esac
-#    else
-#        user="$uid"
-#        group="$gid"
-#    fi
+rm migrate-ok
 
 chown -R root: ../html
 
@@ -46,11 +27,29 @@ tar -xf /vendor.tar.gz
 #./init --env=Development --overwrite=n
 ./init --env=Production --overwrite=y
 
-./yii migrate/up --interactive=0
+i=0
+until [ $i -gt 3 ]
+do
+  echo Try to migrate...
+  ./yii migrate/up --interactive=0
+  if [ $? -ne 0 ]; then
+    if [ $i -ge 3 ]; then
+      exit 1
+    fi
+
+    sleep 5
+    i=$((i=i+1))
+  else
+    break
+  fi
+done
+
+touch migrate-ok
 
 user='www-data'
 group='www-data'
 chown -R "$user:$group" .
 
 set -- php-fpm "$@"
+
 exec "$@"
