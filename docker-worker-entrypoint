@@ -1,9 +1,6 @@
 #!/usr/bin/env sh
 #set -Eeuo pipefail
 
-#mkdir -p /var/www/html/console/runtime/daemon/logs
-#ln -sf /dev/stdout /var/www/html/console/runtime/daemon/logs/mtm_amqp_worker.log
-
 i=0
 until [ $i -gt 3 ]
 do

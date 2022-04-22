@@ -77,7 +77,10 @@ class MtmAmqpWorker extends Worker
 
     public function init()
     {
-        $this->logFile = '@console/runtime/daemon/logs/mtm_amqp_worker.log';
+        if ($this->logFile == null) {
+            $this->logFile = '@runtime/daemon/logs/mtm_amqp_worker.log';
+        }
+
         parent::init();
 
         $params = Yii::$app->params;
